@@ -1,0 +1,21 @@
+name: Simple Filesystem Tests
+server: npx -y @modelcontextprotocol/server-filesystem /tmp
+
+tests:
+  - name: List allowed directories
+    call: list_allowed_directories
+    expect:
+      - exists: $.content
+
+  - name: Read a test file
+    call: read_file
+    with:
+      path: /tmp/mcpspec-test.txt
+    expect:
+      - exists: $.content
+
+  - name: Handle missing file
+    call: read_file
+    with:
+      path: /tmp/nonexistent-file-12345.txt
+    expectError: true

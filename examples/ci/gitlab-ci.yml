@@ -1,0 +1,11 @@
+mcp-tests:
+  image: node:22
+  stage: test
+  script:
+    - npm install -g mcpspec
+    - mcpspec test --ci --reporter json --output results.json
+  artifacts:
+    when: always
+    paths:
+      - results.json
+    expire_in: 1 week

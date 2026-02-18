@@ -1,0 +1,43 @@
+schemaVersion: "1.0"
+name: Environment-Aware Tests
+description: Tests that use environment variables
+
+server:
+  transport: stdio
+  command: npx
+  args:
+    - "-y"
+    - "@modelcontextprotocol/server-filesystem"
+    - "{{baseDir}}"
+
+environments:
+  dev:
+    variables:
+      baseDir: /tmp
+  staging:
+    variables:
+      baseDir: /var/tmp
+
+defaultEnvironment: dev
+
+tests:
+  - id: test-list
+    name: List directories
+    tags:
+      - smoke
+    call: list_allowed_directories
+    assertions:
+      - type: schema
+      - type: latency
+        maxMs: 10000
+
+  - id: test-read
+    name: Read test file
+    tags:
+      - integration
+    call: read_file
+    with:
+      path: "{{baseDir}}/mcpspec-test.txt"
+    assertions:
+      - type: exists
+        path: $.content

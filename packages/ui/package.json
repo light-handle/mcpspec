@@ -1,0 +1,17 @@
+{
+  "name": "@mcpspec/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'UI build not yet configured (Phase 3)'",
+    "test": "echo 'No UI tests yet (Phase 3)'",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@mcpspec/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

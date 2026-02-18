@@ -1,6 +1,6 @@
 # MCPSpec
 
-The definitive testing platform for Model Context Protocol (MCP) servers. Think Postman, but for MCP.
+The testing platform for Model Context Protocol (MCP) servers. Think Postman, but for MCP.
 
 ## Features
 

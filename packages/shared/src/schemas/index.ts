@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+export {
+  createServerSchema,
+  updateServerSchema,
+  createCollectionSchema,
+  updateCollectionSchema,
+  triggerRunSchema,
+  inspectConnectSchema,
+  inspectCallSchema,
+} from './api.js';
+
 export const serverConfigSchema = z.union([
   z.string(),
   z.object({

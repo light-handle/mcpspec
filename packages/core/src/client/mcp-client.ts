@@ -1,10 +1,12 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import type { MCPClientInterface, ToolInfo, ResourceInfo, ToolCallResult } from './mcp-client-interface.js';
 import type { ServerConfig } from '@mcpspec/shared';
 import { ConnectionManager } from './connection-manager.js';
 import { ProcessManagerImpl } from '../process/process-manager.js';
 import { MCPSpecError } from '../errors/mcpspec-error.js';
+import { sleep } from '../rate-limiting/backoff.js';
 
 export interface MCPClientOptions {
   serverConfig: ServerConfig | string;
@@ -13,7 +15,7 @@ export interface MCPClientOptions {
 
 export class MCPClient implements MCPClientInterface {
   private client: Client | null = null;
-  private transport: StdioClientTransport | null = null;
+  private transport: Transport | null = null;
   private connectionManager: ConnectionManager;
   public readonly processManager: ProcessManagerImpl;
   private serverConfig: ServerConfig;
@@ -48,21 +50,10 @@ export class MCPClient implements MCPClientInterface {
     this.connectionManager.transition('connecting');
 
     try {
-      const { command, args } = this.serverConfig;
-      if (!command) {
-        throw new MCPSpecError('CONFIG_ERROR', 'Server command is required for stdio transport', {
-          config: this.serverConfig,
-        });
-      }
-
-      this.transport = new StdioClientTransport({
-        command,
-        args: args ?? [],
-        env: this.serverConfig.env as Record<string, string> | undefined,
-      });
+      this.transport = await this.createTransport();
 
       this.client = new Client(
-        { name: 'mcpspec', version: '0.1.0' },
+        { name: 'mcpspec', version: '0.2.0' },
         { capabilities: {} },
       );
 
@@ -71,12 +62,73 @@ export class MCPClient implements MCPClientInterface {
       this.connectionManager.transition('connected');
     } catch (err) {
       this.connectionManager.transition('error');
+
+      // Attempt reconnection
+      if (this.connectionManager.shouldReconnect()) {
+        return this.reconnect();
+      }
+
       if (err instanceof MCPSpecError) throw err;
       const message = err instanceof Error ? err.message : String(err);
       throw new MCPSpecError('CONNECTION_TIMEOUT', `Failed to connect to MCP server: ${message}`, {
         command: this.serverConfig.command,
+        url: this.serverConfig.url,
         error: message,
       });
+    }
+  }
+
+  private async reconnect(): Promise<void> {
+    this.connectionManager.transition('connecting');
+    const delay = this.connectionManager.getReconnectDelay();
+    await sleep(delay);
+    return this.connect();
+  }
+
+  private async createTransport(): Promise<Transport> {
+    const transport = this.serverConfig.transport ?? 'stdio';
+
+    switch (transport) {
+      case 'stdio': {
+        const { command, args } = this.serverConfig;
+        if (!command) {
+          throw new MCPSpecError('CONFIG_ERROR', 'Server command is required for stdio transport', {
+            config: this.serverConfig,
+          });
+        }
+        return new StdioClientTransport({
+          command,
+          args: args ?? [],
+          env: this.serverConfig.env as Record<string, string> | undefined,
+        });
+      }
+
+      case 'sse': {
+        const { url } = this.serverConfig;
+        if (!url) {
+          throw new MCPSpecError('CONFIG_ERROR', 'Server URL is required for SSE transport', {
+            config: this.serverConfig,
+          });
+        }
+        const { createSSETransport } = await import('./transports/sse.js');
+        return createSSETransport(url);
+      }
+
+      case 'streamable-http': {
+        const { url } = this.serverConfig;
+        if (!url) {
+          throw new MCPSpecError('CONFIG_ERROR', 'Server URL is required for streamable-http transport', {
+            config: this.serverConfig,
+          });
+        }
+        const { createStreamableHTTPTransport } = await import('./transports/http.js');
+        return createStreamableHTTPTransport(url);
+      }
+
+      default:
+        throw new MCPSpecError('CONFIG_ERROR', `Unknown transport type: ${transport}`, {
+          transport,
+        });
     }
   }
 

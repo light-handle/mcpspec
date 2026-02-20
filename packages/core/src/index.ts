@@ -24,9 +24,21 @@ export { ConnectionManager } from './client/connection-manager.js';
 
 // Testing
 export { TestRunner } from './testing/test-runner.js';
+export type { TestRunReporter } from './testing/test-runner.js';
 export { TestExecutor } from './testing/test-executor.js';
+export { TestScheduler } from './testing/test-scheduler.js';
+
+// Reporters
 export { ConsoleReporter } from './testing/reporters/console-reporter.js';
 export { JsonReporter } from './testing/reporters/json-reporter.js';
+export { JunitReporter } from './testing/reporters/junit-reporter.js';
+export { HtmlReporter } from './testing/reporters/html-reporter.js';
+export { TapReporter } from './testing/reporters/tap-reporter.js';
+
+// Comparison
+export { BaselineStore } from './testing/comparison/baseline-store.js';
+export { ResultDiffer } from './testing/comparison/result-differ.js';
+export type { RunDiff, TestDiff } from './testing/comparison/result-differ.js';
 
 // Rate limiting
 export { RateLimiter } from './rate-limiting/rate-limiter.js';

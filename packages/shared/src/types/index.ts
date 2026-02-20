@@ -235,3 +235,13 @@ export interface ErrorTemplate {
   suggestions: string[];
   docs?: string;
 }
+
+// API types
+export type {
+  SavedServerConnection,
+  SavedCollection,
+  TestRunRecord,
+  ApiResponse,
+  ApiListResponse,
+  ApiError,
+} from './api.js';

@@ -5,26 +5,84 @@ import type {
   AssertionDefinition,
   SimpleExpectation,
 } from '@mcpspec/shared';
+import { DEFAULT_TIMEOUTS } from '@mcpspec/shared';
 import type { MCPClientInterface, ToolCallResult } from '../client/mcp-client-interface.js';
 import { assertSchema } from './assertions/schema-assertion.js';
 import { assertEqual } from './assertions/equals-assertion.js';
 import { assertContains } from './assertions/contains-assertion.js';
 import { assertExists } from './assertions/exists-assertion.js';
 import { assertMatches } from './assertions/regex-assertion.js';
+import { assertType } from './assertions/type-assertion.js';
+import { assertExpression } from './assertions/expression-assertion.js';
+import { assertBinary } from './assertions/binary-assertion.js';
 import { queryJsonPath } from '../utils/jsonpath.js';
 import { resolveObjectVariables } from '../utils/variable-resolver.js';
 import { MCPSpecError } from '../errors/mcpspec-error.js';
+import type { RateLimiter } from '../rate-limiting/rate-limiter.js';
+import { calculateBackoff, sleep } from '../rate-limiting/backoff.js';
 
 export class TestExecutor {
   private variables: Record<string, unknown> = {};
+  private rateLimiter: RateLimiter | undefined;
 
-  constructor(initialVariables?: Record<string, unknown>) {
+  constructor(initialVariables?: Record<string, unknown>, rateLimiter?: RateLimiter) {
     if (initialVariables) {
       this.variables = { ...initialVariables };
     }
+    this.rateLimiter = rateLimiter;
   }
 
   async execute(test: TestDefinition, client: MCPClientInterface): Promise<TestResult> {
+    const timeout = test.timeout ?? DEFAULT_TIMEOUTS.test;
+    const retries = test.retries ?? 0;
+
+    // Try with retries (only for thrown errors, not assertion failures)
+    let lastError: Error | undefined;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      if (attempt > 0) {
+        const delay = calculateBackoff(attempt - 1);
+        await sleep(delay);
+      }
+
+      try {
+        return await this.executeWithTimeout(test, client, timeout);
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err));
+        // Only retry on thrown errors (connection failures, etc.)
+        if (attempt < retries) {
+          continue;
+        }
+      }
+    }
+
+    // All retries exhausted
+    return {
+      testId: test.id ?? test.name,
+      testName: test.name,
+      status: 'error',
+      duration: 0,
+      assertions: [],
+      error: lastError?.message ?? 'Unknown error',
+    };
+  }
+
+  private executeWithTimeout(
+    test: TestDefinition,
+    client: MCPClientInterface,
+    timeoutMs: number,
+  ): Promise<TestResult> {
+    return Promise.race([
+      this.executeInternal(test, client),
+      new Promise<TestResult>((_, reject) =>
+        setTimeout(() => reject(new MCPSpecError('TIMEOUT', `Test "${test.name}" timed out after ${timeoutMs}ms`, {
+          testName: test.name,
+          timeout: timeoutMs,
+        })), timeoutMs),
+      ),
+    ]);
+  }
+
+  private async executeInternal(test: TestDefinition, client: MCPClientInterface): Promise<TestResult> {
     const startTime = Date.now();
     const testId = test.id ?? test.name;
     const assertionResults: AssertionResult[] = [];
@@ -42,7 +100,10 @@ export class TestExecutor {
 
       let result: ToolCallResult;
       try {
-        result = await client.callTool(toolName, resolvedInput);
+        const callFn = () => client.callTool(toolName, resolvedInput);
+        result = this.rateLimiter
+          ? await this.rateLimiter.schedule(callFn)
+          : await callFn();
       } catch (err) {
         if (test.expectError) {
           return {
@@ -185,6 +246,48 @@ export class TestExecutor {
         return assertExists(response, assertion.path ?? '$');
       case 'matches':
         return assertMatches(response, assertion.path ?? '$', assertion.pattern ?? '');
+      case 'type':
+        return assertType(response, assertion.path ?? '$', (assertion.expected as string) ?? 'object');
+      case 'expression':
+        return assertExpression(response, assertion.expr ?? '');
+      case 'mimeType':
+        return assertBinary(response, (assertion.expected as string) ?? '');
+      case 'length': {
+        const value = queryJsonPath(response, assertion.path ?? '$');
+        const len = Array.isArray(value)
+          ? value.length
+          : typeof value === 'string'
+            ? value.length
+            : -1;
+        if (len === -1) {
+          return {
+            type: 'length',
+            passed: false,
+            message: `Value at "${assertion.path}" is not an array or string`,
+            actual: typeof value,
+          };
+        }
+        const op = assertion.operator ?? 'eq';
+        const target = typeof assertion.value === 'number' ? assertion.value : Number(assertion.value);
+        let passed = false;
+        switch (op) {
+          case 'eq': passed = len === target; break;
+          case 'gt': passed = len > target; break;
+          case 'gte': passed = len >= target; break;
+          case 'lt': passed = len < target; break;
+          case 'lte': passed = len <= target; break;
+          default: passed = len === target;
+        }
+        return {
+          type: 'length',
+          passed,
+          message: passed
+            ? `Length ${len} satisfies ${op} ${target}`
+            : `Length ${len} does not satisfy ${op} ${target}`,
+          expected: target,
+          actual: len,
+        };
+      }
       case 'latency':
         return {
           type: 'latency',

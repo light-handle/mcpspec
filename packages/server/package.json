@@ -1,21 +1,32 @@
 {
   "name": "@mcpspec/server",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
-    "test": "vitest run --passWithNoTests",
+    "build": "tsup",
+    "test": "vitest run",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
     "@mcpspec/core": "workspace:*",
-    "@mcpspec/shared": "workspace:*"
+    "@mcpspec/shared": "workspace:*",
+    "hono": "^4.6.0",
+    "@hono/node-server": "^1.13.0",
+    "sql.js": "^1.11.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
     "vitest": "^2.1.0"

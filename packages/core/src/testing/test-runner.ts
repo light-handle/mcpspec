@@ -4,17 +4,23 @@ import type {
   TestResult,
   TestSummary,
   ServerConfig,
+  RateLimitConfig,
 } from '@mcpspec/shared';
 import { MCPClient } from '../client/mcp-client.js';
-import { TestExecutor } from './test-executor.js';
+import { TestScheduler } from './test-scheduler.js';
 import { ProcessManagerImpl } from '../process/process-manager.js';
 import { registerCleanupHandlers } from '../process/cleanup-handler.js';
+import { RateLimiter } from '../rate-limiting/rate-limiter.js';
+import { SecretMasker } from '../utils/secret-masker.js';
 import { MCPSpecError } from '../errors/mcpspec-error.js';
 import { randomUUID } from 'node:crypto';
 
 export interface TestRunnerOptions {
   environment?: string;
   reporter?: TestRunReporter;
+  parallelism?: number;
+  tags?: string[];
+  rateLimitConfig?: Partial<RateLimitConfig>;
 }
 
 export interface TestRunReporter {
@@ -22,6 +28,7 @@ export interface TestRunReporter {
   onTestStart(testName: string): void;
   onTestComplete(result: TestResult): void;
   onRunComplete(result: TestRunResult): void;
+  setSecretMasker?(masker: SecretMasker): void;
 }
 
 export class TestRunner {
@@ -35,8 +42,19 @@ export class TestRunner {
   async run(collection: CollectionDefinition, options?: TestRunnerOptions): Promise<TestRunResult> {
     const runId = randomUUID();
     const startedAt = new Date();
-    const results: TestResult[] = [];
     const reporter = options?.reporter;
+    const parallelism = options?.parallelism ?? 1;
+    const tags = options?.tags;
+
+    // Create secret masker and register server env secrets
+    const secretMasker = new SecretMasker();
+    const serverConfig = this.resolveServerConfig(collection.server);
+    if (serverConfig.env) {
+      secretMasker.registerFromEnv(serverConfig.env);
+    }
+    if (reporter && typeof (reporter as { setSecretMasker?: unknown }).setSecretMasker === 'function') {
+      (reporter as { setSecretMasker: (m: SecretMasker) => void }).setSecretMasker(secretMasker);
+    }
 
     reporter?.onRunStart(collection.name, collection.tests.length);
 
@@ -58,23 +76,33 @@ export class TestRunner {
     }
 
     // Connect to server
-    const serverConfig = this.resolveServerConfig(collection.server);
     const client = new MCPClient({
       serverConfig,
       processManager: this.processManager,
     });
 
+    let results: TestResult[];
+
     try {
       await client.connect();
 
-      const executor = new TestExecutor(envVariables as Record<string, unknown>);
+      // Create rate limiter if configured
+      const rateLimiter = options?.rateLimitConfig
+        ? new RateLimiter(options.rateLimitConfig)
+        : undefined;
 
-      // Sequential execution (MVP)
-      for (const test of collection.tests) {
-        reporter?.onTestStart(test.name);
-        const result = await executor.execute(test, client);
-        results.push(result);
-        reporter?.onTestComplete(result);
+      // Use TestScheduler for both sequential and parallel
+      const scheduler = new TestScheduler();
+      results = await scheduler.schedule(collection.tests, client, {
+        parallelism,
+        tags,
+        reporter,
+        rateLimiter,
+        initialVariables: envVariables as Record<string, unknown>,
+      });
+
+      if (rateLimiter) {
+        await rateLimiter.stop();
       }
     } finally {
       await client.disconnect();

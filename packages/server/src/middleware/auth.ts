@@ -1,5 +1,8 @@
-import { NotImplementedError } from '@mcpspec/core';
+import type { MiddlewareHandler } from 'hono';
 
-export function authMiddleware(): never {
-  throw new NotImplementedError('Auth middleware (Phase 3)');
+// Phase 3: pass-through middleware (extensible in later phases)
+export function authMiddleware(): MiddlewareHandler {
+  return async (_c, next) => {
+    return next();
+  };
 }

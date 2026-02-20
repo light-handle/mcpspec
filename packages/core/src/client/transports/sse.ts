@@ -1,7 +1,7 @@
-import { NotImplementedError } from '../../errors/mcpspec-error.js';
+import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 
-export class SSETransport {
-  constructor() {
-    throw new NotImplementedError('SSE transport');
-  }
+export { SSEClientTransport };
+
+export function createSSETransport(url: string): SSEClientTransport {
+  return new SSEClientTransport(new URL(url));
 }

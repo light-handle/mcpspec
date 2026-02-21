@@ -1,8 +1,4 @@
 import { Command } from 'commander';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const uiCommand = new Command('ui')
   .description('Launch the MCPSpec web UI')
@@ -17,10 +13,9 @@ export const uiCommand = new Command('ui')
     }
 
     // Dynamic import to keep CLI startup fast
-    const { startServer } = await import('@mcpspec/server');
+    const { startServer, UI_DIST_PATH } = await import('@mcpspec/server');
 
-    // Resolve UI dist path relative to CLI dist
-    const uiDistPath = resolve(__dirname, '../../ui/dist');
+    const uiDistPath = UI_DIST_PATH;
 
     const server = await startServer({
       port,

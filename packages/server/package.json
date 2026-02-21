@@ -1,7 +1,6 @@
 {
   "name": "@mcpspec/server",
-  "version": "0.3.0",
-  "private": true,
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,10 +10,24 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "ui-dist"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthropics/mcpspec.git",
+    "directory": "packages/server"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "build": "tsup",
+    "postbuild": "rm -rf ui-dist && cp -r ../ui/dist ui-dist",
     "test": "vitest run",
-    "clean": "rm -rf dist .turbo"
+    "clean": "rm -rf dist ui-dist .turbo"
   },
   "dependencies": {
     "@mcpspec/core": "workspace:*",

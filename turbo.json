@@ -1,6 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+    "@mcpspec/server#build": {
+      "dependsOn": ["@mcpspec/ui#build"],
+      "outputs": ["dist/**", "ui-dist/**"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]

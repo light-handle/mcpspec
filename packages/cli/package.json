@@ -1,12 +1,25 @@
 {
-  "name": "@mcpspec/cli",
-  "version": "0.3.0",
-  "private": true,
+  "name": "mcpspec",
+  "version": "1.0.0",
+  "description": "The definitive MCP server testing platform",
+  "keywords": ["mcp", "model-context-protocol", "testing", "cli"],
   "type": "module",
   "bin": {
     "mcpspec": "./dist/index.js"
   },
   "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthropics/mcpspec.git",
+    "directory": "packages/cli"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run --passWithNoTests",

@@ -1,7 +1,6 @@
 {
   "name": "@mcpspec/core",
-  "version": "0.3.0",
-  "private": true,
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -10,6 +9,18 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthropics/mcpspec.git",
+    "directory": "packages/core"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",

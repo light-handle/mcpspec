@@ -1,6 +1,6 @@
 {
   "name": "mcpspec",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "private": true,
   "description": "The definitive MCP server testing platform",
   "packageManager": "pnpm@10.30.0",
@@ -10,7 +10,9 @@
     "test": "turbo test",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "publish:all": "pnpm build && pnpm -r publish --access public --no-git-checks",
+    "publish:dry": "pnpm build && pnpm -r publish --access public --no-git-checks --dry-run"
   },
   "devDependencies": {
     "turbo": "^2.3.0",

@@ -848,6 +848,12 @@ Initial public release. Core features complete.
 - Import from Postman/Insomnia
 - More security rules
 - Bug fixes from feedback
+- **Server Process Monitor** — Real-time view of stdio server process health: stdout/stderr streams, memory/CPU usage, uptime, exit code on crash. Expose ProcessManager stats via server API/WebSocket. UI panel in Inspector.
+
+### v1.1.5 (Week 26)
+- **Request/Response Diff & Replay** — Record Inspector sessions (tool call sequences with inputs/outputs) as "recordings". Replay against same or different server version and diff results side-by-side. Export recordings as YAML collections. Builds on baseline/compare infrastructure.
+- **Step-Through Test Execution** — Debug mode for collection runs: pause between test cases, inspect/modify variable state, continue/skip/abort. TestExecutor emits events and waits for "continue" signal via WebSocket. UI "Debug Run" button.
+- **MCP Conformance Probe** — Automatically exercise MCP protocol edge cases (missing fields, wrong types, extra fields, empty arrays, null values, oversized payloads) and report server handling. Protocol compliance report, not security scan. New CLI command (`mcpspec probe`) + UI section.
 
 ### v1.2.0 (Week 28)
 - Team workspaces

@@ -33,11 +33,11 @@ export async function startServer(options: StartServerOptions = {}): Promise<Ser
   const db = new Database(dbPath);
   await db.init();
 
-  // Create Hono app
-  const app = createApp({ db, uiDistPath: options.uiDistPath });
-
   // Create WebSocket handler
   const wsHandler = new WebSocketHandler();
+
+  // Create Hono app
+  const app = createApp({ db, uiDistPath: options.uiDistPath, wsHandler });
 
   // Start HTTP server with WS upgrade
   const server = serve({ fetch: app.fetch, port, hostname: host }, (info) => {

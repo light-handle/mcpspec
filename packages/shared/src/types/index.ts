@@ -236,6 +236,9 @@ export interface ErrorTemplate {
   docs?: string;
 }
 
+// Protocol log types
+export type { ProtocolLogEntry, MessageDirection } from './protocol-log.js';
+
 // API types
 export type {
   SavedServerConnection,

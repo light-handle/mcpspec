@@ -4,6 +4,7 @@ import { localhostOnly } from './middleware/localhost-only.js';
 import { authMiddleware } from './middleware/auth.js';
 import { registerRoutes } from './routes/index.js';
 import type { Database } from './db/database.js';
+import type { WebSocketHandler } from './websocket.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { join, extname } from 'node:path';
 
@@ -23,6 +24,7 @@ const MIME_TYPES: Record<string, string> = {
 export interface AppOptions {
   db: Database;
   uiDistPath?: string;
+  wsHandler?: WebSocketHandler;
 }
 
 export function createApp(options: AppOptions): Hono {
@@ -34,7 +36,7 @@ export function createApp(options: AppOptions): Hono {
   app.use('/api/*', authMiddleware());
 
   // API routes
-  registerRoutes(app, options.db);
+  registerRoutes(app, options.db, options.wsHandler);
 
   // Static file serving (SPA fallback)
   if (options.uiDistPath) {

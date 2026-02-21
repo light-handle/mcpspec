@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SchemaForm } from './schema-form';
 import { JsonViewer } from './json-viewer';
 import { api } from '@/lib/api';
-import { Play, Loader2 } from 'lucide-react';
 
 interface Tool {
   name: string;
@@ -19,21 +17,19 @@ interface ToolCallerProps {
 
 export function ToolCaller({ sessionId, tools }: ToolCallerProps) {
   const [selectedTool, setSelectedTool] = useState('');
-  const [inputJson, setInputJson] = useState('{}');
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const currentTool = tools.find((t) => t.name === selectedTool);
 
-  async function handleCall() {
+  async function handleCall(input: Record<string, unknown>) {
     if (!selectedTool) return;
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      const input = JSON.parse(inputJson);
       const response = await api.inspect.call(sessionId, selectedTool, input);
       setResult(response.data);
     } catch (err) {
@@ -41,6 +37,9 @@ export function ToolCaller({ sessionId, tools }: ToolCallerProps) {
     }
     setLoading(false);
   }
+
+  // Build a schema for the form — use the tool's inputSchema or an empty fallback
+  const formSchema = currentTool?.inputSchema ?? { type: 'object', properties: {} };
 
   return (
     <div className="space-y-4">
@@ -65,27 +64,14 @@ export function ToolCaller({ sessionId, tools }: ToolCallerProps) {
         )}
       </div>
 
-      {currentTool?.inputSchema && (
-        <div>
-          <label className="text-sm font-medium">Schema</label>
-          <JsonViewer data={currentTool.inputSchema} />
-        </div>
-      )}
-
-      <div>
-        <label className="text-sm font-medium">Input (JSON)</label>
-        <Textarea
-          value={inputJson}
-          onChange={(e) => setInputJson(e.target.value)}
-          className="font-mono text-xs"
-          rows={4}
+      {currentTool && (
+        <SchemaForm
+          key={currentTool.name}
+          schema={formSchema}
+          onSubmit={handleCall}
+          loading={loading}
         />
-      </div>
-
-      <Button onClick={handleCall} disabled={!selectedTool || loading}>
-        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-        Call Tool
-      </Button>
+      )}
 
       {error != null && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
       {result != null && (

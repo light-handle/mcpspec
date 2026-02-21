@@ -2,6 +2,7 @@ import type {
   SavedServerConnection,
   SavedCollection,
   TestRunRecord,
+  ProtocolLogEntry,
   ApiResponse,
   ApiListResponse,
 } from '@mcpspec/shared';
@@ -104,6 +105,11 @@ export const api = {
         '/inspect/resources',
         { method: 'POST', body: JSON.stringify({ sessionId }) },
       ),
+    messages: (sessionId: string, after?: number) =>
+      request<{ data: ProtocolLogEntry[]; total: number }>('/inspect/messages', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, after }),
+      }),
     disconnect: (sessionId: string) =>
       request<ApiResponse<{ disconnected: boolean }>>('/inspect/disconnect', {
         method: 'POST',

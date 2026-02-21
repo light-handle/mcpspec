@@ -21,6 +21,8 @@ export { registerCleanupHandlers } from './process/cleanup-handler.js';
 export type { MCPClientInterface } from './client/mcp-client-interface.js';
 export { MCPClient } from './client/mcp-client.js';
 export { ConnectionManager } from './client/connection-manager.js';
+export { LoggingTransport } from './client/logging-transport.js';
+export type { OnProtocolMessage } from './client/logging-transport.js';
 
 // Testing
 export { TestRunner } from './testing/test-runner.js';

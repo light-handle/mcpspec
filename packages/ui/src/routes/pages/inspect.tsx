@@ -7,7 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToolCaller } from '@/components/inspect/tool-caller';
 import { JsonViewer } from '@/components/inspect/json-viewer';
+import { ProtocolLog } from '@/components/inspect/protocol-log';
+import { ProtocolTail } from '@/components/inspect/protocol-tail';
 import { useServers } from '@/hooks/use-servers';
+import { useProtocolLog } from '@/hooks/use-protocol-log';
 import { api } from '@/lib/api';
 import { Plug, Unplug, Loader2 } from 'lucide-react';
 
@@ -38,6 +41,7 @@ export function InspectPage() {
   const [error, setError] = useState<string | null>(null);
 
   const servers = useServers();
+  const { entries: protocolEntries } = useProtocolLog(sessionId);
 
   async function handleConnect() {
     setConnecting(true);
@@ -163,6 +167,7 @@ export function InspectPage() {
               <TabsTrigger value="tools">Tools ({tools.length})</TabsTrigger>
               <TabsTrigger value="resources">Resources ({resources.length})</TabsTrigger>
               <TabsTrigger value="call">Call Tool</TabsTrigger>
+              <TabsTrigger value="protocol">Protocol Log</TabsTrigger>
             </TabsList>
 
             <TabsContent value="tools" className="mt-4 space-y-3">
@@ -198,10 +203,19 @@ export function InspectPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="call" className="mt-4">
+            <TabsContent value="call" className="mt-4 space-y-4">
               <Card>
                 <CardContent className="pt-4">
                   <ToolCaller sessionId={sessionId} tools={tools} />
+                </CardContent>
+              </Card>
+              <ProtocolTail entries={protocolEntries} />
+            </TabsContent>
+
+            <TabsContent value="protocol" className="mt-4">
+              <Card>
+                <CardContent className="pt-4">
+                  <ProtocolLog entries={protocolEntries} />
                 </CardContent>
               </Card>
             </TabsContent>

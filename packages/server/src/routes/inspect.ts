@@ -1,13 +1,19 @@
 import type { Hono } from 'hono';
 import { inspectConnectSchema, inspectCallSchema } from '@mcpspec/shared';
+import type { ProtocolLogEntry } from '@mcpspec/shared';
 import { MCPClient, ProcessManagerImpl } from '@mcpspec/core';
 import type { ServerConfig } from '@mcpspec/shared';
+import type { WebSocketHandler } from '../websocket.js';
 import { randomUUID } from 'node:crypto';
+
+const MAX_LOG_ENTRIES = 10_000;
 
 interface InspectSession {
   client: MCPClient;
   processManager: ProcessManagerImpl;
   lastUsed: number;
+  protocolLog: ProtocolLogEntry[];
+  pendingRequests: Map<string | number, number>;
 }
 
 const sessions = new Map<string, InspectSession>();
@@ -25,7 +31,7 @@ setInterval(() => {
   }
 }, 60_000);
 
-export function inspectRoutes(app: Hono): void {
+export function inspectRoutes(app: Hono, wsHandler?: WebSocketHandler): void {
   app.post('/api/inspect/connect', async (c) => {
     const body = await c.req.json();
     const parsed = inspectConnectSchema.safeParse(body);
@@ -43,11 +49,59 @@ export function inspectRoutes(app: Hono): void {
       env: parsed.data.env,
     };
 
-    const client = new MCPClient({ serverConfig: config, processManager });
+    const session: InspectSession = {
+      client: null as unknown as MCPClient,
+      processManager,
+      lastUsed: Date.now(),
+      protocolLog: [],
+      pendingRequests: new Map(),
+    };
+
+    const onProtocolMessage = (direction: 'outgoing' | 'incoming', message: Record<string, unknown>) => {
+      const jsonrpcId = message.id as string | number | null | undefined;
+      const method = message.method as string | undefined;
+      const isError = message.error !== undefined;
+      const now = Date.now();
+
+      const entry: ProtocolLogEntry = {
+        id: randomUUID(),
+        timestamp: now,
+        direction,
+        message,
+        jsonrpcId: jsonrpcId ?? undefined,
+        method,
+        isError: isError || undefined,
+      };
+
+      // Request-response pairing for round-trip timing
+      if (direction === 'outgoing' && jsonrpcId != null && method) {
+        session.pendingRequests.set(jsonrpcId, now);
+      } else if (direction === 'incoming' && jsonrpcId != null) {
+        const sentAt = session.pendingRequests.get(jsonrpcId);
+        if (sentAt !== undefined) {
+          entry.roundTripMs = now - sentAt;
+          session.pendingRequests.delete(jsonrpcId);
+        }
+      }
+
+      // Cap stored entries
+      if (session.protocolLog.length >= MAX_LOG_ENTRIES) {
+        session.protocolLog.shift();
+      }
+      session.protocolLog.push(entry);
+
+      // Broadcast via WebSocket
+      if (wsHandler) {
+        wsHandler.broadcast(`inspect:${sessionId}`, 'protocol-message', entry);
+      }
+    };
+
+    const client = new MCPClient({ serverConfig: config, processManager, onProtocolMessage });
+    session.client = client;
 
     try {
       await client.connect();
-      sessions.set(sessionId, { client, processManager, lastUsed: Date.now() });
+      sessions.set(sessionId, session);
       return c.json({ data: { sessionId, connected: true } });
     } catch (err) {
       await processManager.shutdownAll();
@@ -120,6 +174,29 @@ export function inspectRoutes(app: Hono): void {
       const message = err instanceof Error ? err.message : 'Failed to list resources';
       return c.json({ error: 'resource_error', message }, 500);
     }
+  });
+
+  app.post('/api/inspect/messages', async (c) => {
+    const body = await c.req.json();
+    const sessionId = body?.sessionId as string | undefined;
+    if (!sessionId) {
+      return c.json({ error: 'validation_error', message: 'sessionId is required' }, 400);
+    }
+
+    const session = sessions.get(sessionId);
+    if (!session) {
+      return c.json({ error: 'not_found', message: 'Session not found or expired' }, 404);
+    }
+
+    session.lastUsed = Date.now();
+    const after = typeof body.after === 'number' ? body.after : undefined;
+
+    let entries = session.protocolLog;
+    if (after !== undefined) {
+      entries = entries.filter((e) => e.timestamp > after);
+    }
+
+    return c.json({ data: entries, total: session.protocolLog.length });
   });
 
   app.post('/api/inspect/disconnect', async (c) => {

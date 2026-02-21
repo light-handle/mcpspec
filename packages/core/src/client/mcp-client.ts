@@ -7,10 +7,13 @@ import { ConnectionManager } from './connection-manager.js';
 import { ProcessManagerImpl } from '../process/process-manager.js';
 import { MCPSpecError } from '../errors/mcpspec-error.js';
 import { sleep } from '../rate-limiting/backoff.js';
+import { LoggingTransport } from './logging-transport.js';
+import type { OnProtocolMessage } from './logging-transport.js';
 
 export interface MCPClientOptions {
   serverConfig: ServerConfig | string;
   processManager?: ProcessManagerImpl;
+  onProtocolMessage?: OnProtocolMessage;
 }
 
 export class MCPClient implements MCPClientInterface {
@@ -20,11 +23,13 @@ export class MCPClient implements MCPClientInterface {
   public readonly processManager: ProcessManagerImpl;
   private serverConfig: ServerConfig;
   private serverInfo: { name?: string; version?: string } | undefined;
+  private onProtocolMessage?: OnProtocolMessage;
 
   constructor(options: MCPClientOptions) {
     this.connectionManager = new ConnectionManager();
     this.processManager = options.processManager ?? new ProcessManagerImpl();
     this.serverConfig = this.normalizeConfig(options.serverConfig);
+    this.onProtocolMessage = options.onProtocolMessage;
   }
 
   private normalizeConfig(config: ServerConfig | string): ServerConfig {
@@ -50,7 +55,11 @@ export class MCPClient implements MCPClientInterface {
     this.connectionManager.transition('connecting');
 
     try {
-      this.transport = await this.createTransport();
+      let transport = await this.createTransport();
+      if (this.onProtocolMessage) {
+        transport = new LoggingTransport(transport, this.onProtocolMessage);
+      }
+      this.transport = transport;
 
       this.client = new Client(
         { name: 'mcpspec', version: '0.2.0' },

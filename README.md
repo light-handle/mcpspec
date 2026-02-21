@@ -1,6 +1,10 @@
-# MCPSpec
+<p align="center">
+  <img src="mcpspec.png" alt="MCPSpec" width="200" />
+</p>
 
-**The complete testing, debugging, and quality platform for MCP servers.**
+<h1 align="center">MCPSpec</h1>
+
+<p align="center"><strong>The complete testing, debugging, and quality platform for MCP servers.</strong></p>
 
 MCPSpec is Postman for [Model Context Protocol](https://modelcontextprotocol.io) — test collections, interactive inspection, security auditing, performance benchmarking, auto-generated docs, and a quality scoring system. Works from the CLI, in CI/CD, or through a full web UI.
 
@@ -387,7 +391,7 @@ Key design decisions:
 ## Development
 
 ```bash
-git clone https://github.com/mcpspec/mcpspec.git
+git clone https://github.com/light-handle/mcpspec.git
 cd mcpspec
 pnpm install
 pnpm build

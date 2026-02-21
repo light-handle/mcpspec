@@ -3,6 +3,8 @@ import type {
   SavedCollection,
   TestRunRecord,
   ProtocolLogEntry,
+  SecurityScanResult,
+  BenchmarkResult,
   ApiResponse,
   ApiListResponse,
 } from '@mcpspec/shared';
@@ -115,5 +117,66 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ sessionId }),
       }),
+  },
+
+  audit: {
+    start: (data: {
+      transport: string;
+      command?: string;
+      args?: string[];
+      url?: string;
+      env?: Record<string, string>;
+      mode: string;
+      rules?: string[];
+    }) =>
+      request<ApiResponse<{ sessionId: string }>>('/audit/start', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    status: (sessionId: string) =>
+      request<ApiResponse<{
+        status: string;
+        progress?: { currentRule?: string; completedRules: number; totalRules: number; findingsCount: number };
+        error?: string;
+        result?: SecurityScanResult;
+      }>>(`/audit/status/${sessionId}`),
+    result: (sessionId: string) =>
+      request<ApiResponse<SecurityScanResult>>(`/audit/result/${sessionId}`),
+    stop: (sessionId: string) =>
+      request<ApiResponse<{ stopped: boolean }>>(`/audit/stop/${sessionId}`, { method: 'POST' }),
+  },
+
+  benchmark: {
+    start: (data: {
+      transport: string;
+      command?: string;
+      args?: string[];
+      url?: string;
+      env?: Record<string, string>;
+      tool: string;
+      toolArgs?: Record<string, unknown>;
+      iterations?: number;
+      warmup?: number;
+      timeout?: number;
+    }) =>
+      request<ApiResponse<{ sessionId: string }>>('/benchmark/start', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    status: (sessionId: string) =>
+      request<ApiResponse<{
+        status: string;
+        progress?: { completedIterations: number; totalIterations: number; phase: string };
+        error?: string;
+        result?: BenchmarkResult;
+      }>>(`/benchmark/status/${sessionId}`),
+    result: (sessionId: string) =>
+      request<ApiResponse<BenchmarkResult>>(`/benchmark/result/${sessionId}`),
+    tools: (sessionId: string) =>
+      request<{ data: Array<{ name: string; description?: string; inputSchema?: Record<string, unknown> }> }>(
+        `/benchmark/tools/${sessionId}`,
+      ),
+    stop: (sessionId: string) =>
+      request<ApiResponse<{ stopped: boolean }>>(`/benchmark/stop/${sessionId}`, { method: 'POST' }),
   },
 };

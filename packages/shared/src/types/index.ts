@@ -205,6 +205,74 @@ export interface SecurityFinding {
   remediation?: string;
 }
 
+// Security scan types
+export interface SecurityScanConfig {
+  mode: SecurityScanMode;
+  rules?: string[];
+  severityThreshold?: SeverityLevel;
+  acknowledgeRisk?: boolean;
+  timeout?: number;
+  maxProbesPerTool?: number;
+}
+
+export interface SecurityScanResult {
+  id: string;
+  serverName: string;
+  mode: SecurityScanMode;
+  startedAt: Date;
+  completedAt: Date;
+  findings: SecurityFinding[];
+  summary: SecurityScanSummary;
+}
+
+export interface SecurityScanSummary {
+  totalFindings: number;
+  bySeverity: Record<SeverityLevel, number>;
+  byRule: Record<string, number>;
+}
+
+// Benchmark types
+export interface BenchmarkConfig {
+  iterations: number;
+  warmupIterations: number;
+  concurrency: number;
+  timeout: number;
+}
+
+export interface BenchmarkResult {
+  toolName: string;
+  iterations: number;
+  stats: BenchmarkStats;
+  errors: number;
+  startedAt: Date;
+  completedAt: Date;
+}
+
+export interface BenchmarkStats {
+  min: number;
+  max: number;
+  mean: number;
+  median: number;
+  p95: number;
+  p99: number;
+  stddev: number;
+}
+
+// Profiler types
+export interface ProfileEntry {
+  toolName: string;
+  startMs: number;
+  durationMs: number;
+  success: boolean;
+  error?: string;
+}
+
+export interface WaterfallEntry {
+  label: string;
+  startMs: number;
+  durationMs: number;
+}
+
 // MCP Score types
 export interface MCPScore {
   overall: number;

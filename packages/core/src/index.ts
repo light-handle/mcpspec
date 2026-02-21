@@ -44,3 +44,25 @@ export type { RunDiff, TestDiff } from './testing/comparison/result-differ.js';
 
 // Rate limiting
 export { RateLimiter } from './rate-limiting/rate-limiter.js';
+
+// Security
+export { ScanConfig } from './security/scan-config.js';
+export type { SecurityRule } from './security/rule-interface.js';
+export { SecurityScanner } from './security/security-scanner.js';
+export type { ScanProgress } from './security/security-scanner.js';
+export { PathTraversalRule } from './security/rules/path-traversal.js';
+export { InputValidationRule } from './security/rules/input-validation.js';
+export { ResourceExhaustionRule } from './security/rules/resource-exhaustion.js';
+export { AuthBypassRule } from './security/rules/auth-bypass.js';
+export { InjectionRule } from './security/rules/injection.js';
+export { InformationDisclosureRule } from './security/rules/information-disclosure.js';
+export { getSafePayloads } from './security/payloads/safe-payloads.js';
+export type { PayloadSet } from './security/payloads/safe-payloads.js';
+export { getPlatformPayloads, getPayloadsForMode } from './security/payloads/platform-payloads.js';
+export type { PlatformPayload } from './security/payloads/platform-payloads.js';
+
+// Performance
+export { Profiler, computeStats } from './performance/profiler.js';
+export { BenchmarkRunner } from './performance/benchmark-runner.js';
+export type { BenchmarkProgress } from './performance/benchmark-runner.js';
+export { WaterfallGenerator } from './performance/waterfall-generator.js';

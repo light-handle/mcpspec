@@ -1,4 +1,4 @@
-import { LayoutDashboard, Server, FileText, Play, Search } from 'lucide-react';
+import { LayoutDashboard, Server, FileText, Play, Search, Shield, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -7,6 +7,8 @@ const navItems = [
   { href: '/collections', label: 'Collections', icon: FileText },
   { href: '/runs', label: 'Runs', icon: Play },
   { href: '/inspect', label: 'Inspect', icon: Search },
+  { href: '/audit', label: 'Audit', icon: Shield },
+  { href: '/benchmark', label: 'Benchmark', icon: Timer },
 ];
 
 interface SidebarProps {

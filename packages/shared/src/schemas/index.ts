@@ -8,6 +8,8 @@ export {
   triggerRunSchema,
   inspectConnectSchema,
   inspectCallSchema,
+  auditStartSchema,
+  benchmarkStartSchema,
 } from './api.js';
 
 export const serverConfigSchema = z.union([

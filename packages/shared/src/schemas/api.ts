@@ -40,3 +40,26 @@ export const inspectCallSchema = z.object({
   tool: z.string().min(1),
   input: z.record(z.unknown()).optional(),
 });
+
+export const auditStartSchema = z.object({
+  transport: z.enum(['stdio', 'sse', 'streamable-http']),
+  command: z.string().optional(),
+  args: z.array(z.string()).optional(),
+  url: z.string().optional(),
+  env: z.record(z.string()).optional(),
+  mode: z.enum(['passive', 'active', 'aggressive']).default('passive'),
+  rules: z.array(z.string()).optional(),
+});
+
+export const benchmarkStartSchema = z.object({
+  transport: z.enum(['stdio', 'sse', 'streamable-http']),
+  command: z.string().optional(),
+  args: z.array(z.string()).optional(),
+  url: z.string().optional(),
+  env: z.record(z.string()).optional(),
+  tool: z.string().min(1),
+  toolArgs: z.record(z.unknown()).default({}),
+  iterations: z.number().int().min(1).default(100),
+  warmup: z.number().int().min(0).default(5),
+  timeout: z.number().int().min(1000).default(30000),
+});

@@ -321,6 +321,39 @@ Expressions use [expr-eval](https://github.com/silentmatt/expr-eval) — compari
 
 ---
 
+## Community Collections
+
+Pre-built test collections for popular MCP servers, ready to run. Located in [`examples/collections/servers/`](examples/collections/servers/).
+
+| Collection | Server | Tests | Prerequisites |
+|------------|--------|-------|---------------|
+| [filesystem.yaml](examples/collections/servers/filesystem.yaml) | [@modelcontextprotocol/server-filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) | 12 | None |
+| [memory.yaml](examples/collections/servers/memory.yaml) | [@modelcontextprotocol/server-memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) | 10 | None |
+| [everything.yaml](examples/collections/servers/everything.yaml) | [@modelcontextprotocol/server-everything](https://github.com/modelcontextprotocol/servers/tree/main/src/everything) | 11 | None |
+| [fetch.yaml](examples/collections/servers/fetch.yaml) | [@modelcontextprotocol/server-fetch](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch) | 7 | Internet connection |
+| [time.yaml](examples/collections/servers/time.yaml) | [@modelcontextprotocol/server-time](https://github.com/modelcontextprotocol/servers/tree/main/src/time) | 10 | None |
+| [chrome-devtools.yaml](examples/collections/servers/chrome-devtools.yaml) | [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) | 11 | Chrome installed |
+| [github.yaml](examples/collections/servers/github.yaml) | [@modelcontextprotocol/server-github](https://github.com/github/github-mcp-server) | 9 | `GITHUB_PERSONAL_ACCESS_TOKEN` |
+
+**70 tests total** covering tool discovery, read/write operations, search, error handling, security edge cases (path traversal, sandbox escapes), and performance latency.
+
+### Run a collection
+
+```bash
+# No setup required
+mcpspec test examples/collections/servers/filesystem.yaml
+mcpspec test examples/collections/servers/time.yaml
+
+# Run only smoke tests
+mcpspec test examples/collections/servers/everything.yaml --tag smoke
+
+# GitHub (set your token first)
+export GITHUB_TOKEN=ghp_your_token_here
+mcpspec test examples/collections/servers/github.yaml
+```
+
+---
+
 ## CI/CD Integration
 
 ### GitHub Actions

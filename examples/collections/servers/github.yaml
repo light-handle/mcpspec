@@ -1,0 +1,151 @@
+# MCPSpec Community Collection: GitHub Server
+# Server: @modelcontextprotocol/server-github
+# Docs: https://github.com/github/github-mcp-server
+# Prerequisites: GITHUB_PERSONAL_ACCESS_TOKEN environment variable
+#
+# Usage:
+#   mcpspec test examples/collections/servers/github.yaml --env dev
+#
+# Set your token in the environment before running:
+#   export GITHUB_TOKEN=ghp_your_token_here
+
+schemaVersion: "1.0"
+name: GitHub MCP Server Tests
+description: Tests for the official GitHub MCP server (read-only operations)
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-github"]
+  env:
+    GITHUB_PERSONAL_ACCESS_TOKEN: "{{GITHUB_TOKEN}}"
+
+environments:
+  dev:
+    variables:
+      GITHUB_TOKEN: ""
+      TEST_OWNER: "modelcontextprotocol"
+      TEST_REPO: "servers"
+
+defaultEnvironment: dev
+
+tests:
+  # --- Search ---
+
+  - id: search-repos
+    name: Search for repositories
+    tags: [smoke, search]
+    call: search_repositories
+    with:
+      query: "mcp server language:typescript"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: search-code
+    name: Search for code across repositories
+    tags: [search]
+    call: search_code
+    with:
+      query: "McpServer language:typescript"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: search-users
+    name: Search for users
+    tags: [search]
+    call: search_users
+    with:
+      query: "modelcontextprotocol"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Repository ---
+
+  - id: get-file-contents
+    name: Get file contents from a repository
+    tags: [smoke, repo]
+    call: get_file_contents
+    with:
+      owner: "{{TEST_OWNER}}"
+      repo: "{{TEST_REPO}}"
+      path: "README.md"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: list-commits
+    name: List recent commits
+    tags: [repo]
+    call: list_commits
+    with:
+      owner: "{{TEST_OWNER}}"
+      repo: "{{TEST_REPO}}"
+      per_page: 5
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: list-branches
+    name: List repository branches
+    tags: [repo]
+    call: list_branches
+    with:
+      owner: "{{TEST_OWNER}}"
+      repo: "{{TEST_REPO}}"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Issues ---
+
+  - id: list-issues
+    name: List open issues
+    tags: [issues]
+    call: list_issues
+    with:
+      owner: "{{TEST_OWNER}}"
+      repo: "{{TEST_REPO}}"
+      state: "OPEN"
+      perPage: 5
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Pull Requests ---
+
+  - id: list-prs
+    name: List pull requests
+    tags: [prs]
+    call: list_pull_requests
+    with:
+      owner: "{{TEST_OWNER}}"
+      repo: "{{TEST_REPO}}"
+      state: "open"
+      perPage: 5
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Performance ---
+
+  - id: search-latency
+    name: Search completes within 10 seconds
+    tags: [performance]
+    timeout: 15000
+    call: search_repositories
+    with:
+      query: "mcp"
+    assertions:
+      - type: latency
+        maxMs: 10000

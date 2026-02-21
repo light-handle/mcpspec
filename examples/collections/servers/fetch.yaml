@@ -1,0 +1,110 @@
+# MCPSpec Community Collection: Fetch Server
+# Server: @modelcontextprotocol/server-fetch
+# Docs: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch
+# Prerequisites: Internet connection
+
+schemaVersion: "1.0"
+name: Fetch Server Tests
+description: Tests for the official MCP web content fetching server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-fetch"]
+
+tests:
+  # --- Basic fetching ---
+
+  - id: fetch-html
+    name: Fetch a webpage and convert to markdown
+    tags: [smoke]
+    timeout: 15000
+    call: fetch
+    with:
+      url: "https://example.com"
+      max_length: 5000
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+      - type: contains
+        path: $.content[0].text
+        value: "Example Domain"
+
+  - id: fetch-json
+    name: Fetch raw JSON content
+    tags: [smoke]
+    timeout: 15000
+    call: fetch
+    with:
+      url: "https://httpbin.org/json"
+      raw: true
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Pagination ---
+
+  - id: fetch-with-offset
+    name: Fetch with start_index for pagination
+    tags: [pagination]
+    timeout: 15000
+    call: fetch
+    with:
+      url: "https://example.com"
+      max_length: 100
+      start_index: 0
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: fetch-truncated
+    name: Fetch with small max_length
+    tags: [pagination]
+    timeout: 15000
+    call: fetch
+    with:
+      url: "https://example.com"
+      max_length: 50
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Error handling ---
+
+  - id: fetch-404
+    name: Handle 404 response
+    tags: [error]
+    timeout: 15000
+    call: fetch
+    with:
+      url: "https://httpbin.org/status/404"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: fetch-invalid-url
+    name: Handle invalid URL
+    tags: [error]
+    call: fetch
+    with:
+      url: "not-a-valid-url"
+    expectError: true
+
+  # --- Performance ---
+
+  - id: fetch-latency
+    name: Fetch completes within 15 seconds
+    tags: [performance]
+    timeout: 15000
+    call: fetch
+    with:
+      url: "https://example.com"
+      max_length: 1000
+    assertions:
+      - type: latency
+        maxMs: 15000

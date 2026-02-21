@@ -1,0 +1,148 @@
+# MCPSpec Community Collection: Everything Server
+# Server: @modelcontextprotocol/server-everything
+# Docs: https://github.com/modelcontextprotocol/servers/tree/main/src/everything
+# Prerequisites: None
+# Note: This is the official MCP reference/test server that exercises all protocol features.
+
+schemaVersion: "1.0"
+name: Everything Server Tests
+description: Tests for the official MCP reference server (exercises all protocol features)
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-everything"]
+
+tests:
+  # --- Deterministic tools ---
+
+  - id: echo
+    name: Echo a message
+    tags: [smoke]
+    call: echo
+    with:
+      message: "Hello MCPSpec!"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+      - type: contains
+        path: $.content[0].text
+        value: "Hello MCPSpec!"
+
+  - id: sum
+    name: Calculate sum of two numbers
+    tags: [smoke]
+    call: get-sum
+    with:
+      a: 42
+      b: 58
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: tiny-image
+    name: Get tiny image (binary content)
+    tags: [smoke]
+    call: get-tiny-image
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Annotated messages ---
+
+  - id: annotated-error
+    name: Get annotated error message
+    tags: [protocol]
+    call: get-annotated-message
+    with:
+      messageType: "error"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: annotated-success
+    name: Get annotated success message
+    tags: [protocol]
+    call: get-annotated-message
+    with:
+      messageType: "success"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: annotated-debug
+    name: Get annotated debug message
+    tags: [protocol]
+    call: get-annotated-message
+    with:
+      messageType: "debug"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Resource links ---
+
+  - id: resource-links
+    name: Get resource links
+    tags: [protocol]
+    call: get-resource-links
+    with:
+      count: 3
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: resource-reference-text
+    name: Get text resource reference
+    tags: [protocol]
+    call: get-resource-reference
+    with:
+      resourceType: "text"
+      resourceId: 1
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Environment ---
+
+  - id: get-env
+    name: Get environment variables
+    tags: [protocol]
+    call: get-env
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Structured content ---
+
+  - id: structured-content
+    name: Get structured content for a location
+    tags: [protocol]
+    call: get-structured-content
+    with:
+      location: "San Francisco"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Performance ---
+
+  - id: echo-latency
+    name: Echo responds within 5 seconds
+    tags: [performance]
+    call: echo
+    with:
+      message: "latency test"
+    assertions:
+      - type: latency
+        maxMs: 5000

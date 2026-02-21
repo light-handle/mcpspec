@@ -1,0 +1,152 @@
+# MCPSpec Community Collection: Filesystem Server
+# Server: @modelcontextprotocol/server-filesystem
+# Docs: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
+# Prerequisites: None (uses /tmp as sandbox)
+
+schemaVersion: "1.0"
+name: Filesystem Server Tests
+description: Tests for the official MCP filesystem server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
+
+tests:
+  # --- Discovery ---
+
+  - id: list-allowed
+    name: List allowed directories
+    tags: [smoke, discovery]
+    call: list_allowed_directories
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Read operations ---
+
+  - id: list-tmp
+    name: List /tmp directory contents
+    tags: [smoke, read]
+    call: list_directory
+    with:
+      path: /tmp
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: directory-tree
+    name: Get directory tree
+    tags: [read]
+    call: directory_tree
+    with:
+      path: /tmp
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Write then read ---
+
+  - id: write-file
+    name: Write a test file
+    tags: [write]
+    call: write_file
+    with:
+      path: /tmp/mcpspec-test-file.txt
+      content: "Hello from MCPSpec!"
+    assertions:
+      - type: schema
+
+  - id: read-file
+    name: Read the test file back
+    tags: [read]
+    call: read_text_file
+    with:
+      path: /tmp/mcpspec-test-file.txt
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+      - type: contains
+        path: $.content[0].text
+        value: "Hello from MCPSpec!"
+
+  - id: file-info
+    name: Get file metadata
+    tags: [read]
+    call: get_file_info
+    with:
+      path: /tmp/mcpspec-test-file.txt
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Search ---
+
+  - id: search-files
+    name: Search for test file by pattern
+    tags: [read]
+    call: search_files
+    with:
+      path: /tmp
+      pattern: "mcpspec-test-file*"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Directory operations ---
+
+  - id: create-dir
+    name: Create a test directory
+    tags: [write]
+    call: create_directory
+    with:
+      path: /tmp/mcpspec-test-dir
+    assertions:
+      - type: schema
+
+  # --- Edit ---
+
+  - id: edit-file
+    name: Edit the test file
+    tags: [write]
+    call: edit_file
+    with:
+      path: /tmp/mcpspec-test-file.txt
+      edits:
+        - oldText: "Hello from MCPSpec!"
+          newText: "Updated by MCPSpec!"
+      dryRun: false
+    assertions:
+      - type: schema
+
+  # --- Error handling ---
+
+  - id: read-missing-file
+    name: Handle missing file gracefully
+    tags: [smoke, error]
+    call: read_text_file
+    with:
+      path: /tmp/nonexistent-file-99999.txt
+    expectError: true
+
+  - id: read-outside-sandbox
+    name: Reject path outside allowed directories
+    tags: [security, error]
+    call: read_text_file
+    with:
+      path: /etc/passwd
+    expectError: true
+
+  - id: path-traversal
+    name: Reject path traversal attempts
+    tags: [security, error]
+    call: read_text_file
+    with:
+      path: /tmp/../../etc/passwd
+    expectError: true

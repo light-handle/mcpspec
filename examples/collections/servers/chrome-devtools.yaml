@@ -1,0 +1,136 @@
+# MCPSpec Community Collection: Chrome DevTools Server
+# Server: chrome-devtools-mcp
+# Docs: https://github.com/ChromeDevTools/chrome-devtools-mcp
+# Prerequisites: Chrome browser installed (auto-launches when tools are invoked)
+
+schemaVersion: "1.0"
+name: Chrome DevTools MCP Tests
+description: Tests for the official Chrome DevTools MCP server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "chrome-devtools-mcp@latest"]
+
+tests:
+  # --- Page management ---
+
+  - id: new-page
+    name: Open a new browser page
+    tags: [smoke, navigation]
+    call: new_page
+    with:
+      url: "https://example.com"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: list-pages
+    name: List open browser pages
+    tags: [smoke, navigation]
+    call: list_pages
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Navigation ---
+
+  - id: navigate
+    name: Navigate to a URL
+    tags: [navigation]
+    call: navigate_page
+    with:
+      url: "https://example.com"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Debugging ---
+
+  - id: evaluate-script
+    name: Evaluate JavaScript in the page
+    tags: [debugging]
+    call: evaluate_script
+    with:
+      expression: "document.title"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: evaluate-math
+    name: Evaluate a math expression
+    tags: [debugging]
+    call: evaluate_script
+    with:
+      expression: "2 + 2"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: console-messages
+    name: List console messages
+    tags: [debugging]
+    call: list_console_messages
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Screenshots ---
+
+  - id: screenshot
+    name: Take a screenshot
+    tags: [visual]
+    call: take_screenshot
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- DOM ---
+
+  - id: snapshot
+    name: Take a DOM snapshot
+    tags: [debugging]
+    call: take_snapshot
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Network ---
+
+  - id: network-requests
+    name: List network requests
+    tags: [network]
+    call: list_network_requests
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Viewport ---
+
+  - id: resize
+    name: Resize the browser viewport
+    tags: [emulation]
+    call: resize_page
+    with:
+      width: 1024
+      height: 768
+    assertions:
+      - type: schema
+
+  # --- Cleanup ---
+
+  - id: close-page
+    name: Close the browser page
+    tags: [cleanup]
+    call: close_page
+    assertions:
+      - type: schema

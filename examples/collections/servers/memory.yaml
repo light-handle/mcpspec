@@ -1,0 +1,153 @@
+# MCPSpec Community Collection: Memory Server
+# Server: @modelcontextprotocol/server-memory
+# Docs: https://github.com/modelcontextprotocol/servers/tree/main/src/memory
+# Prerequisites: None
+
+schemaVersion: "1.0"
+name: Memory Server Tests
+description: Tests for the official MCP knowledge graph memory server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-memory"]
+
+tests:
+  # --- Create entities ---
+
+  - id: create-entities
+    name: Create entities in the knowledge graph
+    tags: [smoke, write]
+    call: create_entities
+    with:
+      entities:
+        - name: "Alice"
+          entityType: "person"
+          observations:
+            - "Software engineer"
+            - "Lives in San Francisco"
+        - name: "Bob"
+          entityType: "person"
+          observations:
+            - "Product manager"
+            - "Lives in New York"
+        - name: "Acme Corp"
+          entityType: "organization"
+          observations:
+            - "Technology company"
+            - "Founded in 2020"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Create relations ---
+
+  - id: create-relations
+    name: Create relations between entities
+    tags: [write]
+    call: create_relations
+    with:
+      relations:
+        - from: "Alice"
+          to: "Acme Corp"
+          relationType: "works_at"
+        - from: "Bob"
+          to: "Acme Corp"
+          relationType: "works_at"
+        - from: "Alice"
+          to: "Bob"
+          relationType: "collaborates_with"
+    assertions:
+      - type: schema
+
+  # --- Read operations ---
+
+  - id: read-graph
+    name: Read the entire knowledge graph
+    tags: [smoke, read]
+    call: read_graph
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: search-nodes
+    name: Search for nodes by query
+    tags: [read]
+    call: search_nodes
+    with:
+      query: "engineer"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: open-nodes
+    name: Open specific nodes by name
+    tags: [read]
+    call: open_nodes
+    with:
+      names: ["Alice", "Bob"]
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  # --- Add observations ---
+
+  - id: add-observations
+    name: Add observations to an existing entity
+    tags: [write]
+    call: add_observations
+    with:
+      observations:
+        - entityName: "Alice"
+          contents:
+            - "Promoted to senior engineer"
+    assertions:
+      - type: schema
+
+  # --- Delete operations ---
+
+  - id: delete-relations
+    name: Delete a specific relation
+    tags: [write]
+    call: delete_relations
+    with:
+      relations:
+        - from: "Alice"
+          to: "Bob"
+          relationType: "collaborates_with"
+    assertions:
+      - type: schema
+
+  - id: delete-observations
+    name: Delete specific observations
+    tags: [write]
+    call: delete_observations
+    with:
+      deletions:
+        - entityName: "Bob"
+          observations:
+            - "Lives in New York"
+    assertions:
+      - type: schema
+
+  - id: delete-entities
+    name: Delete entities from the graph
+    tags: [write, cleanup]
+    call: delete_entities
+    with:
+      entityNames: ["Alice", "Bob", "Acme Corp"]
+    assertions:
+      - type: schema
+
+  # --- Verify cleanup ---
+
+  - id: verify-empty
+    name: Verify graph is empty after cleanup
+    tags: [read, cleanup]
+    call: read_graph
+    assertions:
+      - type: schema

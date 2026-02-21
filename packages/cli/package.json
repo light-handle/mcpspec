@@ -1,6 +1,6 @@
 {
   "name": "mcpspec",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The definitive MCP server testing platform",
   "keywords": ["mcp", "model-context-protocol", "testing", "cli"],
   "type": "module",

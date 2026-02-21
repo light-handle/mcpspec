@@ -63,3 +63,20 @@ export const benchmarkStartSchema = z.object({
   warmup: z.number().int().min(0).default(5),
   timeout: z.number().int().min(1000).default(30000),
 });
+
+export const docsGenerateSchema = z.object({
+  transport: z.enum(['stdio', 'sse', 'streamable-http']),
+  command: z.string().optional(),
+  args: z.array(z.string()).optional(),
+  url: z.string().optional(),
+  env: z.record(z.string()).optional(),
+  format: z.enum(['markdown', 'html']).default('markdown'),
+});
+
+export const scoreCalculateSchema = z.object({
+  transport: z.enum(['stdio', 'sse', 'streamable-http']),
+  command: z.string().optional(),
+  args: z.array(z.string()).optional(),
+  url: z.string().optional(),
+  env: z.record(z.string()).optional(),
+});

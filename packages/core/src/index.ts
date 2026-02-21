@@ -66,3 +66,14 @@ export { Profiler, computeStats } from './performance/profiler.js';
 export { BenchmarkRunner } from './performance/benchmark-runner.js';
 export type { BenchmarkProgress } from './performance/benchmark-runner.js';
 export { WaterfallGenerator } from './performance/waterfall-generator.js';
+
+// Documentation
+export { DocGenerator } from './documentation/doc-generator.js';
+export type { DocGeneratorOptions, ServerDocData } from './documentation/doc-generator.js';
+export { MarkdownGenerator } from './documentation/markdown-generator.js';
+export { HtmlDocGenerator } from './documentation/html-generator.js';
+
+// Scoring
+export { MCPScoreCalculator } from './scoring/mcp-score.js';
+export type { ScoreProgress } from './scoring/mcp-score.js';
+export { BadgeGenerator } from './scoring/badge-generator.js';

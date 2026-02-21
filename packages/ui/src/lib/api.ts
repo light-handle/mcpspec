@@ -5,6 +5,7 @@ import type {
   ProtocolLogEntry,
   SecurityScanResult,
   BenchmarkResult,
+  MCPScore,
   ApiResponse,
   ApiListResponse,
 } from '@mcpspec/shared';
@@ -178,5 +179,39 @@ export const api = {
       ),
     stop: (sessionId: string) =>
       request<ApiResponse<{ stopped: boolean }>>(`/benchmark/stop/${sessionId}`, { method: 'POST' }),
+  },
+
+  docs: {
+    generate: (data: {
+      transport: string;
+      command?: string;
+      args?: string[];
+      url?: string;
+      env?: Record<string, string>;
+      format: string;
+    }) =>
+      request<ApiResponse<{ content: string; format: string }>>('/docs/generate', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
+
+  score: {
+    calculate: (data: {
+      transport: string;
+      command?: string;
+      args?: string[];
+      url?: string;
+      env?: Record<string, string>;
+    }) =>
+      request<ApiResponse<{ sessionId: string; score: MCPScore }>>('/score/calculate', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    badge: (score: MCPScore) =>
+      request<ApiResponse<{ svg: string }>>('/score/badge', {
+        method: 'POST',
+        body: JSON.stringify({ score }),
+      }),
   },
 };

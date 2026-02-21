@@ -3,7 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { routerInstance } from './routes/route-tree';
+import { useUiStore } from './stores/ui-store';
 import './styles/globals.css';
+
+// Initialize theme before render to prevent flash
+useUiStore.getState().initTheme();
 
 const queryClient = new QueryClient({
   defaultOptions: {

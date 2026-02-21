@@ -10,6 +10,8 @@ export {
   inspectCallSchema,
   auditStartSchema,
   benchmarkStartSchema,
+  docsGenerateSchema,
+  scoreCalculateSchema,
 } from './api.js';
 
 export const serverConfigSchema = z.union([

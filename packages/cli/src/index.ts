@@ -7,13 +7,15 @@ import { baselineCommand } from './commands/baseline.js';
 import { uiCommand } from './commands/ui.js';
 import { auditCommand } from './commands/audit.js';
 import { benchCommand } from './commands/bench.js';
+import { docsCommand } from './commands/docs.js';
+import { scoreCommand } from './commands/score.js';
 
 const program = new Command();
 
 program
   .name('mcpspec')
   .description('The definitive MCP server testing platform')
-  .version('0.3.0');
+  .version('1.0.0');
 
 program.addCommand(testCommand);
 program.addCommand(inspectCommand);
@@ -23,5 +25,7 @@ program.addCommand(baselineCommand);
 program.addCommand(uiCommand);
 program.addCommand(auditCommand);
 program.addCommand(benchCommand);
+program.addCommand(docsCommand);
+program.addCommand(scoreCommand);
 
 program.parse(process.argv);

@@ -8,6 +8,8 @@ import { RunDetailPage } from './pages/run-detail';
 import { InspectPage } from './pages/inspect';
 import { AuditPage } from './pages/audit';
 import { BenchmarkPage } from './pages/benchmark';
+import { DocsPage } from './pages/docs';
+import { ScorePage } from './pages/score';
 
 const rootRoute = createRootRoute({
   component: function RootComponent() {
@@ -73,6 +75,18 @@ const benchmarkRoute = createRoute({
   component: BenchmarkPage,
 });
 
+const docsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/docs',
+  component: DocsPage,
+});
+
+const scoreRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/score',
+  component: ScorePage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   serversRoute,
@@ -82,6 +96,8 @@ const routeTree = rootRoute.addChildren([
   inspectRoute,
   auditRoute,
   benchmarkRoute,
+  docsRoute,
+  scoreRoute,
 ]);
 
 export const routerInstance = createRouter({ routeTree });

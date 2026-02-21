@@ -1,7 +1,159 @@
-import { NotImplementedError } from '../errors/mcpspec-error.js';
+import type { MCPScore } from '@mcpspec/shared';
+import type { MCPClientInterface, ToolInfo } from '../client/mcp-client-interface.js';
+import { SecurityScanner } from '../security/security-scanner.js';
+import { ScanConfig } from '../security/scan-config.js';
+
+export interface ScoreProgress {
+  onCategoryStart?: (category: string) => void;
+  onCategoryComplete?: (category: string, score: number) => void;
+}
 
 export class MCPScoreCalculator {
-  constructor() {
-    throw new NotImplementedError('MCP Score calculator');
+  async calculate(client: MCPClientInterface, progress?: ScoreProgress): Promise<MCPScore> {
+    const tools = await client.listTools();
+
+    let resources: Awaited<ReturnType<MCPClientInterface['listResources']>> = [];
+    try {
+      resources = await client.listResources();
+    } catch {
+      // Server may not support resources
+    }
+
+    progress?.onCategoryStart?.('documentation');
+    const documentation = this.scoreDocumentation(tools, resources);
+    progress?.onCategoryComplete?.('documentation', documentation);
+
+    progress?.onCategoryStart?.('schemaQuality');
+    const schemaQuality = this.scoreSchemaQuality(tools);
+    progress?.onCategoryComplete?.('schemaQuality', schemaQuality);
+
+    progress?.onCategoryStart?.('errorHandling');
+    const errorHandling = await this.scoreErrorHandling(client, tools);
+    progress?.onCategoryComplete?.('errorHandling', errorHandling);
+
+    progress?.onCategoryStart?.('performance');
+    const performance = await this.scorePerformance(client, tools);
+    progress?.onCategoryComplete?.('performance', performance);
+
+    progress?.onCategoryStart?.('security');
+    const security = await this.scoreSecurity(client);
+    progress?.onCategoryComplete?.('security', security);
+
+    const overall = Math.round(
+      documentation * 0.25 +
+      schemaQuality * 0.25 +
+      errorHandling * 0.20 +
+      performance * 0.15 +
+      security * 0.15,
+    );
+
+    return {
+      overall,
+      categories: {
+        documentation,
+        schemaQuality,
+        errorHandling,
+        performance,
+        security,
+      },
+    };
+  }
+
+  private scoreDocumentation(
+    tools: ToolInfo[],
+    resources: Awaited<ReturnType<MCPClientInterface['listResources']>>,
+  ): number {
+    const items = [...tools, ...resources];
+    if (items.length === 0) return 0;
+
+    const withDescription = items.filter((item) => {
+      const desc = 'description' in item ? item.description : undefined;
+      return desc && desc.trim().length > 0;
+    }).length;
+
+    return Math.round((withDescription / items.length) * 100);
+  }
+
+  private scoreSchemaQuality(tools: ToolInfo[]): number {
+    if (tools.length === 0) return 0;
+
+    let totalPoints = 0;
+    for (const tool of tools) {
+      const schema = tool.inputSchema;
+      if (!schema) continue;
+
+      let toolPoints = 0;
+      if (schema.type) toolPoints += 1 / 3;
+      if (schema.properties && typeof schema.properties === 'object') toolPoints += 1 / 3;
+      if (schema.required && Array.isArray(schema.required)) toolPoints += 1 / 3;
+      totalPoints += toolPoints;
+    }
+
+    return Math.round((totalPoints / tools.length) * 100);
+  }
+
+  private async scoreErrorHandling(client: MCPClientInterface, tools: ToolInfo[]): Promise<number> {
+    if (tools.length === 0) return 0;
+
+    const testTools = tools.slice(0, 5);
+    let totalScore = 0;
+
+    for (const tool of testTools) {
+      try {
+        const result = await client.callTool(tool.name, {});
+        if (result.isError) {
+          totalScore += 100; // Proper error response
+        } else {
+          totalScore += 50; // Responded but didn't signal error for empty args
+        }
+      } catch {
+        totalScore += 0; // Connection crash or unhandled error
+      }
+    }
+
+    return Math.round(totalScore / testTools.length);
+  }
+
+  private async scorePerformance(client: MCPClientInterface, tools: ToolInfo[]): Promise<number> {
+    if (tools.length === 0) return 20;
+
+    const tool = tools[0]!;
+    const latencies: number[] = [];
+
+    for (let i = 0; i < 5; i++) {
+      const start = performance.now();
+      try {
+        await client.callTool(tool.name, {});
+      } catch {
+        // Still measure latency even if call fails
+      }
+      latencies.push(performance.now() - start);
+    }
+
+    // Sort and take median
+    latencies.sort((a, b) => a - b);
+    const median = latencies[Math.floor(latencies.length / 2)]!;
+
+    if (median < 100) return 100;
+    if (median < 500) return 80;
+    if (median < 1000) return 60;
+    if (median < 5000) return 40;
+    return 20;
+  }
+
+  private async scoreSecurity(client: MCPClientInterface): Promise<number> {
+    try {
+      const scanner = new SecurityScanner();
+      const config = new ScanConfig({ mode: 'passive' });
+      const result = await scanner.scan(client, config);
+      const findingCount = result.summary.totalFindings;
+
+      if (findingCount === 0) return 100;
+      if (findingCount <= 2) return 70;
+      if (findingCount <= 5) return 40;
+      return 20;
+    } catch {
+      return 50; // Cannot determine; give middle score
+    }
   }
 }

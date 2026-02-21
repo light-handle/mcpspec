@@ -1,15 +1,33 @@
 # MCPSpec
 
-The testing platform for Model Context Protocol (MCP) servers. Think Postman, but for MCP.
+**The complete testing, debugging, and quality platform for MCP servers.**
 
-## Features
+MCPSpec is Postman for [Model Context Protocol](https://modelcontextprotocol.io) — test collections, interactive inspection, security auditing, performance benchmarking, auto-generated docs, and a quality scoring system. Works from the CLI, in CI/CD, or through a full web UI.
 
-- **Test Collections** — Define tests in YAML, run them from CLI
-- **Interactive Inspector** — REPL for exploring MCP server tools and resources
-- **Multiple Assertions** — schema, equals, contains, exists, matches, latency
-- **Environment Support** — Switch between dev/staging/prod variables
-- **CI/CD Ready** — JSON reporter, exit codes, GitHub Actions examples
-- **Safe by Design** — FAILSAFE YAML parsing, secret masking, process cleanup
+```
+mcpspec test ./collection.yaml        # Run tests
+mcpspec inspect "npx my-server"       # Interactive REPL
+mcpspec audit "npx my-server"         # Security scan
+mcpspec bench "npx my-server"         # Performance benchmark
+mcpspec score "npx my-server"         # Quality rating (0-100)
+mcpspec docs "npx my-server"          # Auto-generate documentation
+mcpspec ui                            # Launch web dashboard
+```
+
+---
+
+## Why MCPSpec?
+
+MCP servers expose tools (file access, database queries, API calls) to AI assistants. Before shipping a server, you need to answer:
+
+- **Does it work?** — Do tools return correct results? Do they handle bad input?
+- **Is it safe?** — Can inputs cause path traversal, injection, or information leaks?
+- **Is it fast?** — What's the P95 latency? Can it handle load?
+- **Is it documented?** — Do tools have descriptions and proper schemas?
+
+MCPSpec answers all of these with a single tool.
+
+---
 
 ## Installation
 
@@ -17,11 +35,9 @@ The testing platform for Model Context Protocol (MCP) servers. Think Postman, bu
 npm install -g mcpspec
 ```
 
-Or with pnpm:
+Requires Node.js 22+.
 
-```bash
-pnpm add -g mcpspec
-```
+---
 
 ## Quick Start
 
@@ -31,92 +47,190 @@ pnpm add -g mcpspec
 mcpspec init --template standard
 ```
 
-This creates a `mcpspec.yaml` file you can customize.
-
 ### 2. Write a test collection
 
 ```yaml
-name: My MCP Server Tests
-server: npx my-mcp-server
+name: Filesystem Server Tests
+server: npx @modelcontextprotocol/server-filesystem /tmp
 
 tests:
-  - name: Basic tool call
-    call: my_tool
+  - name: Read a file
+    call: read_file
     with:
-      param: value
+      path: /tmp/test.txt
     expect:
       - exists: $.content
 
-  - name: Handle errors
-    call: my_tool
+  - name: Handle missing file
+    call: read_file
     with:
-      invalid: true
+      path: /tmp/nonexistent.txt
     expectError: true
 ```
 
-### 3. Run tests
+### 3. Run it
 
 ```bash
-mcpspec test ./mcpspec.yaml
+mcpspec test ./collection.yaml
 ```
 
-Output:
-
 ```
-MCPSpec running My MCP Server Tests (2 tests)
+MCPSpec running Filesystem Server Tests (2 tests)
 
-  ✓ Basic tool call (124ms)
-  ✓ Handle errors (89ms)
+  ✓ Read a file (124ms)
+  ✓ Handle missing file (89ms)
 
   Tests:  2 passed (2 total)
   Time:   0.45s
 ```
 
-## CLI Commands
+---
 
-### `mcpspec test [collection]`
+## Commands
 
-Run tests from a YAML collection file.
+### `mcpspec test` — Run Test Collections
 
 ```bash
-mcpspec test                          # Uses ./mcpspec.yaml
-mcpspec test ./my-tests.yaml          # Specific file
-mcpspec test --env staging            # Use staging environment
-mcpspec test --reporter json          # JSON output
-mcpspec test --output results.json    # Save results to file
-mcpspec test --ci                     # CI mode (no colors)
+mcpspec test                              # Uses ./mcpspec.yaml
+mcpspec test ./tests.yaml                 # Specific file
+mcpspec test --env staging                # Use staging variables
+mcpspec test --tag @smoke                 # Filter by tag
+mcpspec test --parallel 4                 # Parallel execution
+mcpspec test --reporter junit --output results.xml  # JUnit for CI
+mcpspec test --baseline main              # Compare against saved baseline
+mcpspec test --watch                      # Re-run on file changes
+mcpspec test --ci                         # CI mode (no colors, strict exit codes)
 ```
 
-### `mcpspec inspect <server>`
+**Reporters:** `console`, `json`, `junit`, `html`, `tap`
 
-Interactive REPL for exploring an MCP server.
+### `mcpspec inspect` — Interactive REPL
 
 ```bash
 mcpspec inspect "npx @modelcontextprotocol/server-filesystem /tmp"
 ```
 
-REPL commands:
-
 | Command | Description |
 |---------|-------------|
-| `.tools` | List all available tools |
-| `.resources` | List all available resources |
-| `.call <tool> <json>` | Call a tool with JSON arguments |
-| `.schema <tool>` | Show tool's input schema |
-| `.info` | Show server information |
-| `.help` | Show help |
-| `.exit` | Disconnect and exit |
+| `.tools` | List all tools |
+| `.resources` | List all resources |
+| `.call <tool> <json>` | Call a tool |
+| `.schema <tool>` | Show input schema |
+| `.info` | Server info |
+| `.exit` | Disconnect |
 
-### `mcpspec init [directory]`
+### `mcpspec audit` — Security Scanner
 
-Initialize a new mcpspec project.
+Scans for 6 categories of vulnerabilities:
 
 ```bash
-mcpspec init                          # Current directory
-mcpspec init ./my-project             # Specific directory
-mcpspec init --template minimal       # Minimal template
-mcpspec init --template full          # Full template with environments
+mcpspec audit "npx my-server"                       # Passive (safe, read-only)
+mcpspec audit "npx my-server" --mode active          # Active (test payloads)
+mcpspec audit "npx my-server" --mode aggressive      # Aggressive probing
+mcpspec audit "npx my-server" --fail-on medium       # Fail CI on medium+ findings
 ```
+
+| Rule | What It Detects |
+|------|-----------------|
+| Path Traversal | `../../etc/passwd` style attacks |
+| Input Validation | Missing/malformed input handling |
+| Resource Exhaustion | Crash-inducing large payloads |
+| Auth Bypass | Access control circumvention |
+| Injection | SQL/command injection in tool inputs |
+| Information Disclosure | Leaked paths, stack traces, secrets |
+
+Active and aggressive modes send potentially harmful payloads and require confirmation (or `--acknowledge-risk` for CI).
+
+### `mcpspec bench` — Performance Benchmark
+
+```bash
+mcpspec bench "npx my-server"                        # Default: 100 iterations
+mcpspec bench "npx my-server" --iterations 500        # More iterations
+mcpspec bench "npx my-server" --tool read_file        # Specific tool
+mcpspec bench "npx my-server" --args '{"path":"/tmp/f"}'  # With arguments
+```
+
+Reports min, max, mean, median, P95, P99, standard deviation, and throughput (calls/sec).
+
+### `mcpspec score` — MCP Quality Score
+
+Calculates a 0–100 quality rating:
+
+```bash
+mcpspec score "npx my-server"
+mcpspec score "npx my-server" --badge badge.svg      # Generate SVG badge
+```
+
+```
+  MCP Score
+  ────────────────────────────────────────
+  Documentation    ████████████████████ 100/100
+  Schema Quality   ████████████████████ 100/100
+  Error Handling   ██████████████░░░░░░  70/100
+  Performance      ████████████████░░░░  80/100
+  Security         ████████████████████ 100/100
+
+  Overall: 91/100
+```
+
+| Category (weight) | What It Measures |
+|--------------------|-----------------|
+| Documentation (25%) | % of tools/resources with descriptions |
+| Schema Quality (25%) | Proper `type`, `properties`, `required` in input schemas |
+| Error Handling (20%) | Returns `isError: true` for bad input vs. crashing |
+| Performance (15%) | Median response latency |
+| Security (15%) | Findings from a passive security scan |
+
+The `--badge` flag generates a shields.io-style SVG for your README.
+
+### `mcpspec docs` — Documentation Generator
+
+```bash
+mcpspec docs "npx my-server"                          # Markdown to stdout
+mcpspec docs "npx my-server" --format html             # HTML output
+mcpspec docs "npx my-server" --output ./docs           # Write to directory
+```
+
+Connects to the server, introspects all tools and resources, and generates documentation with tool descriptions, input schemas, and resource tables.
+
+### `mcpspec compare` / `mcpspec baseline` — Regression Detection
+
+```bash
+mcpspec baseline save main                 # Save current run as "main"
+mcpspec baseline list                      # List saved baselines
+mcpspec compare --baseline main            # Compare latest run against baseline
+mcpspec compare <run-id-1> <run-id-2>      # Compare two specific runs
+```
+
+### `mcpspec init` — Project Scaffolding
+
+```bash
+mcpspec init                               # Current directory
+mcpspec init ./my-project                  # Specific directory
+mcpspec init --template minimal            # Minimal starter
+mcpspec init --template standard           # Standard (recommended)
+mcpspec init --template full               # Full with environments
+```
+
+### `mcpspec ui` — Web Dashboard
+
+```bash
+mcpspec ui                                 # Opens localhost:6274
+mcpspec ui --port 8080                     # Custom port
+```
+
+Full web interface with:
+- Server management and connection testing
+- Collection editor with YAML validation
+- Test run history with drill-down
+- Interactive tool inspector
+- Security audit with live progress
+- Performance benchmarking with real-time stats
+- Documentation generator with copy/download
+- MCP Score calculator with category breakdown
+- Dark mode
+
+---
 
 ## Collection Format
 
@@ -127,20 +241,20 @@ name: My Tests
 server: npx my-mcp-server
 
 tests:
-  - name: Test name
+  - name: Basic call
     call: tool_name
     with:
       param: value
     expect:
-      - exists: $.path
+      - exists: $.result
 ```
 
 ### Advanced Format
 
 ```yaml
 schemaVersion: "1.0"
-name: My Tests
-description: Test description
+name: Comprehensive Tests
+description: Full test suite
 
 server:
   transport: stdio
@@ -152,94 +266,147 @@ server:
 environments:
   dev:
     variables:
-      API_URL: http://localhost:3000
+      BASE_PATH: /tmp/dev
   prod:
     variables:
-      API_URL: https://api.example.com
+      BASE_PATH: /data
 
 defaultEnvironment: dev
 
 tests:
   - id: test-1
     name: Get data
-    tags: [smoke]
+    tags: [smoke, api]
+    timeout: 5000
+    retries: 2
     call: get_data
     with:
-      id: "{{userId}}"
+      path: "{{BASE_PATH}}/file.txt"
     assertions:
       - type: schema
       - type: exists
-        path: $.name
+        path: $.content
+      - type: matches
+        path: $.content
+        pattern: "^Hello"
       - type: latency
         maxMs: 1000
+      - type: expression
+        expr: "response.content.length > 0"
     extract:
-      - name: dataId
-        path: $.id
+      - name: fileContent
+        path: $.content
 ```
 
-## Assertion Types
+### Assertion Types
 
 | Type | Description | Example |
 |------|-------------|---------|
-| `schema` | Response is valid (not null) | `type: schema` |
-| `equals` | Exact value match | `type: equals, path: $.id, value: 123` |
-| `contains` | Array contains / string includes | `type: contains, path: $.tags, value: "active"` |
-| `exists` | Path exists in response | `type: exists, path: $.name` |
-| `matches` | Regex pattern match | `type: matches, path: $.email, pattern: ".*@.*"` |
-| `latency` | Response time limit | `type: latency, maxMs: 1000` |
+| `schema` | Response is valid | `type: schema` |
+| `equals` | Exact match | `path: $.id, value: 123` |
+| `contains` | Array/string contains | `path: $.tags, value: "active"` |
+| `exists` | Path exists | `path: $.name` |
+| `matches` | Regex match | `path: $.email, pattern: ".*@.*"` |
+| `type` | Type check | `path: $.count, expected: number` |
+| `length` | Length check | `path: $.items, operator: gt, value: 0` |
+| `latency` | Response time | `maxMs: 1000` |
+| `mimeType` | Content type | `expected: "image/png"` |
+| `expression` | Safe expression | `expr: "response.total > 0"` |
 
-## Exit Codes
+Expressions use [expr-eval](https://github.com/silentmatt/expr-eval) — comparisons, logical operators, property access, and math. No arbitrary code execution.
 
-| Code | Meaning |
-|------|---------|
-| 0 | All tests passed |
-| 1 | One or more tests failed |
-| 2 | Runtime error |
-| 3 | Configuration error |
-| 4 | Connection error |
-| 5 | Timeout |
-| 130 | Interrupted (Ctrl+C) |
+---
 
 ## CI/CD Integration
 
 ### GitHub Actions
 
 ```yaml
-- name: Run MCP tests
-  run: mcpspec test --ci --reporter json --output results.json
+name: MCP Server Tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install -g mcpspec
+
+      - name: Run tests
+        run: mcpspec test --ci --reporter junit --output results.xml
+
+      - name: Security audit
+        run: mcpspec audit "npx my-server" --mode passive --fail-on high
+
+      - uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: results.xml
 ```
 
-See [examples/ci/](./examples/ci/) for complete workflow files.
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Test failure |
+| 2 | Runtime error |
+| 3 | Configuration error |
+| 4 | Connection error |
+| 5 | Timeout |
+| 6 | Security findings above threshold |
+| 7 | Validation error |
+| 130 | Interrupted (Ctrl+C) |
+
+---
+
+## Architecture
+
+MCPSpec is a TypeScript monorepo:
+
+| Package | Description |
+|---------|-------------|
+| `@mcpspec/shared` | Types, Zod schemas, constants |
+| `@mcpspec/core` | MCP client, test runner, assertions, security scanner, profiler, doc generator, scorer |
+| `@mcpspec/cli` | 10 CLI commands built with Commander.js |
+| `@mcpspec/server` | Hono HTTP server with REST API + WebSocket for real-time updates |
+| `@mcpspec/ui` | React SPA with TanStack Router, TanStack Query, Tailwind CSS, shadcn/ui |
+
+Key design decisions:
+- **Local-first** — works offline, no account needed, server binds to localhost only
+- **Safe by default** — FAILSAFE YAML parsing, secret masking, process cleanup on SIGINT/SIGTERM
+- **sql.js** for storage — WebAssembly SQLite, no native compilation required
+- **Transports** — stdio, SSE, and streamable-http (SSE/HTTP lazy-loaded for code splitting)
+
+---
 
 ## Development
 
 ```bash
-# Clone and install
 git clone https://github.com/mcpspec/mcpspec.git
 cd mcpspec
 pnpm install
-
-# Build all packages
 pnpm build
+pnpm test      # 259 tests across core + server
+```
 
-# Run tests
-pnpm test
+Run the CLI locally:
 
-# Run CLI locally
+```bash
 node packages/cli/dist/index.js test ./examples/collections/simple.yaml
 ```
 
-## Architecture
+Launch the UI in dev mode:
 
-MCPSpec is a monorepo with these packages:
+```bash
+node packages/cli/dist/index.js ui
+```
 
-| Package | Description |
-|---------|-------------|
-| `@mcpspec/shared` | Shared types, schemas, constants |
-| `@mcpspec/core` | MCP client, test runner, assertions |
-| `@mcpspec/cli` | CLI commands (test, inspect, init) |
-| `@mcpspec/server` | Web UI backend (Phase 3) |
-| `@mcpspec/ui` | Web UI frontend (Phase 3) |
+---
 
 ## License
 

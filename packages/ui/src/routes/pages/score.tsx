@@ -26,7 +26,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   documentation: 'Documentation',
   schemaQuality: 'Schema Quality',
   errorHandling: 'Error Handling',
-  performance: 'Performance',
+  responsiveness: 'Responsiveness',
   security: 'Security',
 };
 

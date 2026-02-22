@@ -57,7 +57,7 @@ export const scoreCommand = new Command('score')
         { name: 'Documentation', score: score.categories.documentation },
         { name: 'Schema Quality', score: score.categories.schemaQuality },
         { name: 'Error Handling', score: score.categories.errorHandling },
-        { name: 'Performance', score: score.categories.performance },
+        { name: 'Responsiveness', score: score.categories.responsiveness },
         { name: 'Security', score: score.categories.security },
       ];
 

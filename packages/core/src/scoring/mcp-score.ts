@@ -31,9 +31,9 @@ export class MCPScoreCalculator {
     const errorHandling = await this.scoreErrorHandling(client, tools);
     progress?.onCategoryComplete?.('errorHandling', errorHandling);
 
-    progress?.onCategoryStart?.('performance');
-    const performance = await this.scorePerformance(client, tools);
-    progress?.onCategoryComplete?.('performance', performance);
+    progress?.onCategoryStart?.('responsiveness');
+    const responsiveness = await this.scoreResponsiveness(client, tools);
+    progress?.onCategoryComplete?.('responsiveness', responsiveness);
 
     progress?.onCategoryStart?.('security');
     const security = await this.scoreSecurity(client);
@@ -43,7 +43,7 @@ export class MCPScoreCalculator {
       documentation * 0.25 +
       schemaQuality * 0.25 +
       errorHandling * 0.20 +
-      performance * 0.15 +
+      responsiveness * 0.15 +
       security * 0.15,
     );
 
@@ -53,7 +53,7 @@ export class MCPScoreCalculator {
         documentation,
         schemaQuality,
         errorHandling,
-        performance,
+        responsiveness,
         security,
       },
     };
@@ -102,9 +102,31 @@ export class MCPScoreCalculator {
       try {
         const result = await client.callTool(tool.name, {});
         if (result.isError) {
-          totalScore += 100; // Proper error response
+          // Check if the error response is structured (has meaningful content)
+          const content = result.content;
+          let isStructured = false;
+          if (Array.isArray(content) && content.length > 0) {
+            isStructured = content.some((c) => {
+              const item = c as Record<string, unknown>;
+              const text = item['text'];
+              if (typeof text !== 'string') return false;
+              try {
+                const parsed = JSON.parse(text);
+                return typeof parsed === 'object' && parsed !== null &&
+                  ('code' in parsed || 'message' in parsed || 'error' in parsed);
+              } catch {
+                return false; // Plain text — not structured
+              }
+            });
+          }
+          // Structured JSON error = 100, plain text error = 80
+          totalScore += isStructured ? 100 : 80;
         } else {
-          totalScore += 50; // Responded but didn't signal error for empty args
+          // Tool succeeded with empty args — may be legitimate (e.g. list operations)
+          // Check if the tool actually requires parameters
+          const schema = tool.inputSchema;
+          const hasRequired = schema && Array.isArray(schema.required) && schema.required.length > 0;
+          totalScore += hasRequired ? 30 : 50; // Lower score if it should have rejected empty args
         }
       } catch {
         totalScore += 0; // Connection crash or unhandled error
@@ -114,7 +136,7 @@ export class MCPScoreCalculator {
     return Math.round(totalScore / testTools.length);
   }
 
-  private async scorePerformance(client: MCPClientInterface, tools: ToolInfo[]): Promise<number> {
+  private async scoreResponsiveness(client: MCPClientInterface, tools: ToolInfo[]): Promise<number> {
     if (tools.length === 0) return 20;
 
     const tool = tools[0]!;

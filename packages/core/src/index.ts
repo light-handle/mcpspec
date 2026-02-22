@@ -46,10 +46,10 @@ export type { RunDiff, TestDiff } from './testing/comparison/result-differ.js';
 export { RateLimiter } from './rate-limiting/rate-limiter.js';
 
 // Security
-export { ScanConfig } from './security/scan-config.js';
+export { ScanConfig, DANGEROUS_TOOL_PATTERNS } from './security/scan-config.js';
 export type { SecurityRule } from './security/rule-interface.js';
 export { SecurityScanner } from './security/security-scanner.js';
-export type { ScanProgress } from './security/security-scanner.js';
+export type { ScanProgress, DryRunResult } from './security/security-scanner.js';
 export { PathTraversalRule } from './security/rules/path-traversal.js';
 export { InputValidationRule } from './security/rules/input-validation.js';
 export { ResourceExhaustionRule } from './security/rules/resource-exhaustion.js';

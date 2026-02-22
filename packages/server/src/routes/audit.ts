@@ -1,7 +1,8 @@
 import type { Hono } from 'hono';
-import { auditStartSchema } from '@mcpspec/shared';
+import { auditStartSchema, auditDryRunSchema } from '@mcpspec/shared';
 import type { SecurityScanResult, SecurityScanMode, ServerConfig } from '@mcpspec/shared';
 import { MCPClient, ProcessManagerImpl, SecurityScanner, ScanConfig } from '@mcpspec/core';
+import type { DryRunResult } from '@mcpspec/core';
 import type { WebSocketHandler } from '../websocket.js';
 import { randomUUID } from 'node:crypto';
 
@@ -60,6 +61,7 @@ export function auditRoutes(app: Hono, wsHandler?: WebSocketHandler): void {
     const scanConfig = new ScanConfig({
       mode: parsed.data.mode as SecurityScanMode,
       rules: parsed.data.rules,
+      excludeTools: parsed.data.excludeTools,
       acknowledgeRisk: true, // UI handles confirmation client-side
     });
 
@@ -113,6 +115,48 @@ export function auditRoutes(app: Hono, wsHandler?: WebSocketHandler): void {
     })();
 
     return c.json({ data: { sessionId } });
+  });
+
+  app.post('/api/audit/dry-run', async (c) => {
+    const body = await c.req.json();
+    const parsed = auditDryRunSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'validation_error', message: parsed.error.message }, 400);
+    }
+
+    const processManager = new ProcessManagerImpl();
+    const config: ServerConfig = {
+      transport: parsed.data.transport,
+      command: parsed.data.command,
+      args: parsed.data.args,
+      url: parsed.data.url,
+      env: parsed.data.env,
+    };
+
+    const scanConfig = new ScanConfig({
+      mode: parsed.data.mode as SecurityScanMode,
+      rules: parsed.data.rules,
+      excludeTools: parsed.data.excludeTools,
+      acknowledgeRisk: true,
+    });
+
+    const client = new MCPClient({ serverConfig: config, processManager });
+
+    try {
+      await client.connect();
+      const scanner = new SecurityScanner();
+      const result = await scanner.dryRun(client, scanConfig);
+      await client.disconnect();
+      await processManager.shutdownAll();
+      return c.json({ data: result });
+    } catch (err) {
+      await client.disconnect().catch(() => {});
+      await processManager.shutdownAll().catch(() => {});
+      return c.json(
+        { error: 'dry_run_failed', message: err instanceof Error ? err.message : 'Dry run failed' },
+        500,
+      );
+    }
   });
 
   app.get('/api/audit/status/:sessionId', (c) => {

@@ -154,7 +154,7 @@ export class TestExecutor {
       }
 
       // Build response object from content
-      const response = this.buildResponse(result);
+      const response = this.buildResponse(result, test.rawResponse);
 
       // Process assertions (advanced format)
       if (test.assertions) {
@@ -208,16 +208,19 @@ export class TestExecutor {
     }
   }
 
-  private buildResponse(result: ToolCallResult): unknown {
+  private buildResponse(result: ToolCallResult, rawResponse?: boolean): unknown {
     const contents = result.content;
     if (!Array.isArray(contents) || contents.length === 0) {
       return {};
     }
 
-    // If single text content, try to parse as JSON, otherwise return as object
+    // If single text content, try to parse as JSON unless rawResponse is set
     if (contents.length === 1) {
       const item = contents[0] as Record<string, unknown>;
       if (item['type'] === 'text' && typeof item['text'] === 'string') {
+        if (rawResponse) {
+          return { content: item['text'], text: item['text'] };
+        }
         try {
           return JSON.parse(item['text'] as string);
         } catch {

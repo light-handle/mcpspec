@@ -20,6 +20,9 @@ const AGGRESSIVE_RULES = [...ACTIVE_RULES];
 const DEFAULT_TIMEOUT = 10000;
 const DEFAULT_MAX_PROBES = 50;
 
+// Tools matching these patterns are skipped in active/aggressive mode unless explicitly included
+const DANGEROUS_TOOL_PATTERNS = /^(delete|drop|remove|destroy|kill|purge|truncate|wipe|reset|erase)[_-]|[_-](delete|drop|remove|destroy|kill|purge|truncate|wipe|reset|erase)$/i;
+
 export class ScanConfig {
   readonly mode: SecurityScanMode;
   readonly rules: string[];
@@ -27,6 +30,8 @@ export class ScanConfig {
   readonly acknowledgeRisk: boolean;
   readonly timeout: number;
   readonly maxProbesPerTool: number;
+  readonly excludeTools: string[];
+  readonly dryRun: boolean;
 
   constructor(config: Partial<SecurityScanConfig> = {}) {
     this.mode = config.mode ?? 'passive';
@@ -34,6 +39,8 @@ export class ScanConfig {
     this.acknowledgeRisk = config.acknowledgeRisk ?? false;
     this.timeout = config.timeout ?? DEFAULT_TIMEOUT;
     this.maxProbesPerTool = config.maxProbesPerTool ?? DEFAULT_MAX_PROBES;
+    this.excludeTools = config.excludeTools ?? [];
+    this.dryRun = config.dryRun ?? false;
 
     const allRulesForMode = this.getRulesForMode(this.mode);
     if (config.rules && config.rules.length > 0) {
@@ -53,6 +60,13 @@ export class ScanConfig {
     return severityIdx >= thresholdIdx;
   }
 
+  isToolExcluded(toolName: string): boolean {
+    if (this.excludeTools.includes(toolName)) return true;
+    // In active/aggressive mode, auto-skip destructive-sounding tools
+    if (this.mode !== 'passive' && DANGEROUS_TOOL_PATTERNS.test(toolName)) return true;
+    return false;
+  }
+
   private getRulesForMode(mode: SecurityScanMode): string[] {
     switch (mode) {
       case 'passive':
@@ -64,3 +78,5 @@ export class ScanConfig {
     }
   }
 }
+
+export { DANGEROUS_TOOL_PATTERNS };

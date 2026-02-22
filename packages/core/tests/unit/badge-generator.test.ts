@@ -9,7 +9,7 @@ function makeScore(overall: number): MCPScore {
       documentation: overall,
       schemaQuality: overall,
       errorHandling: overall,
-      performance: overall,
+      responsiveness: overall,
       security: overall,
     },
   };

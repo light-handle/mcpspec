@@ -19,7 +19,7 @@ describe('MCPScoreCalculator', () => {
       resources: [
         { uri: 'file:///a', name: 'a', description: 'A resource' },
       ],
-      callHandler: () => ({ content: [{ type: 'text', text: 'error' }], isError: true }),
+      callHandler: () => ({ content: [{ type: 'text', text: '{"code":"INVALID","message":"missing path"}' }], isError: true }),
       serverInfo: { name: 'good-server', version: '1.0.0' },
     });
     await client.connect();
@@ -82,10 +82,10 @@ describe('MCPScoreCalculator', () => {
     expect(score.overall).toBeLessThanOrEqual(100);
   });
 
-  it('gives full error handling score for isError: true responses', async () => {
+  it('gives full error handling score for structured isError responses', async () => {
     const client = new MockMCPClient({
       tools: [{ name: 'tool1', description: 'A tool' }],
-      callHandler: () => ({ content: [{ type: 'text', text: 'error msg' }], isError: true }),
+      callHandler: () => ({ content: [{ type: 'text', text: '{"code":"ERR","message":"bad input"}' }], isError: true }),
       serverInfo: { name: 'proper-errors', version: '1.0.0' },
     });
     await client.connect();
@@ -94,6 +94,20 @@ describe('MCPScoreCalculator', () => {
     const score = await calculator.calculate(client);
 
     expect(score.categories.errorHandling).toBe(100);
+  });
+
+  it('gives partial error handling score for plain text isError responses', async () => {
+    const client = new MockMCPClient({
+      tools: [{ name: 'tool1', description: 'A tool' }],
+      callHandler: () => ({ content: [{ type: 'text', text: 'something went wrong' }], isError: true }),
+      serverInfo: { name: 'text-errors', version: '1.0.0' },
+    });
+    await client.connect();
+
+    const calculator = new MCPScoreCalculator();
+    const score = await calculator.calculate(client);
+
+    expect(score.categories.errorHandling).toBe(80);
   });
 
   it('gives lower error handling score when tool throws', async () => {
@@ -136,7 +150,7 @@ describe('MCPScoreCalculator', () => {
       score.categories.documentation * 0.25 +
       score.categories.schemaQuality * 0.25 +
       score.categories.errorHandling * 0.20 +
-      score.categories.performance * 0.15 +
+      score.categories.responsiveness * 0.15 +
       score.categories.security * 0.15,
     );
     expect(score.overall).toBe(expected);
@@ -158,7 +172,7 @@ describe('MCPScoreCalculator', () => {
       onCategoryComplete: (cat) => completed.push(cat),
     });
 
-    expect(started).toEqual(['documentation', 'schemaQuality', 'errorHandling', 'performance', 'security']);
+    expect(started).toEqual(['documentation', 'schemaQuality', 'errorHandling', 'responsiveness', 'security']);
     expect(completed).toEqual(started);
   });
 });

@@ -129,8 +129,27 @@ export const api = {
       env?: Record<string, string>;
       mode: string;
       rules?: string[];
+      excludeTools?: string[];
     }) =>
       request<ApiResponse<{ sessionId: string }>>('/audit/start', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    dryRun: (data: {
+      transport: string;
+      command?: string;
+      args?: string[];
+      url?: string;
+      env?: Record<string, string>;
+      mode: string;
+      rules?: string[];
+      excludeTools?: string[];
+    }) =>
+      request<ApiResponse<{
+        tools: Array<{ name: string; included: boolean; reason?: string }>;
+        rules: string[];
+        mode: string;
+      }>>('/audit/dry-run', {
         method: 'POST',
         body: JSON.stringify(data),
       }),

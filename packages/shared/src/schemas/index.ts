@@ -9,6 +9,7 @@ export {
   inspectConnectSchema,
   inspectCallSchema,
   auditStartSchema,
+  auditDryRunSchema,
   benchmarkStartSchema,
   docsGenerateSchema,
   scoreCalculateSchema,

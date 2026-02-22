@@ -70,7 +70,7 @@ export class TestScheduler {
     }
 
     // Parallel execution with semaphore
-    const executor = new TestExecutor(initialVariables, rateLimiter);
+    // Each task gets its own TestExecutor to avoid shared variable state corruption
     let running = 0;
     const results: TestResult[] = new Array(filteredTests.length);
     const waitQueue: Array<() => void> = [];
@@ -98,6 +98,7 @@ export class TestScheduler {
       return (async () => {
         await acquire();
         try {
+          const executor = new TestExecutor(initialVariables, rateLimiter);
           reporter?.onTestStart(test.name);
           const result = await executor.execute(test, client);
           results[i] = result;

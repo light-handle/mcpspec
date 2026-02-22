@@ -31,6 +31,8 @@ interface AuditOptions {
   acknowledgeRisk: boolean;
   failOn?: string;
   rules?: string[];
+  excludeTools?: string[];
+  dryRun: boolean;
 }
 
 export const auditCommand = new Command('audit')
@@ -40,6 +42,8 @@ export const auditCommand = new Command('audit')
   .option('--acknowledge-risk', 'Skip confirmation prompt for active/aggressive modes', false)
   .option('--fail-on <severity>', 'Fail with exit code 6 if findings at or above severity: info, low, medium, high, critical')
   .option('--rules <rules...>', 'Only run specific rules')
+  .option('--exclude-tools <tools...>', 'Skip specific tools during scanning')
+  .option('--dry-run', 'Preview which tools will be scanned without running payloads', false)
   .action(async (serverCommand: string, options: AuditOptions) => {
     let client: MCPClient | null = null;
 
@@ -49,6 +53,8 @@ export const auditCommand = new Command('audit')
         mode,
         acknowledgeRisk: options.acknowledgeRisk,
         rules: options.rules,
+        excludeTools: options.excludeTools,
+        dryRun: options.dryRun,
       });
 
       // Confirmation prompt for active/aggressive modes
@@ -80,6 +86,23 @@ export const auditCommand = new Command('audit')
 
       // Run scan
       const scanner = new SecurityScanner();
+
+      // Dry-run: preview tools and exit
+      if (config.dryRun) {
+        const preview = await scanner.dryRun(client, config);
+        console.log(`${COLORS.bold}  Dry Run — Tools to scan:${COLORS.reset}\n`);
+        for (const tool of preview.tools) {
+          if (tool.included) {
+            console.log(`    ${COLORS.green}✓${COLORS.reset} ${tool.name}`);
+          } else {
+            console.log(`    ${COLORS.yellow}✗${COLORS.reset} ${tool.name} ${COLORS.gray}(${tool.reason})${COLORS.reset}`);
+          }
+        }
+        console.log(`\n  ${COLORS.gray}Rules: ${preview.rules.join(', ')}${COLORS.reset}`);
+        console.log(`  ${COLORS.gray}Mode: ${preview.mode}${COLORS.reset}\n`);
+        await client.disconnect();
+        process.exit(EXIT_CODES.SUCCESS);
+      }
       const result = await scanner.scan(client, config, {
         onRuleStart: (_ruleId, ruleName) => {
           process.stdout.write(`  ${COLORS.gray}Running ${ruleName}...${COLORS.reset}`);

@@ -15,15 +15,23 @@ export interface ServerConnectionData {
   env?: Record<string, string>;
 }
 
+interface SecondaryAction {
+  label: string;
+  loading?: boolean;
+  onClick: (data: ServerConnectionData) => Promise<void>;
+}
+
 interface ServerConnectorProps {
   title?: string;
+  buttonLabel?: string;
   onConnect: (data: ServerConnectionData) => Promise<void>;
   connecting?: boolean;
   error?: string | null;
   children?: React.ReactNode;
+  secondaryAction?: SecondaryAction;
 }
 
-export function ServerConnector({ title = 'Connect to Server', onConnect, connecting, error, children }: ServerConnectorProps) {
+export function ServerConnector({ title = 'Connect to Server', buttonLabel, onConnect, connecting, error, children, secondaryAction }: ServerConnectorProps) {
   const [mode, setMode] = useState<'saved' | 'custom'>('saved');
   const [selectedServerId, setSelectedServerId] = useState('');
   const [customCommand, setCustomCommand] = useState('');
@@ -32,13 +40,11 @@ export function ServerConnector({ title = 'Connect to Server', onConnect, connec
 
   const servers = useServers();
 
-  async function handleConnect() {
-    let connectData: ServerConnectionData;
-
+  function getConnectionData(): ServerConnectionData | null {
     if (mode === 'saved') {
       const server = servers.data?.data.find((s) => s.id === selectedServerId);
-      if (!server) return;
-      connectData = {
+      if (!server) return null;
+      return {
         transport: server.transport,
         command: server.command,
         args: server.args,
@@ -48,13 +54,24 @@ export function ServerConnector({ title = 'Connect to Server', onConnect, connec
     } else {
       if (customTransport === 'stdio') {
         const parts = customCommand.split(/\s+/);
-        connectData = { transport: 'stdio', command: parts[0], args: parts.slice(1) };
+        return { transport: 'stdio', command: parts[0], args: parts.slice(1) };
       } else {
-        connectData = { transport: customTransport, url: customUrl };
+        return { transport: customTransport, url: customUrl };
       }
     }
+  }
 
-    await onConnect(connectData);
+  async function handleConnect() {
+    const data = getConnectionData();
+    if (!data) return;
+    await onConnect(data);
+  }
+
+  async function handleSecondaryAction() {
+    if (!secondaryAction) return;
+    const data = getConnectionData();
+    if (!data) return;
+    await secondaryAction.onClick(data);
   }
 
   const canConnect = mode === 'saved' ? !!selectedServerId : (customTransport === 'stdio' ? !!customCommand : !!customUrl);
@@ -107,10 +124,23 @@ export function ServerConnector({ title = 'Connect to Server', onConnect, connec
 
         {error && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
-        <Button onClick={handleConnect} disabled={connecting || !canConnect} className="w-full">
-          {connecting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plug className="mr-2 h-4 w-4" />}
-          Connect & Start
-        </Button>
+        <div className={secondaryAction ? 'flex gap-2' : ''}>
+          {secondaryAction && (
+            <Button
+              variant="outline"
+              onClick={handleSecondaryAction}
+              disabled={secondaryAction.loading || connecting || !canConnect}
+              className="flex-1"
+            >
+              {secondaryAction.loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plug className="mr-2 h-4 w-4" />}
+              {secondaryAction.label}
+            </Button>
+          )}
+          <Button onClick={handleConnect} disabled={connecting || !canConnect} className={secondaryAction ? 'flex-1' : 'w-full'}>
+            {connecting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plug className="mr-2 h-4 w-4" />}
+            {buttonLabel ?? 'Connect & Start'}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

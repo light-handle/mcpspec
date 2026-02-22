@@ -118,6 +118,7 @@ export interface TestDefinition {
   expect?: SimpleExpectation[];
   expectError?: boolean;
   extract?: ExtractionDefinition[];
+  rawResponse?: boolean;
 }
 
 export type SimpleExpectation = { exists: string } | { equals: [string, unknown] } | { contains: [string, unknown] } | { matches: [string, string] };
@@ -213,6 +214,8 @@ export interface SecurityScanConfig {
   acknowledgeRisk?: boolean;
   timeout?: number;
   maxProbesPerTool?: number;
+  excludeTools?: string[];
+  dryRun?: boolean;
 }
 
 export interface SecurityScanResult {
@@ -280,7 +283,7 @@ export interface MCPScore {
     documentation: number;
     errorHandling: number;
     schemaQuality: number;
-    performance: number;
+    responsiveness: number;
     security: number;
   };
 }

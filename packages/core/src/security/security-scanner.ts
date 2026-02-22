@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { SecurityFinding, SecurityScanResult, SecurityScanSummary, SeverityLevel } from '@mcpspec/shared';
 import type { MCPClientInterface } from '../client/mcp-client-interface.js';
+import type { ToolInfo } from '../client/mcp-client-interface.js';
 import type { SecurityRule } from './rule-interface.js';
 import type { ScanConfig } from './scan-config.js';
 import { PathTraversalRule } from './rules/path-traversal.js';
@@ -18,6 +19,12 @@ export interface ScanProgress {
   onFinding?: (finding: SecurityFinding) => void;
 }
 
+export interface DryRunResult {
+  tools: Array<{ name: string; included: boolean; reason?: string }>;
+  rules: string[];
+  mode: string;
+}
+
 export class SecurityScanner {
   private readonly rules: Map<string, SecurityRule> = new Map();
 
@@ -29,6 +36,35 @@ export class SecurityScanner {
     this.rules.set(rule.id, rule);
   }
 
+  /**
+   * Preview which tools will be scanned without actually running payloads.
+   */
+  async dryRun(client: MCPClientInterface, config: ScanConfig): Promise<DryRunResult> {
+    const allTools = await client.listTools();
+    const toolResults = allTools.map((tool) => {
+      if (config.excludeTools.includes(tool.name)) {
+        return { name: tool.name, included: false, reason: 'excluded by --exclude-tools' };
+      }
+      if (config.isToolExcluded(tool.name)) {
+        return { name: tool.name, included: false, reason: 'auto-skipped (destructive name)' };
+      }
+      return { name: tool.name, included: true };
+    });
+
+    return {
+      tools: toolResults,
+      rules: [...config.rules],
+      mode: config.mode,
+    };
+  }
+
+  /**
+   * Filter tools based on config exclusions.
+   */
+  filterTools(tools: ToolInfo[], config: ScanConfig): ToolInfo[] {
+    return tools.filter((tool) => !config.isToolExcluded(tool.name));
+  }
+
   async scan(
     client: MCPClientInterface,
     config: ScanConfig,
@@ -37,7 +73,19 @@ export class SecurityScanner {
     const startedAt = new Date();
     const findings: SecurityFinding[] = [];
 
-    const tools = await client.listTools();
+    const allTools = await client.listTools();
+    const tools = this.filterTools(allTools, config);
+
+    const skippedCount = allTools.length - tools.length;
+    if (skippedCount > 0) {
+      findings.push({
+        id: randomUUID(),
+        rule: 'safety-filter',
+        severity: 'info',
+        title: `${skippedCount} tool(s) excluded from scan`,
+        description: `${skippedCount} tool(s) were excluded from scanning due to safety filters or --exclude-tools.`,
+      });
+    }
 
     for (const ruleId of config.rules) {
       const rule = this.rules.get(ruleId);

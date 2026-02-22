@@ -9,7 +9,8 @@ import type { SecurityFinding, SecurityScanResult, SeverityLevel } from '@mcpspe
 import type { WSServerMessage } from '@mcpspec/shared';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { api } from '@/lib/api';
-import { Shield, Loader2, StopCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Shield, Loader2, StopCircle, ChevronDown, ChevronRight, ArrowLeft, Play, CheckCircle2, XCircle } from 'lucide-react';
 
 const SEVERITY_COLORS: Record<SeverityLevel, string> = {
   critical: 'bg-red-600 text-white',
@@ -19,14 +20,26 @@ const SEVERITY_COLORS: Record<SeverityLevel, string> = {
   info: 'bg-blue-500 text-white',
 };
 
-type Phase = 'setup' | 'scanning' | 'results';
+interface DryRunResult {
+  tools: Array<{ name: string; included: boolean; reason?: string }>;
+  rules: string[];
+  mode: string;
+}
+
+type Phase = 'setup' | 'preview' | 'scanning' | 'results';
 
 export function AuditPage() {
   const [phase, setPhase] = useState<Phase>('setup');
   const [mode, setMode] = useState<'passive' | 'active' | 'aggressive'>('passive');
+  const [excludeToolsInput, setExcludeToolsInput] = useState('');
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Dry-run / preview state
+  const [dryRunLoading, setDryRunLoading] = useState(false);
+  const [dryRunResult, setDryRunResult] = useState<DryRunResult | null>(null);
+  const [savedConnectionData, setSavedConnectionData] = useState<ServerConnectionData | null>(null);
 
   // Scanning state
   const [currentRule, setCurrentRule] = useState<string | null>(null);
@@ -89,6 +102,27 @@ export function AuditPage() {
     }
   }, [connected, sessionId, subscribe]);
 
+  function parseExcludeTools(): string[] | undefined {
+    const trimmed = excludeToolsInput.trim();
+    if (!trimmed) return undefined;
+    return trimmed.split(',').map((s) => s.trim()).filter(Boolean);
+  }
+
+  async function handleDryRun(data: ServerConnectionData) {
+    setDryRunLoading(true);
+    setError(null);
+
+    try {
+      const res = await api.audit.dryRun({ ...data, mode, excludeTools: parseExcludeTools() });
+      setDryRunResult(res.data);
+      setSavedConnectionData(data);
+      setPhase('preview');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to run dry-run preview');
+    }
+    setDryRunLoading(false);
+  }
+
   async function handleConnect(data: ServerConnectionData) {
     setConnecting(true);
     setError(null);
@@ -97,7 +131,7 @@ export function AuditPage() {
     setCurrentRule(null);
 
     try {
-      const res = await api.audit.start({ ...data, mode });
+      const res = await api.audit.start({ ...data, mode, excludeTools: parseExcludeTools() });
       setSessionId(res.data.sessionId);
 
       // Get total rules from status
@@ -110,6 +144,11 @@ export function AuditPage() {
       setError(err instanceof Error ? err.message : 'Failed to start audit');
     }
     setConnecting(false);
+  }
+
+  async function handleRunFromPreview() {
+    if (!savedConnectionData) return;
+    await handleConnect(savedConnectionData);
   }
 
   async function handleStop() {
@@ -127,6 +166,8 @@ export function AuditPage() {
     setCompletedRules(0);
     setCurrentRule(null);
     setError(null);
+    setDryRunResult(null);
+    setSavedConnectionData(null);
     setPhase('setup');
   }
 
@@ -144,9 +185,15 @@ export function AuditPage() {
       {phase === 'setup' && (
         <ServerConnector
           title="Start Security Audit"
+          buttonLabel="Start Scan"
           onConnect={handleConnect}
           connecting={connecting}
           error={error}
+          secondaryAction={{
+            label: 'Preview Scan',
+            loading: dryRunLoading,
+            onClick: handleDryRun,
+          }}
         >
           <div className="space-y-2">
             <label className="text-sm font-medium">Scan Mode</label>
@@ -161,12 +208,88 @@ export function AuditPage() {
               </SelectContent>
             </Select>
             {mode !== 'passive' && (
-              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
                 <strong>Warning:</strong> {mode === 'active' ? 'Active' : 'Aggressive'} mode sends potentially harmful payloads. Only use against test environments.
               </div>
             )}
           </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Exclude Tools</label>
+            <Input
+              value={excludeToolsInput}
+              onChange={(e) => setExcludeToolsInput(e.target.value)}
+              placeholder="tool1, tool2, ... (comma-separated)"
+            />
+            <p className="text-xs text-muted-foreground">Tools to skip during scanning. Destructive-sounding tools are auto-skipped in active/aggressive mode.</p>
+          </div>
         </ServerConnector>
+      )}
+
+      {phase === 'preview' && dryRunResult && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Scan Preview</CardTitle>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setPhase('setup')}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back
+                </Button>
+                <Button size="sm" onClick={handleRunFromPreview} disabled={connecting}>
+                  {connecting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                  Run Scan
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Summary row */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <Badge variant="outline">{dryRunResult.mode} mode</Badge>
+              <span className="text-sm text-muted-foreground">
+                {dryRunResult.tools.filter((t) => t.included).length} of {dryRunResult.tools.length} tools will be scanned
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {dryRunResult.rules.length} rule{dryRunResult.rules.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Rules */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Rules</h4>
+              <div className="flex gap-2 flex-wrap">
+                {dryRunResult.rules.map((rule) => (
+                  <Badge key={rule} variant="secondary">{rule}</Badge>
+                ))}
+              </div>
+            </div>
+
+            {/* Tools */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Tools</h4>
+              <div className="rounded-md border divide-y">
+                {dryRunResult.tools.map((tool) => (
+                  <div key={tool.name} className="flex items-center gap-3 px-3 py-2">
+                    {tool.included ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={tool.included ? 'text-sm' : 'text-sm text-muted-foreground line-through'}>
+                      {tool.name}
+                    </span>
+                    {tool.reason && (
+                      <span className="text-xs text-muted-foreground ml-auto">{tool.reason}</span>
+                    )}
+                  </div>
+                ))}
+                {dryRunResult.tools.length === 0 && (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">No tools found on server</div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {phase === 'scanning' && (

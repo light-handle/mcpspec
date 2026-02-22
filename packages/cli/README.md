@@ -50,9 +50,9 @@ mcpspec test
 |---|---|---|
 | **Test Collections** | YAML-based test suites with 10 assertion types, environments, variables, tags, retries, and parallel execution |
 | **Interactive Inspector** | Connect to any MCP server and explore tools, resources, and schemas in a live REPL |
-| **Security Audit** | Scan for path traversal, injection, auth bypass, resource exhaustion, and information disclosure |
+| **Security Audit** | Scan for path traversal, injection, auth bypass, resource exhaustion, and info disclosure. Safety filter auto-skips destructive tools; `--dry-run` previews targets |
 | **Benchmarks** | Measure min/max/mean/median/P95/P99 latency and throughput across hundreds of iterations |
-| **MCP Score** | 0-100 quality rating across documentation, schema quality, error handling, performance, and security |
+| **MCP Score** | 0-100 quality rating across documentation, schema quality, error handling, responsiveness, and security |
 | **Doc Generator** | Auto-generate Markdown or HTML documentation from server introspection |
 | **Web Dashboard** | Full React UI with server management, test runner, audit viewer, and dark mode |
 | **CI/CD Ready** | JUnit/JSON/TAP reporters, deterministic exit codes, `--ci` mode, GitHub Actions compatible |
@@ -63,7 +63,7 @@ mcpspec test
 |---------|-------------|
 | `mcpspec test [collection]` | Run test collections with `--env`, `--tag`, `--parallel`, `--reporter`, `--watch`, `--ci` |
 | `mcpspec inspect <server>` | Interactive REPL — `.tools`, `.call`, `.schema`, `.resources`, `.info` |
-| `mcpspec audit <server>` | Security scan — `--mode passive\|active\|aggressive`, `--fail-on <severity>` |
+| `mcpspec audit <server>` | Security scan — `--mode`, `--fail-on`, `--exclude-tools`, `--dry-run` |
 | `mcpspec bench <server>` | Performance benchmark — `--iterations`, `--tool`, `--args` |
 | `mcpspec score <server>` | Quality score (0-100) — `--badge badge.svg` |
 | `mcpspec docs <server>` | Generate docs — `--format markdown\|html`, `--output <dir>` |
@@ -104,7 +104,7 @@ Pre-built test suites for popular MCP servers in [`examples/collections/servers/
 git clone https://github.com/light-handle/mcpspec.git
 cd mcpspec
 pnpm install && pnpm build
-pnpm test   # 259 tests across core + server
+pnpm test   # 260 tests across core + server
 ```
 
 ## License

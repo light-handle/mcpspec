@@ -1,4 +1,7 @@
 import { Command } from 'commander';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { testCommand } from './commands/test.js';
 import { inspectCommand } from './commands/inspect.js';
 import { initCommand } from './commands/init.js';
@@ -10,12 +13,15 @@ import { benchCommand } from './commands/bench.js';
 import { docsCommand } from './commands/docs.js';
 import { scoreCommand } from './commands/score.js';
 
+const __cliDir = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__cliDir, '..', 'package.json'), 'utf-8'));
+
 const program = new Command();
 
 program
   .name('mcpspec')
   .description('The definitive MCP server testing platform')
-  .version('1.0.0');
+  .version(pkg.version);
 
 program.addCommand(testCommand);
 program.addCommand(inspectCommand);

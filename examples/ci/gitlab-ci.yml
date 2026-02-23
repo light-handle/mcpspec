@@ -1,11 +1,14 @@
-mcp-tests:
+mcpspec:
   image: node:22
   stage: test
   script:
     - npm install -g mcpspec
-    - mcpspec test --ci --reporter json --output results.json
+    - mcpspec test --ci --reporter junit --output results.xml
+    - mcpspec audit "npx my-server" --mode passive --fail-on high
   artifacts:
     when: always
     paths:
-      - results.json
+      - results.xml
+    reports:
+      junit: results.xml
     expire_in: 1 week

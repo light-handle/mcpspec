@@ -13,6 +13,7 @@ import { benchCommand } from './commands/bench.js';
 import { docsCommand } from './commands/docs.js';
 import { scoreCommand } from './commands/score.js';
 import { recordCommand } from './commands/record.js';
+import { ciInitCommand } from './commands/ci-init.js';
 
 const __cliDir = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__cliDir, '..', 'package.json'), 'utf-8'));
@@ -35,5 +36,6 @@ program.addCommand(benchCommand);
 program.addCommand(docsCommand);
 program.addCommand(scoreCommand);
 program.addCommand(recordCommand);
+program.addCommand(ciInitCommand);
 
 program.parse(process.argv);

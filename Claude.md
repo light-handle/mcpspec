@@ -250,7 +250,8 @@ mcpspec/
 │   │       │   ├── bench.ts
 │   │       │   ├── compare.ts
 │   │       │   ├── baseline.ts
-│   │       │   └── record.ts              # Recording & replay
+│   │       │   ├── record.ts              # Recording & replay
+│   │       │   └── ci-init.ts             # CI pipeline generator
 │   │       ├── wizard/
 │   │       │   └── onboarding.ts
 │   │       └── utils/
@@ -579,6 +580,16 @@ mcpspec record start <server>           # Record inspector session
 mcpspec record list                     # List saved recordings
 mcpspec record replay <name> <server>   # Replay and diff
 mcpspec record delete <name>            # Delete recording
+
+# Generate CI pipeline configuration
+mcpspec ci-init
+  --platform <type>          # github, gitlab, or shell (auto-detect)
+  --collection <path>        # Path to collection file
+  --server <command>         # Server command for audit/score/bench
+  --checks <list>            # Comma-separated: test,audit,score,bench
+  --fail-on <severity>       # Audit severity gate: low,medium,high,critical
+  --min-score <n>            # Minimum MCP Score threshold (0-100)
+  --force                    # Overwrite existing files
 ```
 
 ---
@@ -866,6 +877,7 @@ Initial public release. Core features complete.
 - Server API: recordings CRUD + replay endpoint, save-recording from inspect sessions
 - UI: Recordings page, Save Recording button on Inspector
 - Security scanner now has 8 rules (was 6), passive mode has 5 rules (was 3)
+- **CI Pipeline Generator** — `mcpspec ci-init` generates GitHub Actions, GitLab CI, or shell scripts with interactive wizard and flag-driven mode. Auto-detects platform. Supports test, audit, score, and bench checks with configurable severity gates and MCP Score thresholds.
 
 ### v1.1.5 (Week 26)
 - **Server Process Monitor** — Real-time view of stdio server process health: stdout/stderr streams, memory/CPU usage, uptime, exit code on crash. Expose ProcessManager stats via server API/WebSocket. UI panel in Inspector.

@@ -2,7 +2,7 @@ name: MCP Server Tests
 on: [push, pull_request]
 
 jobs:
-  test:
+  mcpspec:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,12 +12,22 @@ jobs:
 
       - run: npm install -g mcpspec
 
-      - name: Run MCP tests
-        run: mcpspec test --ci --reporter json --output results.json
+      - name: Run tests
+        run: mcpspec test --ci --reporter junit --output results.xml
+
+      - name: Security audit
+        run: mcpspec audit "npx my-server" --mode passive --fail-on high
 
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: results.json
+          name: mcpspec-results
+          path: |
+            results.xml
+
+      - name: Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: results.xml

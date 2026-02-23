@@ -29,6 +29,7 @@ mcpspec bench "npx my-server"         # Performance benchmark
 mcpspec score "npx my-server"         # Quality rating (0-100)
 mcpspec docs "npx my-server"          # Auto-generate documentation
 mcpspec record start "npx my-server"  # Record & replay sessions
+mcpspec ci-init --platform github     # Generate CI pipeline config
 mcpspec ui                            # Launch web dashboard
 ```
 
@@ -43,6 +44,9 @@ mcpspec init --template standard
 
 # 3. Run tests
 mcpspec test
+
+# 4. Add CI gating (optional)
+mcpspec ci-init
 ```
 
 ## Features
@@ -57,7 +61,7 @@ mcpspec test
 | **MCP Score** | 0-100 quality rating across documentation, schema quality (opinionated linting: property types, descriptions, constraints, naming conventions), error handling, responsiveness, and security |
 | **Doc Generator** | Auto-generate Markdown or HTML documentation from server introspection |
 | **Web Dashboard** | Full React UI with server management, test runner, audit viewer, and dark mode |
-| **CI/CD Ready** | JUnit/JSON/TAP reporters, deterministic exit codes, `--ci` mode, GitHub Actions compatible |
+| **CI/CD Ready** | `ci-init` generates GitHub Actions, GitLab CI, or shell scripts. JUnit/JSON/TAP reporters, deterministic exit codes, `--ci` mode |
 
 ## Commands
 
@@ -76,6 +80,7 @@ mcpspec test
 | `mcpspec record list` | List saved recordings |
 | `mcpspec record delete <name>` | Delete a saved recording |
 | `mcpspec init [dir]` | Scaffold project — `--template minimal\|standard\|full` |
+| `mcpspec ci-init` | Generate CI config — `--platform github\|gitlab\|shell`, `--checks`, `--fail-on`, `--force` |
 | `mcpspec ui` | Launch web dashboard on `localhost:6274` |
 
 ## Community Collections
@@ -100,7 +105,7 @@ Pre-built test suites for popular MCP servers in [`examples/collections/servers/
 |---------|-------------|
 | `@mcpspec/shared` | Types, Zod schemas, constants |
 | `@mcpspec/core` | MCP client, test runner, assertions, security scanner (8 rules), profiler, doc generator, scorer, recording/replay |
-| `@mcpspec/cli` | 11 CLI commands built with Commander.js |
+| `@mcpspec/cli` | 12 CLI commands built with Commander.js |
 | `@mcpspec/server` | Hono HTTP server with REST API + WebSocket |
 | `@mcpspec/ui` | React SPA — TanStack Router, TanStack Query, Tailwind, shadcn/ui |
 
@@ -110,7 +115,7 @@ Pre-built test suites for popular MCP servers in [`examples/collections/servers/
 git clone https://github.com/light-handle/mcpspec.git
 cd mcpspec
 pnpm install && pnpm build
-pnpm test   # 294 tests across core + server
+pnpm test   # 299 tests across core + server
 ```
 
 ## License

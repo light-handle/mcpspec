@@ -166,7 +166,7 @@
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#9881;</div>
           <h3 class="text-white font-semibold mb-2">CI/CD Ready</h3>
-          <p class="text-gray-400 text-sm">JUnit, JSON, TAP reporters. Deterministic exit codes. <code class="text-brand-light">--ci</code> mode. GitHub Actions compatible.</p>
+          <p class="text-gray-400 text-sm"><code class="text-brand-light">ci-init</code> generates GitHub Actions, GitLab CI, or shell scripts. JUnit/JSON/TAP reporters. Deterministic exit codes. <code class="text-brand-light">--ci</code> mode.</p>
         </div>
       </div>
     </div>
@@ -217,7 +217,7 @@
   <section id="commands" class="py-20 px-4">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold text-center text-white mb-4">Commands</h2>
-      <p class="text-gray-400 text-center mb-12">11 commands for every stage of MCP server development.</p>
+      <p class="text-gray-400 text-center mb-12">12 commands for every stage of MCP server development.</p>
 
       <div class="space-y-6">
 
@@ -365,6 +365,21 @@ mcpspec init ./my-project
 mcpspec init --template minimal            # Minimal starter
 mcpspec init --template standard           # Standard (recommended)
 mcpspec init --template full               # Full with environments</code></pre>
+        </div>
+
+        <!-- ci-init -->
+        <div class="gradient-card rounded-xl border border-white/5 p-6">
+          <h3 class="text-white font-semibold text-lg mb-1">mcpspec ci-init</h3>
+          <p class="text-gray-400 text-sm mb-4">Generate CI pipeline configuration with an interactive wizard or flags.</p>
+          <pre><code class="language-bash">mcpspec ci-init                                # Interactive wizard
+mcpspec ci-init --platform github              # GitHub Actions
+mcpspec ci-init --platform gitlab              # GitLab CI
+mcpspec ci-init --platform shell               # Shell script
+mcpspec ci-init --checks test,audit,score      # Choose checks
+mcpspec ci-init --fail-on medium               # Audit severity gate
+mcpspec ci-init --min-score 70                 # MCP Score threshold
+mcpspec ci-init --force                        # Overwrite existing files</code></pre>
+          <p class="text-gray-500 text-xs mt-3">Auto-detects platform from .github/ or .gitlab-ci.yml. Supports test, audit, score, and bench checks. Use <code class="text-brand-light">--force</code> to regenerate.</p>
         </div>
 
         <!-- ui -->
@@ -523,16 +538,17 @@ mcpspec test examples/collections/servers/github.yaml</code></pre>
   <section id="cicd" class="py-20 px-4 bg-navy-800/50">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold text-center text-white mb-4">CI/CD Integration</h2>
-      <p class="text-gray-400 text-center mb-12">Deterministic exit codes, multiple reporters, and ready-made workflow examples.</p>
+      <p class="text-gray-400 text-center mb-12">Run <code class="text-brand-light">mcpspec ci-init</code> to generate a pipeline, or use these examples directly.</p>
 
       <div class="grid md:grid-cols-2 gap-6">
         <div>
           <h3 class="text-white font-semibold mb-3">GitHub Actions</h3>
+          <p class="text-gray-500 text-xs mb-3">Generate this with <code class="text-brand-light">mcpspec ci-init --platform github</code></p>
           <pre><code class="language-yaml">name: MCP Server Tests
 on: [push, pull_request]
 
 jobs:
-  test:
+  mcpspec:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -540,6 +556,7 @@ jobs:
         with:
           node-version: '22'
 
+      # Or add mcpspec as a devDependency for version pinning
       - run: npm install -g mcpspec
 
       - name: Run tests
@@ -594,7 +611,7 @@ jobs:
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/cli</code>
-          <span class="text-gray-400 text-sm">11 CLI commands built with Commander.js</span>
+          <span class="text-gray-400 text-sm">12 CLI commands built with Commander.js</span>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/server</code>
@@ -608,11 +625,11 @@ jobs:
 
       <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div class="gradient-card rounded-lg border border-white/5 p-4">
-          <div class="text-2xl font-bold text-white">294</div>
+          <div class="text-2xl font-bold text-white">299</div>
           <div class="text-gray-500 text-sm">Tests</div>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4">
-          <div class="text-2xl font-bold text-white">11</div>
+          <div class="text-2xl font-bold text-white">12</div>
           <div class="text-gray-500 text-sm">CLI Commands</div>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4">

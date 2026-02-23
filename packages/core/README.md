@@ -1,6 +1,6 @@
 # @mcpspec/core
 
-Core engine for [MCPSpec](https://www.npmjs.com/package/mcpspec) — MCP client, test runner, security scanner, performance profiler, documentation generator, quality scorer, and mock server generator.
+Core engine for [MCPSpec](https://www.npmjs.com/package/mcpspec) — the reliability platform for MCP servers. MCP client, test runner, security scanner (including Tool Poisoning detection), performance profiler, documentation generator, quality scorer, recording/replay, and mock server generator.
 
 > **For CLI usage, install [`mcpspec`](https://www.npmjs.com/package/mcpspec) instead.** This package is for programmatic use — embedding MCPSpec capabilities in your own tools.
 

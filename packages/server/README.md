@@ -1,6 +1,6 @@
 # @mcpspec/server
 
-HTTP server and web UI backend for [MCPSpec](https://www.npmjs.com/package/mcpspec). Provides a REST API, WebSocket real-time events, and serves the MCPSpec web dashboard.
+HTTP server and web UI backend for [MCPSpec](https://www.npmjs.com/package/mcpspec) — the reliability platform for MCP servers. Provides a REST API, WebSocket real-time events, and serves the MCPSpec web dashboard.
 
 > **For CLI usage, install [`mcpspec`](https://www.npmjs.com/package/mcpspec) instead.** This package is for embedding the MCPSpec server in your own applications.
 

@@ -1,6 +1,6 @@
 # @mcpspec/core
 
-Core engine for [MCPSpec](https://www.npmjs.com/package/mcpspec) — MCP client, test runner, security scanner, performance profiler, documentation generator, and quality scorer.
+Core engine for [MCPSpec](https://www.npmjs.com/package/mcpspec) — MCP client, test runner, security scanner, performance profiler, documentation generator, quality scorer, and mock server generator.
 
 > **For CLI usage, install [`mcpspec`](https://www.npmjs.com/package/mcpspec) instead.** This package is for programmatic use — embedding MCPSpec capabilities in your own tools.
 
@@ -113,6 +113,12 @@ Evaluated via `TestExecutor` — schema, equals, contains, exists, matches, type
 - `RecordingStore` — Save, load, list, and delete session recordings
 - `RecordingReplayer` — Replay recorded steps against a live server
 - `RecordingDiffer` — Diff original recording vs replayed results (matched/changed/added/removed)
+
+### Mock Server
+
+- `MockMCPServer` — Start a mock MCP server from a recording (stdio transport, drop-in replacement)
+- `ResponseMatcher` — Match incoming tool calls to recorded responses (`match` or `sequential` mode)
+- `MockGenerator` — Generate standalone `.js` mock server files (only requires `@modelcontextprotocol/sdk`)
 
 ### Utilities
 

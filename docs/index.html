@@ -112,9 +112,9 @@
     <div class="max-w-5xl mx-auto">
       <div class="grid md:grid-cols-3 gap-8 text-center">
         <div>
-          <div class="text-brand text-4xl font-bold mb-2">12</div>
+          <div class="text-brand text-4xl font-bold mb-2">13</div>
           <div class="text-white font-semibold mb-1">CLI Commands</div>
-          <div class="text-gray-500 text-sm">Test, inspect, audit, bench, score, docs, record, compare, baseline, init, ci-init, ui</div>
+          <div class="text-gray-500 text-sm">Test, inspect, audit, bench, score, docs, record, mock, compare, baseline, init, ci-init, ui</div>
         </div>
         <div>
           <div class="text-brand text-4xl font-bold mb-2">8</div>
@@ -160,6 +160,12 @@
           <div class="text-3xl mb-3">&#127909;</div>
           <h3 class="text-white font-semibold mb-2">Recording &amp; Replay</h3>
           <p class="text-gray-400 text-sm">Record inspector sessions, replay against different server versions, and diff results step by step. Catches regressions: matched, changed, added, removed.</p>
+        </div>
+        <!-- Card: Mock Server -->
+        <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
+          <div class="text-3xl mb-3">&#129520;</div>
+          <h3 class="text-white font-semibold mb-2">Mock Server</h3>
+          <p class="text-gray-400 text-sm">Turn any recording into a mock MCP server. Drop-in replacement for CI/CD, offline dev, and deterministic tests. Generate standalone .js files with no mcpspec dependency.</p>
         </div>
         <!-- Card 4 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
@@ -240,7 +246,7 @@
   <section id="commands" class="py-20 px-4">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold text-center text-white mb-4">Commands</h2>
-      <p class="text-gray-400 text-center mb-12">12 commands for every stage of MCP server development.</p>
+      <p class="text-gray-400 text-center mb-12">13 commands for every stage of MCP server development.</p>
 
       <div class="space-y-6">
 
@@ -343,6 +349,28 @@ mcpspec record delete my-session</code></pre>
             <div class="mt-2">&nbsp;&nbsp;Summary: <span class="text-green-400">2 matched</span>, <span class="text-yellow-400">1 changed</span>, 0 added, 0 removed</div>
           </div>
           <p class="text-gray-500 text-xs mt-3">REPL commands: <code class="text-brand-light">.call &lt;tool&gt; &lt;json&gt;</code>, <code class="text-brand-light">.save &lt;name&gt;</code>, <code class="text-brand-light">.steps</code>, <code class="text-brand-light">.tools</code>, <code class="text-brand-light">.help</code>, <code class="text-brand-light">.exit</code>. Recordings stored in <code class="text-brand-light">~/.mcpspec/recordings/</code>.</p>
+        </div>
+
+        <!-- mock -->
+        <div class="gradient-card rounded-xl border border-white/5 p-6">
+          <h3 class="text-white font-semibold text-lg mb-1">mcpspec mock <span class="text-gray-500 font-normal text-sm">&lt;recording&gt;</span></h3>
+          <p class="text-gray-400 text-sm mb-4">Start a mock MCP server from a saved recording. Generate standalone .js files for portable, dependency-light mocks.</p>
+          <pre><code class="language-bash"># Start mock server (stdio transport)
+mcpspec mock my-api
+
+# Use as a drop-in server replacement
+mcpspec test --server "mcpspec mock my-api" ./tests.yaml
+
+# Generate standalone .js file
+mcpspec mock my-api --generate ./mock-server.js
+node mock-server.js
+
+# Options
+mcpspec mock my-api --mode sequential          # Tape-style matching
+mcpspec mock my-api --latency original         # Simulate original timing
+mcpspec mock my-api --latency 100              # Fixed 100ms delay
+mcpspec mock my-api --on-missing empty         # Return empty for unrecorded tools</code></pre>
+          <p class="text-gray-500 text-xs mt-3">Match mode: exact input match first, then next queued response per tool. Sequential mode: tape/cassette style — responses in recorded order. Generated files only require <code class="text-brand-light">@modelcontextprotocol/sdk</code>.</p>
         </div>
 
         <!-- bench -->
@@ -789,7 +817,7 @@ jobs:
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/cli</code>
-          <span class="text-gray-400 text-sm">12 CLI commands built with Commander.js + @inquirer/prompts for interactive wizards</span>
+          <span class="text-gray-400 text-sm">13 CLI commands built with Commander.js + @inquirer/prompts for interactive wizards</span>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/server</code>
@@ -803,11 +831,11 @@ jobs:
 
       <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div class="gradient-card rounded-lg border border-white/5 p-4">
-          <div class="text-2xl font-bold text-white">299</div>
+          <div class="text-2xl font-bold text-white">329</div>
           <div class="text-gray-500 text-sm">Unit Tests</div>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4">
-          <div class="text-2xl font-bold text-white">12</div>
+          <div class="text-2xl font-bold text-white">13</div>
           <div class="text-gray-500 text-sm">CLI Commands</div>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4">

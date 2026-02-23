@@ -207,6 +207,11 @@ mcpspec/
 │   │   │   │   ├── recording-replayer.ts       # Replay against server
 │   │   │   │   └── recording-differ.ts         # Diff original vs replay
 │   │   │   │
+│   │   │   ├── mock/
+│   │   │   │   ├── response-matcher.ts         # Match tool calls to recorded responses
+│   │   │   │   ├── mock-server.ts              # MCP SDK Server wrapper for mock
+│   │   │   │   └── mock-generator.ts           # Generate standalone .js mock files
+│   │   │   │
 │   │   │   ├── scoring/
 │   │   │   │   ├── mcp-score.ts
 │   │   │   │   ├── criteria/
@@ -251,6 +256,7 @@ mcpspec/
 │   │       │   ├── compare.ts
 │   │       │   ├── baseline.ts
 │   │       │   ├── record.ts              # Recording & replay
+│   │       │   ├── mock.ts               # Mock server from recordings
 │   │       │   └── ci-init.ts             # CI pipeline generator
 │   │       ├── wizard/
 │   │       │   └── onboarding.ts
@@ -580,6 +586,13 @@ mcpspec record start <server>           # Record inspector session
 mcpspec record list                     # List saved recordings
 mcpspec record replay <name> <server>   # Replay and diff
 mcpspec record delete <name>            # Delete recording
+
+# Mock server from recording
+mcpspec mock <recording-name>
+  --mode <sequential|match>     # Response matching strategy (default: match)
+  --latency <ms|original>       # Response delay (default: 0)
+  --on-missing <error|empty>    # Behavior for unrecorded tools (default: error)
+  --generate <path>             # Generate standalone .js file instead of starting server
 
 # Generate CI pipeline configuration
 mcpspec ci-init

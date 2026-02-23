@@ -85,3 +85,11 @@ export { RecordingStore } from './recording/recording-store.js';
 export { RecordingReplayer } from './recording/recording-replayer.js';
 export type { ReplayProgress, ReplayResult } from './recording/recording-replayer.js';
 export { RecordingDiffer } from './recording/recording-differ.js';
+
+// Mock
+export { MockMCPServer } from './mock/mock-server.js';
+export type { MockServerConfig, MockServerStats } from './mock/mock-server.js';
+export { ResponseMatcher } from './mock/response-matcher.js';
+export type { MatchMode, OnMissingBehavior, ResponseMatcherConfig, MatchResult, MatcherStats } from './mock/response-matcher.js';
+export { MockGenerator } from './mock/mock-generator.js';
+export type { MockGeneratorOptions } from './mock/mock-generator.js';

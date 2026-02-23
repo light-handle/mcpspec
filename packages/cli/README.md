@@ -29,6 +29,7 @@ mcpspec bench "npx my-server"         # Performance benchmark
 mcpspec score "npx my-server"         # Quality rating (0-100)
 mcpspec docs "npx my-server"          # Auto-generate documentation
 mcpspec record start "npx my-server"  # Record & replay sessions
+mcpspec mock my-recording             # Start mock server from recording
 mcpspec ci-init --platform github     # Generate CI pipeline config
 mcpspec ui                            # Launch web dashboard
 ```
@@ -281,6 +282,42 @@ Recordings are stored in `~/.mcpspec/recordings/` and include tool names, inputs
 
 ---
 
+### Mock Server
+
+Turn any recording into a mock MCP server — a drop-in replacement for the real server. Useful for CI/CD without real dependencies, offline development, and deterministic tests.
+
+```bash
+# Start mock server from a recording (stdio transport)
+mcpspec mock my-api
+
+# Use as a server in test collections
+mcpspec test --server "mcpspec mock my-api" ./tests.yaml
+
+# Generate standalone .js file (only needs @modelcontextprotocol/sdk)
+mcpspec mock my-api --generate ./mock-server.js
+node mock-server.js
+```
+
+**Matching modes:**
+
+| Mode | Behavior |
+|------|----------|
+| `match` (default) | Exact input match first, then next queued response per tool |
+| `sequential` | Tape/cassette style — responses served in recorded order |
+
+**Options:**
+
+```bash
+mcpspec mock my-api --mode sequential       # Tape-style matching
+mcpspec mock my-api --latency original      # Simulate original response times
+mcpspec mock my-api --latency 100           # Fixed 100ms delay
+mcpspec mock my-api --on-missing empty      # Return empty instead of error for unrecorded tools
+```
+
+The generated standalone file embeds the recording data and matching logic — commit it to your repo for portable, dependency-light mock servers.
+
+---
+
 ### Performance Benchmarks
 
 Measure latency and throughput with statistical analysis across hundreds of iterations.
@@ -479,6 +516,7 @@ Connection state machine with automatic reconnection: exponential backoff (1s, 2
 | `mcpspec record replay <name> <server>` | Replay a recording and diff against original |
 | `mcpspec record list` | List saved recordings |
 | `mcpspec record delete <name>` | Delete a saved recording |
+| `mcpspec mock <recording>` | Mock server from recording — `--mode`, `--latency`, `--on-missing`, `--generate` |
 | `mcpspec init [dir]` | Scaffold project — `--template minimal\|standard\|full` |
 | `mcpspec ci-init` | Generate CI config — `--platform github\|gitlab\|shell`, `--checks`, `--fail-on`, `--force` |
 | `mcpspec ui` | Launch web dashboard on `localhost:6274` |
@@ -511,7 +549,7 @@ mcpspec test examples/collections/servers/time.yaml --tag smoke
 |---------|-------------|
 | `@mcpspec/shared` | Types, Zod schemas, constants |
 | `@mcpspec/core` | MCP client, test runner, assertions, security scanner (8 rules), profiler, doc generator, scorer, recording/replay |
-| `@mcpspec/cli` | 12 CLI commands built with Commander.js |
+| `@mcpspec/cli` | 13 CLI commands built with Commander.js |
 | `@mcpspec/server` | Hono HTTP server with REST API + WebSocket |
 | `@mcpspec/ui` | React SPA — TanStack Router, TanStack Query, Tailwind, shadcn/ui |
 
@@ -521,7 +559,7 @@ mcpspec test examples/collections/servers/time.yaml --tag smoke
 git clone https://github.com/light-handle/mcpspec.git
 cd mcpspec
 pnpm install && pnpm build
-pnpm test   # 299 tests across core + server
+pnpm test   # 329 tests across core + server
 ```
 
 ## License

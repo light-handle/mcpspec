@@ -22,6 +22,28 @@ const COLORS = {
   blue: '\x1b[34m',
 };
 
+function formatInputSummary(input: Record<string, unknown>): string {
+  const keys = Object.keys(input);
+  if (keys.length === 0) return '';
+  const parts = keys.map((k) => {
+    const v = input[k];
+    const val = typeof v === 'string' ? v : JSON.stringify(v);
+    const truncated = val != null && val.length > 30 ? val.slice(0, 27) + '...' : val;
+    return `${k}=${truncated}`;
+  });
+  return ` ${COLORS.gray}(${parts.join(', ')})${COLORS.reset}`;
+}
+
+function formatOutputSummary(output: unknown[]): string {
+  if (!output || output.length === 0) return '';
+  const first = output[0] as Record<string, unknown> | undefined;
+  if (!first) return '';
+  const text = first['text'] as string | undefined;
+  if (!text) return '';
+  const truncated = text.length > 50 ? text.slice(0, 47) + '...' : text;
+  return ` ${COLORS.gray}→ ${truncated}${COLORS.reset}`;
+}
+
 export const recordCommand = new Command('record')
   .description('Record, replay, and manage inspector session recordings');
 
@@ -263,13 +285,15 @@ recordCommand
       const replayer = new RecordingReplayer();
       const result = await replayer.replay(recording, client, {
         onStepStart: (i, step) => {
-          process.stdout.write(`  ${i + 1}/${recording.steps.length} ${step.tool}... `);
+          const inputSummary = formatInputSummary(step.input);
+          process.stdout.write(`  ${i + 1}/${recording.steps.length} ${step.tool}${inputSummary}... `);
         },
         onStepComplete: (_i, replayed) => {
+          const outputSummary = formatOutputSummary(replayed.output);
           const status = replayed.isError
             ? `${COLORS.red}ERROR${COLORS.reset}`
             : `${COLORS.green}OK${COLORS.reset}`;
-          console.log(`[${status}] ${COLORS.gray}${replayed.durationMs}ms${COLORS.reset}`);
+          console.log(`[${status}] ${COLORS.gray}${replayed.durationMs}ms${COLORS.reset}${outputSummary}`);
         },
       });
 

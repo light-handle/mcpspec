@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples — MCPSpec</title>
+  <meta name="description" content="Ready-to-run example collections, CI/CD configs, and end-to-end workflows for MCPSpec." />
+  <link rel="icon" type="image/png" href="../mcpspec.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
+            brand: { DEFAULT: '#3b82f6', light: '#60a5fa', dark: '#2563eb' },
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="../styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body class="bg-navy-900 text-gray-100 antialiased">
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full z-50 bg-navy-900/90 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="../" class="flex items-center gap-3">
+        <img src="../mcpspec.png" alt="MCPSpec" class="w-8 h-8" />
+        <span class="text-lg font-bold text-white">MCPSpec</span>
+      </a>
+      <div class="hidden md:flex items-center gap-2 text-sm text-gray-400">
+        <a href="../" class="nav-tab">Home</a>
+        <a href="../docs/" class="nav-tab">Docs</a>
+        <a href="./" class="nav-tab active">Examples</a>
+        <span class="mx-2 w-px h-4 bg-white/10"></span>
+        <a href="https://github.com/light-handle/mcpspec" class="nav-tab flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden border-t border-white/5 bg-navy-900/95 backdrop-blur-md">
+      <div class="px-4 py-3 space-y-3 text-sm">
+        <a href="../" class="block text-gray-400 hover:text-white">Home</a>
+        <a href="../docs/" class="block text-gray-400 hover:text-white">Docs</a>
+        <a href="./" class="block text-white font-medium">Examples</a>
+        <a href="https://github.com/light-handle/mcpspec" class="block text-gray-400 hover:text-white">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <section class="pt-28 pb-12 px-4">
+    <div class="max-w-5xl mx-auto text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">Examples</h1>
+      <p class="text-gray-400 max-w-xl mx-auto">Ready-to-run test collections, CI/CD configurations, and end-to-end workflows. Copy, paste, and go.</p>
+    </div>
+  </section>
+
+  <!-- Quick Start Examples -->
+  <section class="pb-16 px-4">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-xl font-bold text-white mb-6">Quick Start</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- simple.yaml -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold">simple.yaml</h3>
+            <span class="badge badge-blue">3 tests</span>
+          </div>
+          <p class="text-gray-400 text-sm mb-3">Minimal collection &mdash; the simplest way to test a server. Uses shorthand assertions.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">name: Simple Filesystem Tests
+server: npx -y @modelcontextprotocol/server-filesystem /tmp
+
+tests:
+  - name: List allowed directories
+    call: list_allowed_directories
+    expect:
+      - exists: $.content
+
+  - name: Read a test file
+    call: read_file
+    with:
+      path: /tmp/mcpspec-test.txt
+    expect:
+      - exists: $.content
+
+  - name: Handle missing file
+    call: read_file
+    with:
+      path: /tmp/nonexistent-file-12345.txt
+    expectError: true</code></pre>
+          </div>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/simple.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- with-environments.yaml -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold">with-environments.yaml</h3>
+            <span class="badge badge-blue">2 tests</span>
+          </div>
+          <p class="text-gray-400 text-sm mb-3">Advanced collection with environments, tags, typed assertions, and latency checks.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">schemaVersion: "1.0"
+name: Environment-Aware Tests
+description: Tests that use environment variables
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "{{baseDir}}"]
+
+environments:
+  dev:
+    variables:
+      baseDir: /tmp
+  staging:
+    variables:
+      baseDir: /var/tmp
+
+defaultEnvironment: dev
+
+tests:
+  - id: test-list
+    name: List directories
+    tags: [smoke]
+    call: list_allowed_directories
+    assertions:
+      - type: schema
+      - type: latency
+        maxMs: 10000
+
+  - id: test-read
+    name: Read test file
+    tags: [integration]
+    call: read_file
+    with:
+      path: "{{baseDir}}/mcpspec-test.txt"
+    assertions:
+      - type: exists
+        path: $.content</code></pre>
+          </div>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/with-environments.yaml --env dev</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Server Collections -->
+  <section class="pb-16 px-4 bg-navy-800/30 py-16">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-xl font-bold text-white mb-2">Community Server Collections</h2>
+      <p class="text-gray-400 text-sm mb-6">70 tests across 7 popular MCP servers. Each collection is ready to run with no setup.</p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <!-- Filesystem -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">Filesystem</h3>
+            <span class="badge badge-blue">12 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">@modelcontextprotocol/server-filesystem</p>
+          <p class="text-gray-400 text-xs mb-3">Read/write files, list directories, search, edit, path traversal security checks.</p>
+          <div class="collapsible-code collapsed" id="code-filesystem">
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">schemaVersion: "1.0"
+name: Filesystem Server Tests
+description: Tests for the official MCP filesystem server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
+
+tests:
+  - id: list-allowed
+    name: List allowed directories
+    tags: [smoke, discovery]
+    call: list_allowed_directories
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: list-tmp
+    name: List /tmp directory contents
+    tags: [smoke, read]
+    call: list_directory
+    with:
+      path: /tmp
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: write-file
+    name: Write a test file
+    tags: [write]
+    call: write_file
+    with:
+      path: /tmp/mcpspec-test-file.txt
+      content: "Hello from MCPSpec!"
+    assertions:
+      - type: schema
+
+  - id: read-file
+    name: Read the test file back
+    tags: [read]
+    call: read_text_file
+    with:
+      path: /tmp/mcpspec-test-file.txt
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+      - type: contains
+        path: $.content[0].text
+        value: "Hello from MCPSpec!"
+
+  - id: read-missing-file
+    name: Handle missing file gracefully
+    tags: [smoke, error]
+    call: read_text_file
+    with:
+      path: /tmp/nonexistent-file-99999.txt
+    expectError: true
+
+  - id: read-outside-sandbox
+    name: Reject path outside allowed directories
+    tags: [security, error]
+    call: read_text_file
+    with:
+      path: /etc/passwd
+    expectError: true
+
+  - id: path-traversal
+    name: Reject path traversal attempts
+    tags: [security, error]
+    call: read_text_file
+    with:
+      path: /tmp/../../etc/passwd
+    expectError: true</code></pre>
+            </div>
+          </div>
+          <span class="toggle-code" onclick="toggleCode('code-filesystem', this)">Show full collection</span>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/filesystem.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- Memory -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">Memory</h3>
+            <span class="badge badge-blue">10 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">@modelcontextprotocol/server-memory</p>
+          <p class="text-gray-400 text-xs mb-3">Knowledge graph CRUD: create entities/relations, search, add observations, delete, verify cleanup.</p>
+          <div class="collapsible-code collapsed" id="code-memory">
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">schemaVersion: "1.0"
+name: Memory Server Tests
+description: Tests for the official MCP knowledge graph memory server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-memory"]
+
+tests:
+  - id: create-entities
+    name: Create entities in the knowledge graph
+    tags: [smoke, write]
+    call: create_entities
+    with:
+      entities:
+        - name: "Alice"
+          entityType: "person"
+          observations:
+            - "Software engineer"
+            - "Lives in San Francisco"
+        - name: "Bob"
+          entityType: "person"
+          observations:
+            - "Product manager"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: create-relations
+    name: Create relations between entities
+    tags: [write]
+    call: create_relations
+    with:
+      relations:
+        - from: "Alice"
+          to: "Bob"
+          relationType: "collaborates_with"
+    assertions:
+      - type: schema
+
+  - id: read-graph
+    name: Read the entire knowledge graph
+    tags: [smoke, read]
+    call: read_graph
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: search-nodes
+    name: Search for nodes by query
+    tags: [read]
+    call: search_nodes
+    with:
+      query: "engineer"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: delete-entities
+    name: Delete entities from the graph
+    tags: [write, cleanup]
+    call: delete_entities
+    with:
+      entityNames: ["Alice", "Bob"]
+    assertions:
+      - type: schema</code></pre>
+            </div>
+          </div>
+          <span class="toggle-code" onclick="toggleCode('code-memory', this)">Show full collection</span>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/memory.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- Everything -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">Everything</h3>
+            <span class="badge badge-blue">11 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">@modelcontextprotocol/server-everything</p>
+          <p class="text-gray-400 text-xs mb-3">Reference server exercising all protocol features: echo, sum, images, annotations, resource links.</p>
+          <div class="collapsible-code collapsed" id="code-everything">
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">schemaVersion: "1.0"
+name: Everything Server Tests
+description: Tests for the official MCP reference server
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-everything"]
+
+tests:
+  - id: echo
+    name: Echo a message
+    tags: [smoke]
+    call: echo
+    with:
+      message: "Hello MCPSpec!"
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+      - type: contains
+        path: $.content[0].text
+        value: "Hello MCPSpec!"
+
+  - id: sum
+    name: Calculate sum of two numbers
+    tags: [smoke]
+    call: get-sum
+    with:
+      a: 42
+      b: 58
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: tiny-image
+    name: Get tiny image (binary content)
+    tags: [smoke]
+    call: get-tiny-image
+    assertions:
+      - type: schema
+      - type: exists
+        path: $.content
+
+  - id: echo-latency
+    name: Echo responds within 5 seconds
+    tags: [performance]
+    call: echo
+    with:
+      message: "latency test"
+    assertions:
+      - type: latency
+        maxMs: 5000</code></pre>
+            </div>
+          </div>
+          <span class="toggle-code" onclick="toggleCode('code-everything', this)">Show full collection</span>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/everything.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">Time</h3>
+            <span class="badge badge-blue">10 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">@modelcontextprotocol/server-time</p>
+          <p class="text-gray-400 text-xs mb-3">Time and timezone queries, conversions, and error handling for invalid inputs.</p>
+          <div class="code-block mt-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/time.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- Fetch -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">Fetch</h3>
+            <span class="badge badge-blue">7 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">@modelcontextprotocol/server-fetch</p>
+          <p class="text-gray-400 text-xs mb-3">HTTP fetch operations, URL validation, content extraction, and error handling.</p>
+          <div class="code-block mt-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/fetch.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- GitHub -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">GitHub</h3>
+            <span class="badge badge-blue">9 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">@modelcontextprotocol/server-github</p>
+          <p class="text-gray-400 text-xs mb-3">GitHub API operations: search repos, list issues, get file contents, user info.</p>
+          <div class="code-block mt-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/github.yaml</code></pre>
+          </div>
+        </div>
+
+        <!-- Chrome DevTools -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-white font-semibold text-sm">Chrome DevTools</h3>
+            <span class="badge badge-blue">11 tests</span>
+          </div>
+          <p class="text-gray-500 text-xs mb-2 font-mono">chrome-devtools-mcp</p>
+          <p class="text-gray-400 text-xs mb-3">Browser automation: navigate, screenshot, evaluate JS, network, console, accessibility.</p>
+          <div class="code-block mt-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test examples/collections/servers/chrome-devtools.yaml</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CI/CD Examples -->
+  <section class="py-16 px-4">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-xl font-bold text-white mb-6">CI/CD Configurations</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- GitHub Actions -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold text-sm">GitHub Actions</h3>
+            <span class="badge badge-green">YAML</span>
+          </div>
+          <p class="text-gray-400 text-xs mb-3">Complete workflow with test, audit, and quality gate steps.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">name: MCP Server Tests
+on: [push, pull_request]
+
+jobs:
+  mcpspec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install -g mcpspec
+
+      - name: Run tests
+        run: mcpspec test --ci --reporter junit --output results.xml
+
+      - name: Security audit
+        run: mcpspec audit "npx my-server" --mode passive --fail-on high
+
+      - name: Quality gate
+        run: mcpspec score "npx my-server" --min-score 80
+
+      - uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: results.xml</code></pre>
+          </div>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec ci-init --platform github --checks test,audit,score</code></pre>
+          </div>
+        </div>
+
+        <!-- GitLab CI -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold text-sm">GitLab CI</h3>
+            <span class="badge badge-green">YAML</span>
+          </div>
+          <p class="text-gray-400 text-xs mb-3">GitLab CI job with JUnit artifact reporting.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">mcpspec:
+  image: node:22
+  stage: test
+  script:
+    - npm install -g mcpspec
+    - mcpspec test --ci --reporter junit --output results.xml
+    - mcpspec audit "npx my-server" --mode passive --fail-on high
+  artifacts:
+    when: always
+    paths:
+      - results.xml
+    reports:
+      junit: results.xml
+    expire_in: 1 week</code></pre>
+          </div>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec ci-init --platform gitlab --checks test,audit</code></pre>
+          </div>
+        </div>
+
+        <!-- Shell Script -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold text-sm">Shell Script</h3>
+            <span class="badge badge-green">Bash</span>
+          </div>
+          <p class="text-gray-400 text-xs mb-3">Portable shell script for any CI system or local use.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">#!/bin/bash
+set -euo pipefail
+
+echo "=== MCPSpec CI ==="
+
+# Run tests
+mcpspec test --ci --reporter junit --output results.xml
+echo "Tests passed"
+
+# Security audit
+mcpspec audit "npx my-server" --mode passive --fail-on high
+echo "Audit passed"
+
+# Quality gate
+mcpspec score "npx my-server" --min-score 80
+echo "Score check passed"
+
+echo "=== All checks passed ==="</code></pre>
+          </div>
+          <div class="code-block mt-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec ci-init --platform shell --checks test,audit,score</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- End-to-End Workflows -->
+  <section class="py-16 px-4 bg-navy-800/30">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-xl font-bold text-white mb-6">End-to-End Workflows</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- Record → Replay → Mock -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold">Record, Replay, Mock</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3">Record a session once. Replay it to catch regressions. Mock it for CI. No API keys required.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># 1. Record a session against your real server
+mcpspec record start "npx my-server"
+# In the REPL:
+#   .call get_user {"id": "1"}
+#   .call list_items {}
+#   .call create_item {"name": "test"}
+#   .save my-api
+
+# 2. Replay against a new version — catch regressions
+mcpspec record replay my-api "npx my-server-v2"
+
+# 3. Start a mock server (drop-in replacement)
+mcpspec mock my-api
+
+# 4. Generate standalone .js file for CI
+mcpspec mock my-api --generate ./mocks/server.js
+
+# 5. Use mock in your test suite
+mcpspec test --server "node ./mocks/server.js"</code></pre>
+          </div>
+        </div>
+
+        <!-- CI Gate -->
+        <div class="example-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-white font-semibold">CI Gate: Test + Audit + Score</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3">Full quality pipeline: run tests, audit for vulnerabilities, and enforce a minimum quality score.</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># 1. Generate CI config with all checks
+mcpspec ci-init --platform github \
+  --checks test,audit,score \
+  --fail-on medium \
+  --min-score 80
+
+# 2. Or run manually:
+
+# Run tests with JUnit output
+mcpspec test --ci --reporter junit --output results.xml
+
+# Security audit (passive = safe for production)
+mcpspec audit "npx my-server" --fail-on medium
+
+# Quality gate with badge generation
+mcpspec score "npx my-server" --min-score 80 --badge ./badge.svg
+
+# Performance baseline
+mcpspec bench "npx my-server" --iterations 50</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 px-4 border-t border-white/5">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+      <div class="flex items-center gap-3">
+        <img src="../mcpspec.png" alt="MCPSpec" class="w-5 h-5" />
+        <span>MCPSpec &mdash; MIT License</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="https://www.npmjs.com/package/mcpspec" class="hover:text-gray-300 transition-colors">npm</a>
+        <a href="https://github.com/light-handle/mcpspec" class="hover:text-gray-300 transition-colors">GitHub</a>
+        <a href="../docs/" class="hover:text-gray-300 transition-colors">Docs</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+  <script>
+    function copyCode(btn) {
+      var code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code);
+      btn.textContent = 'Copied!'; btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    }
+
+    function toggleCode(id, toggle) {
+      var el = document.getElementById(id);
+      if (el.classList.contains('collapsed')) {
+        el.classList.remove('collapsed');
+        toggle.textContent = 'Collapse';
+      } else {
+        el.classList.add('collapsed');
+        toggle.textContent = 'Show full collection';
+      }
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+    document.querySelectorAll('#mobile-menu a').forEach(function(link) {
+      link.addEventListener('click', function() { document.getElementById('mobile-menu').classList.add('hidden'); });
+    });
+  </script>
+</body>
+</html>

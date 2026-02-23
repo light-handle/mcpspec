@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation — MCPSpec</title>
+  <meta name="description" content="Complete documentation for MCPSpec — the testing, debugging, and documentation platform for MCP servers." />
+  <link rel="icon" type="image/png" href="../mcpspec.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
+            brand: { DEFAULT: '#3b82f6', light: '#60a5fa', dark: '#2563eb' },
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="../styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body class="bg-navy-900 text-gray-100 antialiased">
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full z-50 bg-navy-900/90 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="../" class="flex items-center gap-3">
+        <img src="../mcpspec.png" alt="MCPSpec" class="w-8 h-8" />
+        <span class="text-lg font-bold text-white">MCPSpec</span>
+      </a>
+      <div class="hidden md:flex items-center gap-2 text-sm text-gray-400">
+        <a href="../" class="nav-tab">Home</a>
+        <a href="./" class="nav-tab active">Docs</a>
+        <a href="../examples/" class="nav-tab">Examples</a>
+        <span class="mx-2 w-px h-4 bg-white/10"></span>
+        <a href="https://github.com/light-handle/mcpspec" class="nav-tab flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <!-- Mobile: sidebar toggle + menu -->
+      <div class="flex md:hidden items-center gap-2">
+        <button id="sidebar-toggle" class="p-2 text-gray-400 hover:text-white" title="Toggle sidebar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar backdrop (mobile) -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+  <!-- Layout wrapper -->
+  <div class="docs-layout" style="padding-top:64px">
+
+    <!-- Sidebar -->
+    <aside id="docs-sidebar" class="docs-sidebar">
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title" onclick="toggleGroup(this)">Getting Started <span class="chevron">&#9662;</span></div>
+        <div class="sidebar-links">
+          <a href="#overview" class="sidebar-link active">Overview</a>
+          <a href="#installation" class="sidebar-link">Installation</a>
+          <a href="#quickstart" class="sidebar-link">Quick Start</a>
+          <a href="#first-collection" class="sidebar-link">Your First Collection</a>
+        </div>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title" onclick="toggleGroup(this)">Collections <span class="chevron">&#9662;</span></div>
+        <div class="sidebar-links">
+          <a href="#collections-simple" class="sidebar-link">Simple Format</a>
+          <a href="#collections-advanced" class="sidebar-link">Advanced Format</a>
+          <a href="#collections-server" class="sidebar-link">Server Configuration</a>
+          <a href="#collections-env" class="sidebar-link">Environments & Variables</a>
+          <a href="#collections-tags" class="sidebar-link">Tags & Filtering</a>
+          <a href="#collections-retries" class="sidebar-link">Retries & Timeouts</a>
+        </div>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title" onclick="toggleGroup(this)">Assertions <span class="chevron">&#9662;</span></div>
+        <div class="sidebar-links">
+          <a href="#assertions-overview" class="sidebar-link">Overview & Shorthand</a>
+          <a href="#assert-schema" class="sidebar-link">schema</a>
+          <a href="#assert-equals" class="sidebar-link">equals</a>
+          <a href="#assert-contains" class="sidebar-link">contains</a>
+          <a href="#assert-exists" class="sidebar-link">exists</a>
+          <a href="#assert-matches" class="sidebar-link">matches</a>
+          <a href="#assert-type" class="sidebar-link">type</a>
+          <a href="#assert-length" class="sidebar-link">length</a>
+          <a href="#assert-latency" class="sidebar-link">latency</a>
+          <a href="#assert-expression" class="sidebar-link">expression</a>
+        </div>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title" onclick="toggleGroup(this)">CLI Commands <span class="chevron">&#9662;</span></div>
+        <div class="sidebar-links">
+          <a href="#cmd-test" class="sidebar-link">test</a>
+          <a href="#cmd-inspect" class="sidebar-link">inspect</a>
+          <a href="#cmd-record" class="sidebar-link">record</a>
+          <a href="#cmd-mock" class="sidebar-link">mock</a>
+          <a href="#cmd-audit" class="sidebar-link">audit</a>
+          <a href="#cmd-score" class="sidebar-link">score</a>
+          <a href="#cmd-bench" class="sidebar-link">bench</a>
+          <a href="#cmd-docs" class="sidebar-link">docs</a>
+          <a href="#cmd-compare" class="sidebar-link">compare & baseline</a>
+          <a href="#cmd-init" class="sidebar-link">init</a>
+          <a href="#cmd-ci-init" class="sidebar-link">ci-init</a>
+          <a href="#cmd-ui" class="sidebar-link">ui</a>
+        </div>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title" onclick="toggleGroup(this)">Guides <span class="chevron">&#9662;</span></div>
+        <div class="sidebar-links">
+          <a href="#guide-recording" class="sidebar-link">Recording & Replay</a>
+          <a href="#guide-mock" class="sidebar-link">Mock Servers</a>
+          <a href="#guide-security" class="sidebar-link">Security Audit</a>
+          <a href="#guide-score" class="sidebar-link">MCP Score</a>
+          <a href="#guide-cicd" class="sidebar-link">CI/CD Integration</a>
+          <a href="#guide-transports" class="sidebar-link">Transports</a>
+        </div>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title" onclick="toggleGroup(this)">Reference <span class="chevron">&#9662;</span></div>
+        <div class="sidebar-links">
+          <a href="#ref-schema" class="sidebar-link">Collection Schema</a>
+          <a href="#ref-exit-codes" class="sidebar-link">Exit Codes</a>
+          <a href="#ref-config" class="sidebar-link">Configuration</a>
+          <a href="#ref-troubleshooting" class="sidebar-link">Troubleshooting</a>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-content">
+
+      <!-- ============================================================ -->
+      <!--  GETTING STARTED                                             -->
+      <!-- ============================================================ -->
+
+      <h2 id="overview">Overview</h2>
+      <p>MCPSpec is <strong>"Postman for MCP"</strong> &mdash; a comprehensive testing, debugging, and documentation platform for <a href="https://modelcontextprotocol.io">Model Context Protocol</a> servers. It enables developers to test MCP servers interactively, create reusable test collections, generate documentation, run security audits, and measure performance.</p>
+      <p><strong>Key capabilities:</strong></p>
+      <ul>
+        <li>Record inspector sessions and replay them to catch regressions</li>
+        <li>Generate mock servers for offline development and CI</li>
+        <li>YAML-based test collections with 10 assertion types</li>
+        <li>Security audit with 8 rules (including Tool Poisoning &amp; Excessive Agency)</li>
+        <li>MCP Score: 0&ndash;100 quality rating with SVG badge generation</li>
+        <li>Performance benchmarking with statistical analysis</li>
+        <li>CI/CD pipeline generation (GitHub Actions, GitLab CI, shell)</li>
+        <li>Full web dashboard with 10 pages</li>
+      </ul>
+
+      <h2 id="installation">Installation</h2>
+      <p>MCPSpec requires <strong>Node.js 22+</strong> (LTS).</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">npm install -g mcpspec</code></pre>
+      </div>
+      <p>Verify the installation:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec --version</code></pre>
+      </div>
+      <p>You can also use <code>npx mcpspec</code> without a global install.</p>
+
+      <h2 id="quickstart">Quick Start</h2>
+      <p>No configuration needed. Run a pre-built community collection to see MCPSpec in action:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Install
+npm install -g mcpspec
+
+# Run a community test suite (filesystem server)
+mcpspec test examples/collections/servers/filesystem.yaml
+
+# Or explore a server interactively
+mcpspec inspect "npx -y @modelcontextprotocol/server-filesystem /tmp"</code></pre>
+      </div>
+      <p>Expected output:</p>
+      <div class="terminal-output">
+        <div>MCPSpec running Filesystem Server Tests (12 tests)</div>
+        <div class="mt-1">&nbsp;&nbsp;<span class="text-green-400">&#10003;</span> List allowed directories <span class="text-gray-500">(52ms)</span></div>
+        <div>&nbsp;&nbsp;<span class="text-green-400">&#10003;</span> List /tmp directory contents <span class="text-gray-500">(45ms)</span></div>
+        <div>&nbsp;&nbsp;<span class="text-green-400">&#10003;</span> Write a test file <span class="text-gray-500">(67ms)</span></div>
+        <div>&nbsp;&nbsp;<span class="text-green-400">&#10003;</span> Read the test file back <span class="text-gray-500">(38ms)</span></div>
+        <div>&nbsp;&nbsp;<span class="text-gray-500">... 8 more</span></div>
+        <div class="mt-1">&nbsp;&nbsp;Tests: <span class="text-green-400">12 passed</span> (12 total)</div>
+        <div>&nbsp;&nbsp;Time: &nbsp;1.23s</div>
+      </div>
+
+      <h2 id="first-collection">Your First Collection</h2>
+      <p>Create a file called <code>mcpspec.yaml</code> in your project root:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">name: My First Tests
+server: npx -y @modelcontextprotocol/server-filesystem /tmp
+
+tests:
+  - name: List allowed directories
+    call: list_allowed_directories
+    expect:
+      - exists: $.content
+
+  - name: Read a test file
+    call: read_file
+    with:
+      path: /tmp/mcpspec-test.txt
+    expect:
+      - exists: $.content
+
+  - name: Handle missing file
+    call: read_file
+    with:
+      path: /tmp/nonexistent-file-12345.txt
+    expectError: true</code></pre>
+      </div>
+      <p>Run it:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test</code></pre>
+      </div>
+      <p>The <code>server</code> field is a command string. MCPSpec spawns the process, connects via stdio, runs the tests, and shuts it down. The <code>expect</code> shorthand lets you write assertions without verbose syntax.</p>
+
+      <!-- ============================================================ -->
+      <!--  COLLECTIONS                                                 -->
+      <!-- ============================================================ -->
+
+      <h2 id="collections-simple">Simple Format</h2>
+      <p>The simple format is ideal for most test suites. Use <code>call</code>/<code>with</code>/<code>expect</code> for concise test definitions:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">name: Simple Filesystem Tests
+server: npx -y @modelcontextprotocol/server-filesystem /tmp
+
+tests:
+  - name: List allowed directories
+    call: list_allowed_directories
+    expect:
+      - exists: $.content
+
+  - name: Read a test file
+    call: read_file
+    with:
+      path: /tmp/mcpspec-test.txt
+    expect:
+      - exists: $.content
+
+  - name: Handle missing file
+    call: read_file
+    with:
+      path: /tmp/nonexistent-file-12345.txt
+    expectError: true</code></pre>
+      </div>
+      <p>Key fields:</p>
+      <ul>
+        <li><code>name</code> &mdash; Collection name (displayed in output)</li>
+        <li><code>server</code> &mdash; Server command string (shorthand for stdio transport)</li>
+        <li><code>tests[].call</code> &mdash; Tool name to invoke</li>
+        <li><code>tests[].with</code> &mdash; Input arguments (JSON object)</li>
+        <li><code>tests[].expect</code> &mdash; Shorthand assertions (see <a href="#assertions-overview">Assertions</a>)</li>
+        <li><code>tests[].expectError</code> &mdash; Expect the tool call to return an error</li>
+      </ul>
+
+      <h2 id="collections-advanced">Advanced Format</h2>
+      <p>The advanced format adds environments, tags, typed assertions, variable extraction, and more:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">schemaVersion: "1.0"
+name: Environment-Aware Tests
+description: Tests that use environment variables
+
+server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "{{baseDir}}"]
+
+environments:
+  dev:
+    variables:
+      baseDir: /tmp
+  staging:
+    variables:
+      baseDir: /var/tmp
+
+defaultEnvironment: dev
+
+tests:
+  - id: test-list
+    name: List directories
+    tags: [smoke]
+    call: list_allowed_directories
+    assertions:
+      - type: schema
+      - type: latency
+        maxMs: 10000
+
+  - id: test-read
+    name: Read test file
+    tags: [integration]
+    call: read_file
+    with:
+      path: "{{baseDir}}/mcpspec-test.txt"
+    assertions:
+      - type: exists
+        path: $.content</code></pre>
+      </div>
+      <p>Additional fields:</p>
+      <ul>
+        <li><code>schemaVersion</code> &mdash; Collection schema version (currently <code>"1.0"</code>)</li>
+        <li><code>tests[].id</code> &mdash; Unique test identifier (for dependencies and extraction)</li>
+        <li><code>tests[].tags</code> &mdash; Array of tags for filtering with <code>--tag</code></li>
+        <li><code>tests[].assertions</code> &mdash; Full assertion objects (see <a href="#assertions-overview">Assertions</a>)</li>
+        <li><code>tests[].timeout</code> &mdash; Per-test timeout in ms</li>
+        <li><code>tests[].retries</code> &mdash; Number of retry attempts</li>
+        <li><code>tests[].extract</code> &mdash; Extract variables from responses for subsequent tests</li>
+      </ul>
+
+      <h2 id="collections-server">Server Configuration</h2>
+      <p>Three ways to configure the server:</p>
+
+      <h3>String shorthand (stdio)</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">server: npx -y @modelcontextprotocol/server-filesystem /tmp</code></pre>
+      </div>
+
+      <h3>Stdio object</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">server:
+  transport: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
+  env:
+    NODE_ENV: test
+  timeouts:
+    connect: 10000
+    call: 30000</code></pre>
+      </div>
+
+      <h3>SSE / HTTP</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Server-Sent Events
+server:
+  transport: sse
+  url: http://localhost:3000/sse
+
+# Streamable HTTP
+server:
+  transport: streamable-http
+  url: http://localhost:3000/mcp</code></pre>
+      </div>
+
+      <h2 id="collections-env">Environments & Variables</h2>
+      <p>Define named environments with variable sets. Use <code>{{variable}}</code> syntax in server config, tool inputs, and assertions:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">environments:
+  dev:
+    variables:
+      baseDir: /tmp
+      apiUrl: http://localhost:3000
+  prod:
+    variables:
+      baseDir: /data
+      apiUrl: https://api.example.com
+
+defaultEnvironment: dev</code></pre>
+      </div>
+      <p>Switch environments at runtime:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test --env prod</code></pre>
+      </div>
+      <blockquote><p><strong>Note:</strong> YAML is loaded with <code>FAILSAFE_SCHEMA</code>, meaning all values are strings. MCPSpec automatically coerces types (numbers, booleans) when needed.</p></blockquote>
+
+      <h2 id="collections-tags">Tags & Filtering</h2>
+      <p>Add tags to tests and filter with <code>--tag</code>:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">tests:
+  - name: Quick smoke test
+    tags: [smoke, api]
+    call: health_check</code></pre>
+      </div>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Run only smoke tests
+mcpspec test --tag smoke
+
+# The @ prefix is optional and stripped automatically
+mcpspec test --tag @smoke</code></pre>
+      </div>
+      <p>Multiple <code>--tag</code> flags run tests matching <em>any</em> of the specified tags.</p>
+
+      <h2 id="collections-retries">Retries & Timeouts</h2>
+      <p>Configure per-test timeouts and retries:</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">tests:
+  - name: Flaky network call
+    call: fetch_data
+    timeout: 15000    # 15s timeout for this test
+    retries: 2        # Retry up to 2 times on error</code></pre>
+      </div>
+      <p><strong>Timeout hierarchy</strong> (inner timeouts must be less than outer):</p>
+      <table>
+        <thead><tr><th>Level</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>test</code></td><td>30,000ms</td><td>Total test timeout</td></tr>
+          <tr><td><code>mcpCall</code></td><td>25,000ms</td><td>Single tool call</td></tr>
+          <tr><td><code>transport</code></td><td>20,000ms</td><td>HTTP/stdio response</td></tr>
+          <tr><td><code>assertion</code></td><td>5,000ms</td><td>Expression evaluation</td></tr>
+          <tr><td><code>cleanup</code></td><td>5,000ms</td><td>Post-test cleanup</td></tr>
+        </tbody>
+      </table>
+      <blockquote><p><strong>Note:</strong> Retries only trigger on thrown errors (e.g., connection failures), not on assertion failures. This prevents retrying tests that are simply wrong.</p></blockquote>
+
+      <!-- ============================================================ -->
+      <!--  ASSERTIONS                                                  -->
+      <!-- ============================================================ -->
+
+      <h2 id="assertions-overview">Assertions Overview</h2>
+      <p>MCPSpec has 10 assertion types. You can use either the <strong>shorthand</strong> format (in <code>expect</code>) or the <strong>full</strong> format (in <code>assertions</code>).</p>
+
+      <h3>Shorthand format</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">expect:
+  - exists: $.content           # Path exists
+  - equals: [$.id, 123]         # Exact match
+  - contains: [$.tags, "active"] # Contains value
+  - matches: [$.email, ".*@.*"] # Regex match</code></pre>
+      </div>
+
+      <h3>Full format</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">assertions:
+  - type: exists
+    path: $.content
+  - type: equals
+    path: $.id
+    value: 123
+  - type: latency
+    maxMs: 1000</code></pre>
+      </div>
+
+      <table>
+        <thead><tr><th>Type</th><th>Purpose</th><th>Key Fields</th></tr></thead>
+        <tbody>
+          <tr><td><code>schema</code></td><td>Validate response structure</td><td>&mdash;</td></tr>
+          <tr><td><code>equals</code></td><td>Exact deep match</td><td><code>path</code>, <code>value</code></td></tr>
+          <tr><td><code>contains</code></td><td>Array/string contains</td><td><code>path</code>, <code>value</code></td></tr>
+          <tr><td><code>exists</code></td><td>Path exists and not null</td><td><code>path</code></td></tr>
+          <tr><td><code>matches</code></td><td>Regex pattern match</td><td><code>path</code>, <code>pattern</code></td></tr>
+          <tr><td><code>type</code></td><td>Type check</td><td><code>path</code>, <code>expected</code></td></tr>
+          <tr><td><code>length</code></td><td>Array/string length</td><td><code>path</code>, <code>operator</code>, <code>value</code></td></tr>
+          <tr><td><code>latency</code></td><td>Response time check</td><td><code>maxMs</code></td></tr>
+          <tr><td><code>mimeType</code></td><td>Content type check</td><td><code>expected</code></td></tr>
+          <tr><td><code>expression</code></td><td>Safe expression eval</td><td><code>expr</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="assert-schema">schema</h2>
+      <p>Validates that the response is a valid MCP tool result (object or array with expected structure).</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Shorthand — not available, use full format
+assertions:
+  - type: schema</code></pre>
+      </div>
+      <p>No additional fields needed. Checks that the response has <code>content</code> with proper structure.</p>
+
+      <h2 id="assert-equals">equals</h2>
+      <p>Exact deep comparison using <code>JSON.stringify</code>.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Shorthand
+expect:
+  - equals: [$.id, 123]
+
+# Full
+assertions:
+  - type: equals
+    path: $.id
+    value: 123</code></pre>
+      </div>
+
+      <h2 id="assert-contains">contains</h2>
+      <p>Checks if an array includes a value or a string contains a substring.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Shorthand
+expect:
+  - contains: [$.tags, "active"]
+
+# Full
+assertions:
+  - type: contains
+    path: $.tags
+    value: "active"</code></pre>
+      </div>
+
+      <h2 id="assert-exists">exists</h2>
+      <p>Checks that a JSONPath resolves to a non-null value.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Shorthand
+expect:
+  - exists: $.content
+
+# Full
+assertions:
+  - type: exists
+    path: $.content</code></pre>
+      </div>
+
+      <h2 id="assert-matches">matches</h2>
+      <p>Matches a string value against a regular expression.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Shorthand
+expect:
+  - matches: [$.email, ".*@.*\\.com"]
+
+# Full
+assertions:
+  - type: matches
+    path: $.email
+    pattern: ".*@.*\\.com"</code></pre>
+      </div>
+
+      <h2 id="assert-type">type</h2>
+      <p>Checks the JavaScript type of a value at the given path.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">assertions:
+  - type: type
+    path: $.count
+    expected: number   # string, number, boolean, object, array</code></pre>
+      </div>
+
+      <h2 id="assert-length">length</h2>
+      <p>Checks the length of an array or string using a comparison operator.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">assertions:
+  - type: length
+    path: $.items
+    operator: gt    # eq, gt, gte, lt, lte
+    value: 0</code></pre>
+      </div>
+
+      <h2 id="assert-latency">latency</h2>
+      <p>Asserts that the tool call completed within the specified time.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">assertions:
+  - type: latency
+    maxMs: 1000   # milliseconds</code></pre>
+      </div>
+
+      <h2 id="assert-expression">expression</h2>
+      <p>Evaluates a safe expression using the <code>expr-eval</code> library. This is <strong>not arbitrary code</strong> &mdash; only comparisons, logical operators, math, property access, and array indexing are available.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">assertions:
+  - type: expression
+    expr: "response.items.length > 0 and response.total == response.items.length"</code></pre>
+      </div>
+      <p><strong>Available:</strong> <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>and</code>, <code>or</code>, <code>not</code>, <code>in</code>, property access, array indexing, basic math.</p>
+      <p><strong>NOT available:</strong> Function definitions, loops, <code>require</code>, file access, <code>eval</code>.</p>
+
+      <!-- ============================================================ -->
+      <!--  CLI COMMANDS                                                -->
+      <!-- ============================================================ -->
+
+      <h2 id="cmd-test">mcpspec test</h2>
+      <p>Run a test collection.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec test [collection]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>[collection]</code></td><td>Path to collection YAML</td><td><code>mcpspec.yaml</code></td></tr>
+          <tr><td><code>--env &lt;name&gt;</code></td><td>Environment to use</td><td>defaultEnvironment</td></tr>
+          <tr><td><code>--tag &lt;tags...&gt;</code></td><td>Filter tests by tag (repeatable)</td><td>&mdash;</td></tr>
+          <tr><td><code>--parallel &lt;n&gt;</code></td><td>Parallel test execution</td><td>1 (sequential)</td></tr>
+          <tr><td><code>--reporter &lt;type&gt;</code></td><td>console, json, junit, html, tap</td><td>console</td></tr>
+          <tr><td><code>--output &lt;path&gt;</code></td><td>Output file for results</td><td>&mdash;</td></tr>
+          <tr><td><code>--ci</code></td><td>CI mode (no colors, structured output)</td><td>false</td></tr>
+          <tr><td><code>--baseline &lt;name&gt;</code></td><td>Compare against named baseline</td><td>&mdash;</td></tr>
+          <tr><td><code>--watch</code></td><td>Re-run on file changes (300ms debounce)</td><td>false</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Run with tags and parallel
+mcpspec test --tag smoke --parallel 4
+
+# CI mode with JUnit output
+mcpspec test --ci --reporter junit --output results.xml
+
+# Compare against baseline
+mcpspec test --baseline main</code></pre>
+      </div>
+
+      <h2 id="cmd-inspect">mcpspec inspect</h2>
+      <p>Interactive REPL for exploring an MCP server.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec inspect &lt;server&gt;</code></pre>
+      </div>
+      <p>REPL commands:</p>
+      <table>
+        <thead><tr><th>Command</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>.tools</code></td><td>List all available tools</td></tr>
+          <tr><td><code>.resources</code></td><td>List all available resources</td></tr>
+          <tr><td><code>.call &lt;tool&gt; &lt;json&gt;</code></td><td>Call a tool with JSON arguments</td></tr>
+          <tr><td><code>.schema &lt;tool&gt;</code></td><td>Display tool's input JSON Schema</td></tr>
+          <tr><td><code>.info</code></td><td>Show server info (name, version, capabilities)</td></tr>
+          <tr><td><code>.help</code></td><td>Show help</td></tr>
+          <tr><td><code>.exit</code></td><td>Disconnect and exit</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec inspect "npx -y @modelcontextprotocol/server-filesystem /tmp"
+# > .tools
+# > .call read_file {"path": "/tmp/test.txt"}
+# > .schema read_file
+# > .exit</code></pre>
+      </div>
+
+      <h2 id="cmd-record">mcpspec record</h2>
+      <p>Record, list, replay, and delete inspector sessions.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec record start &lt;server&gt;           # Record a session
+mcpspec record list                      # List saved recordings
+mcpspec record replay &lt;name&gt; &lt;server&gt;   # Replay and diff
+mcpspec record delete &lt;name&gt;             # Delete a recording</code></pre>
+      </div>
+      <p>During a recording session, use the same REPL commands as <code>inspect</code> plus:</p>
+      <ul>
+        <li><code>.steps</code> &mdash; Show recorded steps so far</li>
+        <li><code>.save &lt;name&gt;</code> &mdash; Save recording and exit</li>
+      </ul>
+      <p>Recordings are stored in <code>~/.mcpspec/recordings/</code>.</p>
+
+      <h2 id="cmd-mock">mcpspec mock</h2>
+      <p>Start a mock MCP server from a recording, or generate a standalone file.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec mock &lt;recording&gt; [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>--mode &lt;mode&gt;</code></td><td><code>match</code> or <code>sequential</code></td><td><code>match</code></td></tr>
+          <tr><td><code>--latency &lt;ms&gt;</code></td><td>Response delay: <code>0</code>, milliseconds, or <code>original</code></td><td><code>0</code></td></tr>
+          <tr><td><code>--on-missing &lt;behavior&gt;</code></td><td><code>error</code> or <code>empty</code></td><td><code>error</code></td></tr>
+          <tr><td><code>--generate &lt;path&gt;</code></td><td>Generate standalone <code>.js</code> file</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Start mock server (stdin/stdout)
+mcpspec mock my-api
+
+# Tape/cassette style matching
+mcpspec mock my-api --mode sequential
+
+# Simulate original response timing
+mcpspec mock my-api --latency original
+
+# Generate standalone .js file (only requires @modelcontextprotocol/sdk)
+mcpspec mock my-api --generate ./mocks/server.js
+node ./mocks/server.js</code></pre>
+      </div>
+
+      <h2 id="cmd-audit">mcpspec audit</h2>
+      <p>Run a security scan against an MCP server.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec audit &lt;server&gt; [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>--mode &lt;mode&gt;</code></td><td><code>passive</code>, <code>active</code>, or <code>aggressive</code></td><td><code>passive</code></td></tr>
+          <tr><td><code>--acknowledge-risk</code></td><td>Skip confirmation for active/aggressive</td><td>false</td></tr>
+          <tr><td><code>--fail-on &lt;severity&gt;</code></td><td>Exit code 6 if findings at: info, low, medium, high, critical</td><td>&mdash;</td></tr>
+          <tr><td><code>--rules &lt;rules...&gt;</code></td><td>Only run specific rules</td><td>all</td></tr>
+          <tr><td><code>--exclude-tools &lt;tools...&gt;</code></td><td>Skip specific tools</td><td>&mdash;</td></tr>
+          <tr><td><code>--dry-run</code></td><td>Preview targets without scanning</td><td>false</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Passive scan (safe for production)
+mcpspec audit "npx my-server"
+
+# Active scan with CI gate
+mcpspec audit "npx my-server" --mode active --acknowledge-risk --fail-on medium
+
+# Preview what would be scanned
+mcpspec audit "npx my-server" --dry-run</code></pre>
+      </div>
+
+      <h2 id="cmd-score">mcpspec score</h2>
+      <p>Calculate the MCP Score (0&ndash;100 quality rating) for a server.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec score &lt;server&gt; [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>--badge &lt;path&gt;</code></td><td>Output shields.io-style SVG badge</td><td>&mdash;</td></tr>
+          <tr><td><code>--min-score &lt;n&gt;</code></td><td>Fail if below threshold</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec score "npx my-server"
+mcpspec score "npx my-server" --badge ./badge.svg --min-score 80</code></pre>
+      </div>
+
+      <h2 id="cmd-bench">mcpspec bench</h2>
+      <p>Run performance benchmarks against a server.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec bench &lt;server&gt; [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>--iterations &lt;n&gt;</code></td><td>Number of iterations</td><td>100</td></tr>
+          <tr><td><code>--tool &lt;name&gt;</code></td><td>Tool to benchmark</td><td>first available</td></tr>
+          <tr><td><code>--args &lt;json&gt;</code></td><td>JSON arguments for tool call</td><td><code>{}</code></td></tr>
+          <tr><td><code>--timeout &lt;ms&gt;</code></td><td>Timeout per call</td><td>30000</td></tr>
+          <tr><td><code>--warmup &lt;n&gt;</code></td><td>Warmup iterations (excluded from results)</td><td>5</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec bench "npx my-server" --iterations 200 --tool echo --args '{"message":"test"}'</code></pre>
+      </div>
+      <p>Output includes: min, max, mean, median, P95, P99, standard deviation, and throughput (calls/sec).</p>
+
+      <h2 id="cmd-docs">mcpspec docs</h2>
+      <p>Auto-generate documentation from server introspection.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec docs &lt;server&gt; [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>--format &lt;type&gt;</code></td><td><code>markdown</code> or <code>html</code></td><td>markdown</td></tr>
+          <tr><td><code>--output &lt;dir&gt;</code></td><td>Output directory</td><td>current dir</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec docs "npx my-server" --format html --output ./docs</code></pre>
+      </div>
+
+      <h2 id="cmd-compare">mcpspec compare & baseline</h2>
+      <p>Compare test runs and manage baselines for regression detection.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Save current results as a baseline
+mcpspec baseline save main
+
+# List saved baselines
+mcpspec baseline list
+
+# Compare two runs
+mcpspec compare &lt;run1&gt; &lt;run2&gt;
+
+# Compare against a baseline
+mcpspec compare --baseline main</code></pre>
+      </div>
+
+      <h2 id="cmd-init">mcpspec init</h2>
+      <p>Scaffold a new MCPSpec project with an interactive wizard or template.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec init [directory] --template &lt;minimal|standard|full&gt;</code></pre>
+      </div>
+      <p>Templates:</p>
+      <ul>
+        <li><code>minimal</code> &mdash; Basic 3-test collection</li>
+        <li><code>standard</code> &mdash; Full-featured with assertions and error handling</li>
+        <li><code>full</code> &mdash; Comprehensive with environments, extraction, tags, multiple tests</li>
+      </ul>
+
+      <h2 id="cmd-ci-init">mcpspec ci-init</h2>
+      <p>Generate CI/CD pipeline configuration.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec ci-init [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>--platform &lt;type&gt;</code></td><td><code>github</code>, <code>gitlab</code>, or <code>shell</code></td><td>auto-detect</td></tr>
+          <tr><td><code>--collection &lt;path&gt;</code></td><td>Path to collection file</td><td>&mdash;</td></tr>
+          <tr><td><code>--server &lt;command&gt;</code></td><td>Server command</td><td>&mdash;</td></tr>
+          <tr><td><code>--checks &lt;list&gt;</code></td><td>Comma-separated: test, audit, score, bench</td><td>test</td></tr>
+          <tr><td><code>--fail-on &lt;severity&gt;</code></td><td>Audit severity gate</td><td>&mdash;</td></tr>
+          <tr><td><code>--min-score &lt;n&gt;</code></td><td>Minimum MCP Score threshold</td><td>&mdash;</td></tr>
+          <tr><td><code>--force</code></td><td>Overwrite existing files</td><td>false</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># Interactive wizard
+mcpspec ci-init
+
+# Non-interactive
+mcpspec ci-init --platform github --checks test,audit,score --fail-on medium --min-score 80</code></pre>
+      </div>
+      <p>Auto-detects platform from <code>.github/</code> or <code>.gitlab-ci.yml</code>. GitLab <code>--force</code> surgically replaces only the mcpspec job block.</p>
+
+      <h2 id="cmd-ui">mcpspec ui</h2>
+      <p>Launch the web dashboard.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec ui [options]</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>-p, --port &lt;port&gt;</code></td><td>Port to listen on</td><td>6274</td></tr>
+          <tr><td><code>--host &lt;host&gt;</code></td><td>Host to bind to</td><td>127.0.0.1</td></tr>
+          <tr><td><code>--no-open</code></td><td>Do not auto-open browser</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+      <p>The UI includes 10 pages: Dashboard, Servers, Collections, Runs, Inspector, Recordings, Audit, Benchmark, Docs, and Score. Features dark mode and real-time WebSocket updates.</p>
+
+      <!-- ============================================================ -->
+      <!--  GUIDES                                                      -->
+      <!-- ============================================================ -->
+
+      <h2 id="guide-recording">Recording & Replay</h2>
+      <p>Record an inspector session, save it, and replay it later against a new server version to catch regressions.</p>
+
+      <h3>Full workflow</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash"># 1. Start a recording session
+mcpspec record start "npx my-server"
+
+# 2. Interact with the server (REPL)
+# > .call get_user {"id": "1"}
+# > .call list_items {}
+# > .call create_item {"name": "test"}
+
+# 3. Save the recording
+# > .save my-api
+
+# 4. List recordings
+mcpspec record list
+
+# 5. Replay against a new version — diffs results step-by-step
+mcpspec record replay my-api "npx my-server-v2"</code></pre>
+      </div>
+
+      <h3>Replay output</h3>
+      <div class="terminal-output">
+        <div>Replaying 3 steps...</div>
+        <div class="mt-1">&nbsp;&nbsp;1/3 get_user <span class="text-gray-500">(id=1)</span>... &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-green-400">[OK]</span> <span class="text-gray-500">42ms</span> <span class="text-gray-500">&rarr; {"name": "Alice"}</span></div>
+        <div>&nbsp;&nbsp;2/3 list_items... &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-yellow-400">[CHANGED]</span> <span class="text-gray-500">38ms</span></div>
+        <div>&nbsp;&nbsp;3/3 create_item <span class="text-gray-500">(name=test)</span>... <span class="text-green-400">[OK]</span> <span class="text-gray-500">51ms</span> <span class="text-gray-500">&rarr; {"id": "abc"}</span></div>
+        <div class="mt-1">&nbsp;&nbsp;Summary: <span class="text-green-400">2 matched</span>, <span class="text-yellow-400">1 changed</span>, 0 added, 0 removed</div>
+      </div>
+
+      <h3>Use cases</h3>
+      <ul>
+        <li><strong>Regression detection</strong> &mdash; replay before every release</li>
+        <li><strong>Migration testing</strong> &mdash; replay against a new server implementation</li>
+        <li><strong>API contract validation</strong> &mdash; ensure responses haven't changed</li>
+      </ul>
+
+      <h2 id="guide-mock">Mock Servers</h2>
+      <p>Generate a mock MCP server from any recording. Mock servers communicate via stdio and are drop-in replacements for real servers in CI, offline development, and testing.</p>
+
+      <h3>Match mode (default)</h3>
+      <p>Looks up responses by exact input match first. If no exact match, falls back to the next queued response for that tool.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec mock my-api</code></pre>
+      </div>
+
+      <h3>Sequential mode</h3>
+      <p>Tape/cassette style &mdash; responses are served in the order they were recorded, regardless of input.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec mock my-api --mode sequential</code></pre>
+      </div>
+
+      <h3>Latency simulation</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec mock my-api --latency original   # Simulate real timing
+mcpspec mock my-api --latency 100        # Fixed 100ms delay</code></pre>
+      </div>
+
+      <h3>Standalone file generation</h3>
+      <p>Generate a standalone <code>.js</code> file that can be committed to your repo. The generated file only requires <code>@modelcontextprotocol/sdk</code> as a runtime dependency.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec mock my-api --generate ./mocks/server.js
+node ./mocks/server.js</code></pre>
+      </div>
+
+      <h3>Missing tool behavior</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec mock my-api --on-missing error   # Return error (default)
+mcpspec mock my-api --on-missing empty   # Return empty content</code></pre>
+      </div>
+
+      <h2 id="guide-security">Security Audit</h2>
+      <p>MCPSpec includes 8 security rules, including LLM-specific threats like Tool Poisoning and Excessive Agency.</p>
+
+      <h3>Security rules</h3>
+      <table>
+        <thead><tr><th>Rule</th><th>Mode</th><th>Detects</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Tool Poisoning</strong></td><td><span class="badge badge-green">passive</span></td><td>LLM prompt injection in descriptions, hidden Unicode (zero-width, bidirectional), cross-tool manipulation, embedded code, overly long descriptions</td></tr>
+          <tr><td><strong>Excessive Agency</strong></td><td><span class="badge badge-green">passive</span></td><td>Destructive tools without confirmation params, arbitrary code/command params, overly broad schemas, missing descriptions</td></tr>
+          <tr><td>Path Traversal</td><td><span class="badge badge-green">passive</span></td><td><code>../../etc/passwd</code> style directory escape attacks</td></tr>
+          <tr><td>Input Validation</td><td><span class="badge badge-green">passive</span></td><td>Missing constraints (enum, pattern, min/max) on tool inputs</td></tr>
+          <tr><td>Info Disclosure</td><td><span class="badge badge-green">passive</span></td><td>Leaked paths, stack traces, API keys in tool descriptions</td></tr>
+          <tr><td>Resource Exhaustion</td><td><span class="badge badge-yellow">active</span></td><td>Unbounded loops, large allocations</td></tr>
+          <tr><td>Auth Bypass</td><td><span class="badge badge-yellow">active</span></td><td>Missing auth checks, hardcoded credentials</td></tr>
+          <tr><td>Injection</td><td><span class="badge badge-yellow">active</span></td><td>SQL and command injection in tool inputs</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Scan modes</h3>
+      <ul>
+        <li><strong>Passive</strong> (5 rules) &mdash; Analyzes metadata only. No tool calls. Safe for production.</li>
+        <li><strong>Active</strong> (8 rules) &mdash; Sends test payloads. Requires confirmation. Auto-skips destructive tools.</li>
+        <li><strong>Aggressive</strong> (8 rules) &mdash; More exhaustive probing. Requires confirmation.</li>
+      </ul>
+
+      <h3>Confirmation flow</h3>
+      <p>Active and aggressive modes display a warning and require explicit confirmation:</p>
+      <div class="terminal-output">
+        <div>&#9888;&#65039; SECURITY SCAN WARNING</div>
+        <div>This sends potentially harmful payloads.</div>
+        <div>NEVER run against production systems!</div>
+        <div class="mt-1">Is this a TEST environment? [y/N]</div>
+      </div>
+      <p>Use <code>--acknowledge-risk</code> to skip the prompt (for CI).</p>
+      <p>Each finding includes <strong>severity</strong>, <strong>evidence</strong>, and <strong>remediation advice</strong>.</p>
+
+      <h2 id="guide-score">MCP Score</h2>
+      <p>The MCP Score rates server quality from 0 to 100 across 5 weighted categories:</p>
+      <table>
+        <thead><tr><th>Category</th><th>Weight</th><th>What it measures</th></tr></thead>
+        <tbody>
+          <tr><td>Documentation</td><td>25%</td><td>Tool descriptions, parameter docs, resource docs</td></tr>
+          <tr><td>Schema Quality</td><td>25%</td><td>Input schema completeness and correctness</td></tr>
+          <tr><td>Error Handling</td><td>20%</td><td>Graceful error responses, proper error codes</td></tr>
+          <tr><td>Responsiveness</td><td>15%</td><td>Response latency for tool calls</td></tr>
+          <tr><td>Security</td><td>15%</td><td>Results from passive security scan</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Schema quality sub-criteria</h3>
+      <table>
+        <thead><tr><th>Criterion</th><th>Weight</th></tr></thead>
+        <tbody>
+          <tr><td>Structure (proper object type)</td><td>20%</td></tr>
+          <tr><td>Property types defined</td><td>20%</td></tr>
+          <tr><td>Property descriptions</td><td>20%</td></tr>
+          <tr><td>Required fields specified</td><td>15%</td></tr>
+          <tr><td>Constraints (enum, pattern, min/max)</td><td>15%</td></tr>
+          <tr><td>Naming conventions (camelCase)</td><td>10%</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Score ranges</h3>
+      <ul>
+        <li><strong>80&ndash;100</strong> <span class="badge badge-green">green</span> &mdash; Excellent quality</li>
+        <li><strong>60&ndash;79</strong> <span class="badge badge-yellow">yellow</span> &mdash; Acceptable, improvements recommended</li>
+        <li><strong>&lt; 60</strong> <span style="display:inline-block;padding:0.125rem 0.5rem;border-radius:9999px;font-size:0.6875rem;font-weight:500;background:rgba(239,68,68,0.1);color:#f87171;">red</span> &mdash; Significant issues</li>
+      </ul>
+
+      <h3>Badge generation</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">mcpspec score "npx my-server" --badge ./mcp-score.svg</code></pre>
+      </div>
+      <p>Generates a shields.io-style SVG badge for your README.</p>
+
+      <h2 id="guide-cicd">CI/CD Integration</h2>
+      <p>Use <code>mcpspec ci-init</code> to generate pipeline configurations, or use these examples directly.</p>
+
+      <h3>GitHub Actions</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">name: MCP Server Tests
+on: [push, pull_request]
+
+jobs:
+  mcpspec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install -g mcpspec
+
+      - name: Run tests
+        run: mcpspec test --ci --reporter junit --output results.xml
+
+      - name: Security audit
+        run: mcpspec audit "npx my-server" --mode passive --fail-on high
+
+      - name: Quality gate
+        run: mcpspec score "npx my-server" --min-score 80
+
+      - uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: results.xml</code></pre>
+      </div>
+
+      <h3>GitLab CI</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">mcpspec:
+  image: node:22
+  stage: test
+  script:
+    - npm install -g mcpspec
+    - mcpspec test --ci --reporter junit --output results.xml
+    - mcpspec audit "npx my-server" --mode passive --fail-on high
+  artifacts:
+    when: always
+    paths:
+      - results.xml
+    reports:
+      junit: results.xml
+    expire_in: 1 week</code></pre>
+      </div>
+
+      <h3>Exit codes for pipeline gating</h3>
+      <table>
+        <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0</code></td><td>Success</td></tr>
+          <tr><td><code>1</code></td><td>Test failure</td></tr>
+          <tr><td><code>2</code></td><td>Runtime error</td></tr>
+          <tr><td><code>3</code></td><td>Config error</td></tr>
+          <tr><td><code>4</code></td><td>Connection error</td></tr>
+          <tr><td><code>5</code></td><td>Timeout</td></tr>
+          <tr><td><code>6</code></td><td>Security findings above threshold</td></tr>
+          <tr><td><code>7</code></td><td>Validation error</td></tr>
+          <tr><td><code>130</code></td><td>Interrupted (Ctrl+C)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Pre-commit hook</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-bash">#!/bin/bash
+# .git/hooks/pre-commit
+if git diff --cached --name-only | grep -q "collections/.*\.yaml$"; then
+  mcpspec test $(git diff --cached --name-only | grep "collections/.*\.yaml$")
+fi</code></pre>
+      </div>
+
+      <h2 id="guide-transports">Transports</h2>
+      <p>MCPSpec supports three transport types for communicating with MCP servers:</p>
+
+      <h3>stdio (default)</h3>
+      <p>MCPSpec spawns the server as a child process and communicates via stdin/stdout. This is the most common transport and works with any server that reads from stdin and writes to stdout.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Shorthand
+server: npx my-server /tmp
+
+# Explicit
+server:
+  transport: stdio
+  command: npx
+  args: ["my-server", "/tmp"]
+  env:
+    NODE_ENV: test</code></pre>
+      </div>
+
+      <h3>SSE (Server-Sent Events)</h3>
+      <p>Connects to an already-running server via SSE. Useful for remote servers or servers started independently.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">server:
+  transport: sse
+  url: http://localhost:3000/sse</code></pre>
+      </div>
+
+      <h3>Streamable HTTP</h3>
+      <p>The newer HTTP-based transport for MCP servers.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml">server:
+  transport: streamable-http
+  url: http://localhost:3000/mcp</code></pre>
+      </div>
+
+      <h3>When to use each</h3>
+      <table>
+        <thead><tr><th>Transport</th><th>Use when</th></tr></thead>
+        <tbody>
+          <tr><td><code>stdio</code></td><td>Testing local servers, CI pipelines, most common</td></tr>
+          <tr><td><code>sse</code></td><td>Server is already running, remote testing</td></tr>
+          <tr><td><code>streamable-http</code></td><td>Modern HTTP-based MCP servers</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <!--  REFERENCE                                                   -->
+      <!-- ============================================================ -->
+
+      <h2 id="ref-schema">Collection Schema</h2>
+      <p>Complete field reference for collection YAML files.</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code class="language-yaml"># Top-level fields
+schemaVersion: "1.0"            # Optional, currently "1.0"
+name: string                    # Required — collection name
+description: string             # Optional
+server: string | ServerConfig   # Required — see Server Configuration
+environments:                   # Optional — named variable sets
+  &lt;name&gt;:
+    variables:
+      &lt;key&gt;: &lt;value&gt;
+defaultEnvironment: string      # Optional
+tests:                          # Required — at least 1 test
+  - id: string                  # Optional — unique identifier
+    name: string                # Required — display name
+    tags: string[]              # Optional — for --tag filtering
+    timeout: number             # Optional — ms, default 30000
+    retries: number             # Optional — retry on error
+    type: tool                  # Optional — default "tool"
+    call: string                # Tool name to invoke
+    tool: string                # Alias for call
+    with: object                # Tool input arguments
+    input: object               # Alias for with
+    expect: Shorthand[]         # Shorthand assertions
+    assertions: Assertion[]     # Full assertions
+    expectError: boolean        # Expect error response
+    extract:                    # Optional — extract variables
+      - name: string
+        path: string            # JSONPath
+
+# ServerConfig object
+server:
+  name: string                  # Optional
+  transport: stdio|sse|streamable-http  # Default: stdio
+  command: string               # For stdio
+  args: string[]                # For stdio
+  url: string                   # For SSE/HTTP
+  env: Record&lt;string, string&gt;  # Environment variables
+  timeouts:
+    connect: number             # Connection timeout (ms)
+    call: number                # Call timeout (ms)
+
+# Assertion object
+assertions:
+  - type: schema|equals|contains|exists|matches|type|length|latency|mimeType|expression
+    path: string                # JSONPath (for value assertions)
+    value: any                  # Expected value
+    expected: any               # Expected type or mime type
+    pattern: string             # Regex pattern
+    maxMs: number               # Max latency
+    operator: eq|gt|gte|lt|lte  # For length
+    expr: string                # Safe expression</code></pre>
+      </div>
+
+      <h2 id="ref-exit-codes">Exit Codes</h2>
+      <table>
+        <thead><tr><th>Code</th><th>Constant</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0</code></td><td><code>SUCCESS</code></td><td>All tests passed / operation successful</td></tr>
+          <tr><td><code>1</code></td><td><code>TEST_FAILURE</code></td><td>One or more tests failed</td></tr>
+          <tr><td><code>2</code></td><td><code>ERROR</code></td><td>Runtime error (unexpected crash)</td></tr>
+          <tr><td><code>3</code></td><td><code>CONFIG_ERROR</code></td><td>Invalid collection YAML or configuration</td></tr>
+          <tr><td><code>4</code></td><td><code>CONNECTION_ERROR</code></td><td>Could not connect to server</td></tr>
+          <tr><td><code>5</code></td><td><code>TIMEOUT</code></td><td>Operation timed out</td></tr>
+          <tr><td><code>6</code></td><td><code>SECURITY_FINDINGS</code></td><td>Security findings above <code>--fail-on</code> threshold</td></tr>
+          <tr><td><code>7</code></td><td><code>VALIDATION_ERROR</code></td><td>Input validation failed</td></tr>
+          <tr><td><code>130</code></td><td><code>INTERRUPTED</code></td><td>Interrupted by user (Ctrl+C)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="ref-config">Configuration</h2>
+
+      <h3>Timeout defaults</h3>
+      <table>
+        <thead><tr><th>Setting</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>Test timeout</td><td>30,000ms</td></tr>
+          <tr><td>MCP call timeout</td><td>25,000ms</td></tr>
+          <tr><td>Transport timeout</td><td>20,000ms</td></tr>
+          <tr><td>Assertion timeout</td><td>5,000ms</td></tr>
+          <tr><td>Cleanup timeout</td><td>5,000ms</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Rate limiting defaults</h3>
+      <table>
+        <thead><tr><th>Setting</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>Max calls/second</td><td>10</td></tr>
+          <tr><td>Max concurrent</td><td>5</td></tr>
+          <tr><td>Backoff initial</td><td>1,000ms</td></tr>
+          <tr><td>Backoff multiplier</td><td>2x</td></tr>
+          <tr><td>Backoff max</td><td>30,000ms</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Environment variables</h3>
+      <table>
+        <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>MCPSPEC_REMOTE_ACCESS</code></td><td>Set to <code>true</code> to allow non-localhost access to UI server</td></tr>
+          <tr><td><code>MCPSPEC_TOKEN</code></td><td>Authentication token when remote access is enabled</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="ref-troubleshooting">Troubleshooting</h2>
+
+      <h3>Connection Timeout</h3>
+      <p>If you see <code>Connection Timed Out</code>:</p>
+      <ul>
+        <li>Verify the server command is correct and the server starts successfully</li>
+        <li>Check that the server binary/package is installed (<code>npx</code> may need <code>-y</code>)</li>
+        <li>Increase the timeout: <code>mcpspec test --timeout 60000</code></li>
+        <li>Try running the server command directly to see if it outputs errors</li>
+      </ul>
+
+      <h3>YAML Parse Errors</h3>
+      <ul>
+        <li>MCPSpec uses <code>FAILSAFE_SCHEMA</code> which treats all values as strings</li>
+        <li>Numbers and booleans are automatically coerced from strings</li>
+        <li>Ensure proper YAML indentation (use spaces, not tabs)</li>
+        <li>Quote strings containing special characters: <code>path: "{{baseDir}}/file.txt"</code></li>
+      </ul>
+
+      <h3>Process Cleanup</h3>
+      <p>MCPSpec registers cleanup handlers for SIGINT, SIGTERM, and uncaught exceptions. If a server process gets stuck:</p>
+      <ul>
+        <li>Press Ctrl+C to trigger graceful shutdown</li>
+        <li>If that fails, MCPSpec sends SIGKILL after the grace period</li>
+        <li>Check for orphaned processes: <code>ps aux | grep "my-server"</code></li>
+      </ul>
+
+      <h3>Common Mistakes</h3>
+      <ul>
+        <li><strong>Missing <code>-y</code> flag with npx</strong> &mdash; Use <code>npx -y</code> to auto-install packages without prompting</li>
+        <li><strong>Wrong tool name</strong> &mdash; Use <code>mcpspec inspect</code> to see available tools, then use <code>.tools</code> in the REPL</li>
+        <li><strong>Expression assertion syntax</strong> &mdash; Use <code>and</code>/<code>or</code> instead of <code>&amp;&amp;</code>/<code>||</code> in expression assertions</li>
+        <li><strong>Tag with/without @</strong> &mdash; Both <code>--tag smoke</code> and <code>--tag @smoke</code> work identically</li>
+      </ul>
+
+      <!-- End content -->
+      <div class="mt-16 pt-8 border-t border-white/5 text-center">
+        <p class="text-gray-500 text-sm">MCPSpec &mdash; MIT License &mdash; <a href="https://github.com/light-handle/mcpspec" class="text-brand-light hover:underline">GitHub</a> &mdash; <a href="https://www.npmjs.com/package/mcpspec" class="text-brand-light hover:underline">npm</a></p>
+      </div>
+    </main>
+
+    <!-- Right TOC -->
+    <aside id="docs-toc" class="docs-toc">
+      <div class="toc-title">On This Page</div>
+      <div id="toc-links"></div>
+    </aside>
+
+  </div><!-- /docs-layout -->
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+  <script>
+    // ---- Copy code ----
+    function copyCode(btn) {
+      var code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code);
+      btn.textContent = 'Copied!'; btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    }
+
+    // ---- Sidebar toggle (mobile) ----
+    var sidebar = document.getElementById('docs-sidebar');
+    var backdrop = document.getElementById('sidebar-backdrop');
+    var sidebarBtn = document.getElementById('sidebar-toggle');
+
+    function openSidebar() { sidebar.classList.add('open'); backdrop.classList.add('visible'); }
+    function closeSidebar() { sidebar.classList.remove('open'); backdrop.classList.remove('visible'); }
+
+    sidebarBtn.addEventListener('click', function() {
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+    backdrop.addEventListener('click', closeSidebar);
+
+    // Close sidebar on link click (mobile)
+    document.querySelectorAll('.sidebar-link').forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    // ---- Sidebar group collapse ----
+    function toggleGroup(el) {
+      el.classList.toggle('collapsed');
+      el.parentElement.classList.toggle('collapsed');
+    }
+
+    // ---- Active sidebar link tracking ----
+    var sidebarLinks = document.querySelectorAll('.sidebar-link');
+    var headings = [];
+    sidebarLinks.forEach(function(link) {
+      var id = link.getAttribute('href').replace('#', '');
+      var el = document.getElementById(id);
+      if (el) headings.push({ id: id, el: el, link: link });
+    });
+
+    var tocLinks = document.getElementById('toc-links');
+
+    function buildToc() {
+      tocLinks.innerHTML = '';
+      var content = document.querySelector('.docs-content');
+      var hh = content.querySelectorAll('h2[id], h3[id]');
+      hh.forEach(function(h) {
+        var a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.className = 'toc-link' + (h.tagName === 'H3' ? ' toc-h3' : '');
+        a.textContent = h.textContent;
+        tocLinks.appendChild(a);
+      });
+    }
+    buildToc();
+
+    function updateActive() {
+      var scrollY = window.scrollY + 100;
+      var current = null;
+      for (var i = headings.length - 1; i >= 0; i--) {
+        if (headings[i].el.offsetTop <= scrollY) { current = headings[i]; break; }
+      }
+      sidebarLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (current) current.link.classList.add('active');
+
+      // TOC active
+      var allTocLinks = tocLinks.querySelectorAll('.toc-link');
+      var content = document.querySelector('.docs-content');
+      var hh = content.querySelectorAll('h2[id], h3[id]');
+      var currentToc = null;
+      for (var j = hh.length - 1; j >= 0; j--) {
+        if (hh[j].offsetTop <= scrollY) { currentToc = hh[j]; break; }
+      }
+      allTocLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (currentToc) {
+        var match = tocLinks.querySelector('a[href="#' + currentToc.id + '"]');
+        if (match) match.classList.add('active');
+      }
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  </script>
+</body>
+</html>

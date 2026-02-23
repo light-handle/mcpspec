@@ -107,6 +107,29 @@
     </div>
   </section>
 
+  <!-- Why MCPSpec -->
+  <section class="py-16 px-4 bg-navy-800/30">
+    <div class="max-w-5xl mx-auto">
+      <div class="grid md:grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="text-brand text-4xl font-bold mb-2">12</div>
+          <div class="text-white font-semibold mb-1">CLI Commands</div>
+          <div class="text-gray-500 text-sm">Test, inspect, audit, bench, score, docs, record, compare, baseline, init, ci-init, ui</div>
+        </div>
+        <div>
+          <div class="text-brand text-4xl font-bold mb-2">8</div>
+          <div class="text-white font-semibold mb-1">Security Rules</div>
+          <div class="text-gray-500 text-sm">Including LLM-specific threats: tool poisoning and excessive agency detection</div>
+        </div>
+        <div>
+          <div class="text-brand text-4xl font-bold mb-2">10</div>
+          <div class="text-white font-semibold mb-1">Assertion Types</div>
+          <div class="text-gray-500 text-sm">Schema, equals, contains, exists, matches, type, length, latency, mimeType, expression</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Features -->
   <section id="features" class="py-20 px-4">
     <div class="max-w-6xl mx-auto">
@@ -118,55 +141,55 @@
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#128221;</div>
           <h3 class="text-white font-semibold mb-2">Test Collections</h3>
-          <p class="text-gray-400 text-sm">YAML-based suites with 10 assertion types, environments, variables, tags, retries, and parallel execution.</p>
+          <p class="text-gray-400 text-sm">YAML-based suites with 10 assertion types, environments, variable extraction, tags, retries, and parallel execution. 5 reporter formats for any CI system.</p>
         </div>
         <!-- Card 2 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#128269;</div>
           <h3 class="text-white font-semibold mb-2">Inspector REPL</h3>
-          <p class="text-gray-400 text-sm">Connect to any server and interactively explore tools, resources, and schemas in a live terminal.</p>
+          <p class="text-gray-400 text-sm">Connect to any server and interactively explore tools, resources, and schemas. Call tools with JSON, view formatted responses, inspect input schemas.</p>
         </div>
         <!-- Card 3 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#128737;</div>
           <h3 class="text-white font-semibold mb-2">Security Audit</h3>
-          <p class="text-gray-400 text-sm">8 rules including LLM-specific threats: tool poisoning and excessive agency. Safety filter auto-skips destructive tools; <code class="text-brand-light">--dry-run</code> previews targets.</p>
+          <p class="text-gray-400 text-sm">8 rules including LLM-specific threats: tool poisoning (prompt injection in descriptions) and excessive agency (destructive tools without safeguards). 3 scan modes with safety controls.</p>
         </div>
         <!-- Card: Recording & Replay -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#127909;</div>
           <h3 class="text-white font-semibold mb-2">Recording &amp; Replay</h3>
-          <p class="text-gray-400 text-sm">Record inspector sessions, replay against different server versions, and diff results to catch regressions.</p>
+          <p class="text-gray-400 text-sm">Record inspector sessions, replay against different server versions, and diff results step by step. Catches regressions: matched, changed, added, removed.</p>
         </div>
         <!-- Card 4 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#9889;</div>
           <h3 class="text-white font-semibold mb-2">Benchmarks</h3>
-          <p class="text-gray-400 text-sm">Measure min/max/mean/median/P95/P99 latency and throughput across hundreds of iterations.</p>
+          <p class="text-gray-400 text-sm">Measure min/max/mean/median/P95/P99 latency, standard deviation, and throughput (calls/sec) across hundreds of iterations with configurable warmup.</p>
         </div>
         <!-- Card 5 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#127942;</div>
           <h3 class="text-white font-semibold mb-2">MCP Score</h3>
-          <p class="text-gray-400 text-sm">0-100 quality rating with opinionated schema linting — property types, descriptions, constraints, naming conventions.</p>
+          <p class="text-gray-400 text-sm">0-100 quality rating across 5 weighted categories. Opinionated schema linting checks property types, descriptions, constraints, required fields, and naming conventions.</p>
         </div>
         <!-- Card 6 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#128196;</div>
           <h3 class="text-white font-semibold mb-2">Doc Generator</h3>
-          <p class="text-gray-400 text-sm">Auto-generate Markdown or HTML documentation from server introspection. Zero manual writing.</p>
+          <p class="text-gray-400 text-sm">Auto-generate Markdown or HTML documentation from server introspection. Lists all tools with input schemas and all resources with URIs.</p>
         </div>
         <!-- Card 7 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#128421;</div>
           <h3 class="text-white font-semibold mb-2">Web Dashboard</h3>
-          <p class="text-gray-400 text-sm">Full React UI with server management, test runner, audit viewer, benchmark charts, and dark mode.</p>
+          <p class="text-gray-400 text-sm">Full React UI with 10 pages: servers, collections, test runner, inspector, audit, benchmarks, score, docs, recordings, and dark mode.</p>
         </div>
         <!-- Card 8 -->
         <div class="gradient-card rounded-xl border border-white/5 p-6 hover:border-brand/30 transition-colors">
           <div class="text-3xl mb-3">&#9881;</div>
           <h3 class="text-white font-semibold mb-2">CI/CD Ready</h3>
-          <p class="text-gray-400 text-sm"><code class="text-brand-light">ci-init</code> generates GitHub Actions, GitLab CI, or shell scripts. JUnit/JSON/TAP reporters. Deterministic exit codes. <code class="text-brand-light">--ci</code> mode.</p>
+          <p class="text-gray-400 text-sm"><code class="text-brand-light">ci-init</code> generates GitHub Actions, GitLab CI, or shell scripts. JUnit/JSON/TAP reporters. 9 deterministic exit codes. <code class="text-brand-light">--ci</code> mode.</p>
         </div>
       </div>
     </div>
@@ -231,77 +254,129 @@ mcpspec test --env staging                # Use staging variables
 mcpspec test --tag @smoke                 # Filter by tag
 mcpspec test --parallel 4                 # Parallel execution
 mcpspec test --reporter junit --output results.xml
+mcpspec test --reporter html --output report.html
 mcpspec test --baseline main              # Compare against baseline
 mcpspec test --watch                      # Re-run on changes
-mcpspec test --ci                         # CI mode</code></pre>
-          <p class="text-gray-500 text-xs mt-3">Reporters: console, json, junit, html, tap</p>
+mcpspec test --ci                         # CI mode (no colors)</code></pre>
+          <p class="text-gray-500 text-xs mt-3">Reporters: console, json, junit, html, tap. Tags auto-normalize: <code class="text-brand-light">@smoke</code> matches <code class="text-brand-light">smoke</code>. Watch mode uses 300ms debounce.</p>
         </div>
 
         <!-- inspect -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec inspect <span class="text-gray-500 font-normal text-sm">&lt;server&gt;</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Interactive REPL for exploring tools, resources, and schemas.</p>
+          <p class="text-gray-400 text-sm mb-4">Interactive REPL for exploring tools, resources, and schemas. Connect to any MCP server and call tools directly.</p>
           <pre><code class="language-bash">mcpspec inspect "npx @modelcontextprotocol/server-filesystem /tmp"</code></pre>
           <div class="mt-3 overflow-x-auto">
             <table class="w-full text-sm text-left">
               <thead><tr class="text-gray-500 border-b border-white/5"><th class="pb-2 pr-4">Command</th><th class="pb-2">Description</th></tr></thead>
               <tbody class="text-gray-300">
-                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.tools</td><td class="py-2">List all tools</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.resources</td><td class="py-2">List all resources</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.call &lt;tool&gt; &lt;json&gt;</td><td class="py-2">Call a tool</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.schema &lt;tool&gt;</td><td class="py-2">Show input schema</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.info</td><td class="py-2">Server info</td></tr>
-                <tr><td class="py-2 pr-4 font-mono text-brand-light">.exit</td><td class="py-2">Disconnect</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.tools</td><td class="py-2">List all tools with descriptions</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.resources</td><td class="py-2">List all resources with URIs</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.call &lt;tool&gt; &lt;json&gt;</td><td class="py-2">Call a tool with JSON input</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.schema &lt;tool&gt;</td><td class="py-2">Show JSON Schema input spec</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.info</td><td class="py-2">Server name, version, capabilities</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light">.help</td><td class="py-2">Show help</td></tr>
+                <tr><td class="py-2 pr-4 font-mono text-brand-light">.exit</td><td class="py-2">Disconnect and exit</td></tr>
               </tbody>
             </table>
+          </div>
+          <div class="mt-4 bg-navy-900 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300">
+            <div><span class="text-brand-light">mcpspec&gt;</span> .tools</div>
+            <div>&nbsp;&nbsp;<span class="text-green-400">read_file</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Read complete contents of a file</div>
+            <div>&nbsp;&nbsp;<span class="text-green-400">write_file</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create or overwrite a file</div>
+            <div>&nbsp;&nbsp;<span class="text-green-400">list_directory</span> &nbsp;&nbsp;List directory contents</div>
+            <div class="mt-2"><span class="text-brand-light">mcpspec&gt;</span> .call read_file {"path": "/tmp/test.txt"}</div>
+            <div>&nbsp;&nbsp;{</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;"content": "Hello, world!"</div>
+            <div>&nbsp;&nbsp;}</div>
           </div>
         </div>
 
         <!-- audit -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec audit <span class="text-gray-500 font-normal text-sm">&lt;server&gt;</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Security scanner with 8 vulnerability categories including LLM-specific threats. Active modes require confirmation.</p>
+          <p class="text-gray-400 text-sm mb-4">Security scanner with 8 vulnerability categories including LLM-specific threats. 3 scan modes with built-in safety controls.</p>
           <pre><code class="language-bash">mcpspec audit "npx my-server"                       # Passive (safe)
 mcpspec audit "npx my-server" --mode active          # Active probing
 mcpspec audit "npx my-server" --mode aggressive      # Aggressive
 mcpspec audit "npx my-server" --fail-on medium       # CI gate
-mcpspec audit "npx my-server" --acknowledge-risk     # Skip prompt
+mcpspec audit "npx my-server" --acknowledge-risk     # Skip confirmation
 mcpspec audit "npx my-server" --exclude-tools delete_user  # Skip tools
 mcpspec audit "npx my-server" --dry-run              # Preview targets</code></pre>
-          <div class="mt-3 overflow-x-auto">
+          <div class="mt-4 overflow-x-auto">
             <table class="w-full text-sm text-left">
-              <thead><tr class="text-gray-500 border-b border-white/5"><th class="pb-2 pr-4">Rule</th><th class="pb-2">Detects</th></tr></thead>
+              <thead><tr class="text-gray-500 border-b border-white/5"><th class="pb-2 pr-4">Rule</th><th class="pb-2 pr-4">Mode</th><th class="pb-2">Detects</th></tr></thead>
               <tbody class="text-gray-300">
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Path Traversal</td><td class="py-2"><code class="text-xs">../../etc/passwd</code> style attacks</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Input Validation</td><td class="py-2">Missing/malformed input handling</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Resource Exhaustion</td><td class="py-2">Crash-inducing large payloads</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Auth Bypass</td><td class="py-2">Access control circumvention</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Injection</td><td class="py-2">SQL/command injection in tool inputs</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Info Disclosure</td><td class="py-2">Leaked paths, stack traces, secrets</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Tool Poisoning</td><td class="py-2">Prompt injection, hidden Unicode, cross-tool manipulation</td></tr>
-                <tr><td class="py-2 pr-4">Excessive Agency</td><td class="py-2">Destructive tools without confirmation, arbitrary code params</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Path Traversal</td><td class="py-2 pr-4 text-green-400 text-xs">passive</td><td class="py-2"><code class="text-xs">../../etc/passwd</code> style directory escape attacks</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Input Validation</td><td class="py-2 pr-4 text-green-400 text-xs">passive</td><td class="py-2">Missing constraints (enum, pattern, min/max) on tool inputs</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Info Disclosure</td><td class="py-2 pr-4 text-green-400 text-xs">passive</td><td class="py-2">Leaked paths, stack traces, API keys in descriptions</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Tool Poisoning</td><td class="py-2 pr-4 text-green-400 text-xs">passive</td><td class="py-2">LLM prompt injection, hidden Unicode, cross-tool manipulation in descriptions</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Excessive Agency</td><td class="py-2 pr-4 text-green-400 text-xs">passive</td><td class="py-2">Destructive tools without confirmation params, arbitrary code execution</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Resource Exhaustion</td><td class="py-2 pr-4 text-yellow-400 text-xs">active</td><td class="py-2">Unbounded loops, large allocations, recursion</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Auth Bypass</td><td class="py-2 pr-4 text-yellow-400 text-xs">active</td><td class="py-2">Missing auth checks, hardcoded credentials</td></tr>
+                <tr><td class="py-2 pr-4">Injection</td><td class="py-2 pr-4 text-yellow-400 text-xs">active</td><td class="py-2">SQL and command injection in tool inputs</td></tr>
               </tbody>
             </table>
           </div>
+          <p class="text-gray-500 text-xs mt-3">Active/aggressive modes auto-skip destructive tools (<code class="text-brand-light">delete_*</code>, <code class="text-brand-light">destroy_*</code>, etc.) and require confirmation. Each finding includes severity, evidence, and remediation advice.</p>
+        </div>
+
+        <!-- record -->
+        <div class="gradient-card rounded-xl border border-white/5 p-6">
+          <h3 class="text-white font-semibold text-lg mb-1">mcpspec record <span class="text-gray-500 font-normal text-sm">start / replay / list / delete</span></h3>
+          <p class="text-gray-400 text-sm mb-4">Record inspector sessions, replay against servers, and diff results step by step for regression detection.</p>
+          <pre><code class="language-bash"># Record a session
+mcpspec record start "npx my-server"
+# In REPL: .call get_user {"id": "1"}, .call list_items {}, .save my-session
+
+# Replay against a new version and diff
+mcpspec record replay my-session "npx my-server-v2"
+
+# Manage recordings
+mcpspec record list
+mcpspec record delete my-session</code></pre>
+          <div class="mt-4 bg-navy-900 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300">
+            <div>Replaying 3 steps against my-server-v2...</div>
+            <div class="mt-2">&nbsp;&nbsp;1/3 get_user............ <span class="text-green-400">[OK]</span> 42ms</div>
+            <div>&nbsp;&nbsp;2/3 list_items........... <span class="text-yellow-400">[CHANGED]</span> 38ms</div>
+            <div>&nbsp;&nbsp;3/3 create_item.......... <span class="text-green-400">[OK]</span> 51ms</div>
+            <div class="mt-2">&nbsp;&nbsp;Summary: <span class="text-green-400">2 matched</span>, <span class="text-yellow-400">1 changed</span>, 0 added, 0 removed</div>
+          </div>
+          <p class="text-gray-500 text-xs mt-3">REPL commands: <code class="text-brand-light">.call &lt;tool&gt; &lt;json&gt;</code>, <code class="text-brand-light">.save &lt;name&gt;</code>, <code class="text-brand-light">.steps</code>, <code class="text-brand-light">.tools</code>, <code class="text-brand-light">.help</code>, <code class="text-brand-light">.exit</code>. Recordings stored in <code class="text-brand-light">~/.mcpspec/recordings/</code>.</p>
         </div>
 
         <!-- bench -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec bench <span class="text-gray-500 font-normal text-sm">&lt;server&gt;</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Performance benchmarking with statistical analysis.</p>
+          <p class="text-gray-400 text-sm mb-4">Performance benchmarking with statistical analysis. Configurable iterations, warmup, and tool targeting.</p>
           <pre><code class="language-bash">mcpspec bench "npx my-server"                        # 100 iterations
 mcpspec bench "npx my-server" --iterations 500
 mcpspec bench "npx my-server" --tool read_file
-mcpspec bench "npx my-server" --args '{"path":"/tmp/f"}'</code></pre>
-          <p class="text-gray-500 text-xs mt-3">Reports: min, max, mean, median, P95, P99, std dev, throughput (calls/sec)</p>
+mcpspec bench "npx my-server" --args '{"path":"/tmp/f"}'
+mcpspec bench "npx my-server" --warmup 10</code></pre>
+          <div class="mt-4 bg-navy-900 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300">
+            <div>Benchmarking read_file (100 iterations, 5 warmup)...</div>
+            <div class="mt-2">&nbsp;&nbsp;Latency</div>
+            <div>&nbsp;&nbsp;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+            <div>&nbsp;&nbsp;Min &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12.34ms</div>
+            <div>&nbsp;&nbsp;Max &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;89.21ms</div>
+            <div>&nbsp;&nbsp;Mean &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;34.56ms</div>
+            <div>&nbsp;&nbsp;Median &nbsp;&nbsp;&nbsp;31.22ms</div>
+            <div>&nbsp;&nbsp;P95 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;67.89ms</div>
+            <div>&nbsp;&nbsp;P99 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;82.45ms</div>
+            <div>&nbsp;&nbsp;Std Dev &nbsp;&nbsp;15.23ms</div>
+            <div class="mt-1">&nbsp;&nbsp;Throughput: 28.94 calls/sec</div>
+          </div>
+          <p class="text-gray-500 text-xs mt-3">Warmup iterations (default: 5) excluded from measurements. Uses <code class="text-brand-light">performance.now()</code> for high-resolution timing.</p>
         </div>
 
         <!-- score -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec score <span class="text-gray-500 font-normal text-sm">&lt;server&gt;</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Calculate a 0-100 quality rating across 5 weighted categories.</p>
+          <p class="text-gray-400 text-sm mb-4">Calculate a 0-100 quality rating across 5 weighted categories with opinionated schema linting.</p>
           <pre><code class="language-bash">mcpspec score "npx my-server"
-mcpspec score "npx my-server" --badge badge.svg</code></pre>
+mcpspec score "npx my-server" --badge badge.svg       # Generate SVG badge
+mcpspec score "npx my-server" --min-score 80          # Fail if below threshold</code></pre>
           <div class="mt-3 bg-navy-900 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300">
             <div>&nbsp;&nbsp;MCP Score</div>
             <div>&nbsp;&nbsp;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
@@ -312,83 +387,94 @@ mcpspec score "npx my-server" --badge badge.svg</code></pre>
             <div>&nbsp;&nbsp;Security &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-green-400">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span> 100/100</div>
             <div class="mt-1">&nbsp;&nbsp;Overall: <span class="text-white font-bold">91/100</span></div>
           </div>
-          <div class="mt-3 overflow-x-auto">
+          <div class="mt-4 overflow-x-auto">
             <table class="w-full text-sm text-left">
               <thead><tr class="text-gray-500 border-b border-white/5"><th class="pb-2 pr-4">Category (weight)</th><th class="pb-2">Measures</th></tr></thead>
               <tbody class="text-gray-300">
                 <tr class="border-b border-white/5"><td class="py-2 pr-4">Documentation (25%)</td><td class="py-2">% of tools/resources with descriptions</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Schema Quality (25%)</td><td class="py-2">Property types, descriptions, required fields, constraints (enum/pattern/min/max), naming conventions</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Error Handling (20%)</td><td class="py-2">Returns isError for bad input vs. crashing</td></tr>
-                <tr class="border-b border-white/5"><td class="py-2 pr-4">Responsiveness (15%)</td><td class="py-2">Median response latency</td></tr>
-                <tr><td class="py-2 pr-4">Security (15%)</td><td class="py-2">Findings from passive security scan</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Schema Quality (25%)</td><td class="py-2">6 sub-criteria: structure, property types, descriptions, required fields, constraints (enum/pattern/min/max), naming conventions</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Error Handling (20%)</td><td class="py-2">Structured error responses (<code class="text-xs text-brand-light">isError: true</code>) vs. crashes on bad input</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Responsiveness (15%)</td><td class="py-2">Median latency: &lt;100ms = 100, &lt;500ms = 80, &lt;1s = 60, &lt;5s = 40</td></tr>
+                <tr><td class="py-2 pr-4">Security (15%)</td><td class="py-2">Findings from passive scan: 0 = 100, &le;2 = 70, &le;5 = 40</td></tr>
               </tbody>
             </table>
           </div>
+          <p class="text-gray-500 text-xs mt-3"><code class="text-brand-light">--badge</code> generates a shields.io-style SVG for your README. <code class="text-brand-light">--min-score</code> exits with code 1 if score is below threshold.</p>
         </div>
 
         <!-- docs -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec docs <span class="text-gray-500 font-normal text-sm">&lt;server&gt;</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Auto-generate documentation from server introspection.</p>
+          <p class="text-gray-400 text-sm mb-4">Auto-generate documentation from server introspection. Lists all tools with input schemas and all resources with URIs.</p>
           <pre><code class="language-bash">mcpspec docs "npx my-server"                  # Markdown to stdout
 mcpspec docs "npx my-server" --format html     # HTML output
 mcpspec docs "npx my-server" --output ./docs   # Write to directory</code></pre>
+          <p class="text-gray-500 text-xs mt-3">Generated docs include: server name, version, description, all tools (name, description, JSON Schema input), and all resources (URI, name, description).</p>
         </div>
 
         <!-- compare / baseline -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec compare <span class="text-gray-500 font-normal text-sm">/ baseline</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Save baselines and detect regressions between test runs.</p>
+          <p class="text-gray-400 text-sm mb-4">Save baselines and detect regressions between test runs. Shows regressions, fixes, new tests, and removed tests.</p>
           <pre><code class="language-bash">mcpspec baseline save main                 # Save current run
 mcpspec baseline list                      # List baselines
-mcpspec compare --baseline main            # Compare against baseline
+mcpspec test --baseline main               # Compare against baseline
+mcpspec compare --baseline main            # Explicit comparison
 mcpspec compare &lt;run-id-1&gt; &lt;run-id-2&gt;      # Compare two runs</code></pre>
-        </div>
-
-        <!-- record -->
-        <div class="gradient-card rounded-xl border border-white/5 p-6">
-          <h3 class="text-white font-semibold text-lg mb-1">mcpspec record <span class="text-gray-500 font-normal text-sm">start / replay / list / delete</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Record inspector sessions, replay against servers, and diff results for regression detection.</p>
-          <pre><code class="language-bash">mcpspec record start "npx my-server"       # Record a session
-mcpspec record list                         # List saved recordings
-mcpspec record replay my-session "npx my-server"  # Replay &amp; diff
-mcpspec record delete my-session            # Delete a recording</code></pre>
-          <p class="text-gray-500 text-xs mt-3">REPL commands: .call &lt;tool&gt; &lt;json&gt;, .save &lt;name&gt;, .steps, .tools, .help, .exit</p>
         </div>
 
         <!-- init -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec init <span class="text-gray-500 font-normal text-sm">[directory]</span></h3>
-          <p class="text-gray-400 text-sm mb-4">Scaffold a new project with templates.</p>
-          <pre><code class="language-bash">mcpspec init                               # Current directory
+          <p class="text-gray-400 text-sm mb-4">Scaffold a new project with templates. Interactive wizard when no flags provided.</p>
+          <pre><code class="language-bash">mcpspec init                               # Interactive wizard
 mcpspec init ./my-project
-mcpspec init --template minimal            # Minimal starter
-mcpspec init --template standard           # Standard (recommended)
-mcpspec init --template full               # Full with environments</code></pre>
+mcpspec init --template minimal            # Minimal: single test
+mcpspec init --template standard           # Standard: best practices
+mcpspec init --template full               # Full: environments, tags, extraction</code></pre>
         </div>
 
         <!-- ci-init -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec ci-init</h3>
-          <p class="text-gray-400 text-sm mb-4">Generate CI pipeline configuration with an interactive wizard or flags.</p>
+          <p class="text-gray-400 text-sm mb-4">Generate CI pipeline configuration with an interactive wizard or flags. Auto-detects platform from project structure.</p>
           <pre><code class="language-bash">mcpspec ci-init                                # Interactive wizard
 mcpspec ci-init --platform github              # GitHub Actions
 mcpspec ci-init --platform gitlab              # GitLab CI
 mcpspec ci-init --platform shell               # Shell script
 mcpspec ci-init --checks test,audit,score      # Choose checks
+mcpspec ci-init --server "npx my-server"       # Server for audit/score/bench
 mcpspec ci-init --fail-on medium               # Audit severity gate
 mcpspec ci-init --min-score 70                 # MCP Score threshold
 mcpspec ci-init --force                        # Overwrite existing files</code></pre>
-          <p class="text-gray-500 text-xs mt-3">Auto-detects platform from .github/ or .gitlab-ci.yml. Supports test, audit, score, and bench checks. Use <code class="text-brand-light">--force</code> to regenerate.</p>
+          <p class="text-gray-500 text-xs mt-3">Auto-detects platform from <code class="text-brand-light">.github/</code> or <code class="text-brand-light">.gitlab-ci.yml</code>. GitLab <code class="text-brand-light">--force</code> surgically replaces only the mcpspec job, preserving other jobs. Supports test, audit, score, and bench checks.</p>
         </div>
 
         <!-- ui -->
         <div class="gradient-card rounded-xl border border-white/5 p-6">
           <h3 class="text-white font-semibold text-lg mb-1">mcpspec ui</h3>
-          <p class="text-gray-400 text-sm mb-4">Launch the web dashboard with everything in one interface.</p>
+          <p class="text-gray-400 text-sm mb-4">Launch the web dashboard with everything in one interface. Binds to localhost by default.</p>
           <pre><code class="language-bash">mcpspec ui                  # Opens localhost:6274
-mcpspec ui --port 8080      # Custom port</code></pre>
-          <p class="text-gray-500 text-xs mt-3">Server management, collection editor, test runner, inspector, audit viewer, benchmarks, doc generator, MCP Score, dark mode.</p>
+mcpspec ui --port 8080      # Custom port
+mcpspec ui --no-open        # Don't auto-open browser</code></pre>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead><tr class="text-gray-500 border-b border-white/5"><th class="pb-2 pr-4">Page</th><th class="pb-2">Description</th></tr></thead>
+              <tbody class="text-gray-300">
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Dashboard</td><td class="py-2">Overview of servers, collections, recent runs</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Servers</td><td class="py-2">Connect and manage MCP server connections</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Collections</td><td class="py-2">Create and edit YAML test collections</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Runs</td><td class="py-2">Test run history with detailed results</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Inspector</td><td class="py-2">Interactive tool calling with schema forms and protocol logging</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Audit</td><td class="py-2">Run security scans and view findings</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Benchmark</td><td class="py-2">Performance profiling with charts</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Score</td><td class="py-2">MCP Score visualization</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4">Docs</td><td class="py-2">Generated server documentation</td></tr>
+                <tr><td class="py-2 pr-4">Recordings</td><td class="py-2">View, replay, and manage recorded sessions</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-gray-500 text-xs mt-3">Real-time WebSocket updates for running tests. Dark mode with localStorage persistence. Built with React, TanStack Router, TanStack Query, Tailwind, shadcn/ui.</p>
         </div>
 
       </div>
@@ -415,6 +501,7 @@ tests:
       param: value
     expect:
       - exists: $.result
+      - equals: [$.status, "ok"]
 
   - name: Handle errors
     call: tool_name
@@ -438,6 +525,11 @@ environments:
   dev:
     variables:
       BASE_PATH: /tmp/dev
+  staging:
+    variables:
+      BASE_PATH: /tmp/staging
+
+defaultEnvironment: dev
 
 tests:
   - id: test-1
@@ -462,6 +554,35 @@ tests:
         </div>
       </div>
 
+      <!-- Transports -->
+      <h3 class="text-white font-semibold mt-12 mb-4">Transport Configuration</h3>
+      <p class="text-gray-400 text-sm mb-4">MCPSpec supports 3 transport types for connecting to MCP servers.</p>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="gradient-card rounded-lg border border-white/5 p-4">
+          <h4 class="text-brand-light font-mono text-sm mb-2">stdio (default)</h4>
+          <pre><code class="language-yaml">server:
+  command: npx
+  args: ["my-server"]
+  env:
+    NODE_ENV: test</code></pre>
+          <p class="text-gray-500 text-xs mt-2">Spawns child process, communicates via stdin/stdout</p>
+        </div>
+        <div class="gradient-card rounded-lg border border-white/5 p-4">
+          <h4 class="text-brand-light font-mono text-sm mb-2">SSE</h4>
+          <pre><code class="language-yaml">server:
+  transport: sse
+  url: http://localhost:3000/sse</code></pre>
+          <p class="text-gray-500 text-xs mt-2">HTTP Server-Sent Events for streaming</p>
+        </div>
+        <div class="gradient-card rounded-lg border border-white/5 p-4">
+          <h4 class="text-brand-light font-mono text-sm mb-2">HTTP</h4>
+          <pre><code class="language-yaml">server:
+  transport: http
+  url: http://localhost:3000/mcp</code></pre>
+          <p class="text-gray-500 text-xs mt-2">Streamable HTTP POST requests</p>
+        </div>
+      </div>
+
       <!-- Assertion Types -->
       <h3 class="text-white font-semibold mt-12 mb-4">Assertion Types</h3>
       <div class="overflow-x-auto">
@@ -474,20 +595,58 @@ tests:
             </tr>
           </thead>
           <tbody class="text-gray-300">
-            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">schema</td><td class="py-2.5 pr-4">Response is valid</td><td class="py-2.5 font-mono text-xs text-gray-400">type: schema</td></tr>
-            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">equals</td><td class="py-2.5 pr-4">Exact match</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.id, value: 123</td></tr>
+            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">schema</td><td class="py-2.5 pr-4">Response is valid structure</td><td class="py-2.5 font-mono text-xs text-gray-400">type: schema</td></tr>
+            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">equals</td><td class="py-2.5 pr-4">Exact match (deep comparison)</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.id, value: 123</td></tr>
             <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">contains</td><td class="py-2.5 pr-4">Array/string contains</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.tags, value: "active"</td></tr>
-            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">exists</td><td class="py-2.5 pr-4">Path exists</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.name</td></tr>
+            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">exists</td><td class="py-2.5 pr-4">Path exists and is not null</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.name</td></tr>
             <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">matches</td><td class="py-2.5 pr-4">Regex match</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.email, pattern: ".*@.*"</td></tr>
             <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">type</td><td class="py-2.5 pr-4">Type check</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.count, expected: number</td></tr>
-            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">length</td><td class="py-2.5 pr-4">Length check</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.items, operator: gt, value: 0</td></tr>
-            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">latency</td><td class="py-2.5 pr-4">Response time</td><td class="py-2.5 font-mono text-xs text-gray-400">maxMs: 1000</td></tr>
+            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">length</td><td class="py-2.5 pr-4">Array/string length</td><td class="py-2.5 font-mono text-xs text-gray-400">path: $.items, operator: gt, value: 0</td></tr>
+            <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">latency</td><td class="py-2.5 pr-4">Response time threshold</td><td class="py-2.5 font-mono text-xs text-gray-400">maxMs: 1000</td></tr>
             <tr class="border-b border-white/5"><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">mimeType</td><td class="py-2.5 pr-4">Content type</td><td class="py-2.5 font-mono text-xs text-gray-400">expected: "image/png"</td></tr>
-            <tr><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">expression</td><td class="py-2.5 pr-4">Safe expression</td><td class="py-2.5 font-mono text-xs text-gray-400">expr: "response.total > 0"</td></tr>
+            <tr><td class="py-2.5 pr-4 font-mono text-brand-light text-xs">expression</td><td class="py-2.5 pr-4">Safe expression eval</td><td class="py-2.5 font-mono text-xs text-gray-400">expr: "response.total > 0"</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="text-gray-500 text-xs mt-3">Expressions use <a href="https://github.com/silentmatt/expr-eval" class="text-brand-light hover:underline">expr-eval</a> — comparisons, logical operators, property access, math. No arbitrary code execution.</p>
+      <p class="text-gray-500 text-xs mt-3">Expressions use <a href="https://github.com/silentmatt/expr-eval" class="text-brand-light hover:underline">expr-eval</a> — comparisons, logical operators, property access, math. No arbitrary code execution. Variables from <code class="text-brand-light">extract</code> are available in expressions.</p>
+
+      <!-- Variables & Extraction -->
+      <h3 class="text-white font-semibold mt-12 mb-4">Variables &amp; Extraction</h3>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="text-gray-300 text-sm font-semibold mb-2">Environment Variables</h4>
+          <pre><code class="language-yaml">environments:
+  dev:
+    variables:
+      BASE_URL: http://localhost:3000
+      API_KEY: dev-key-123
+
+tests:
+  - name: Use env variable
+    call: fetch_data
+    with:
+      url: "{{BASE_URL}}/api/data"</code></pre>
+          <p class="text-gray-500 text-xs mt-2">Switch with <code class="text-brand-light">--env staging</code></p>
+        </div>
+        <div>
+          <h4 class="text-gray-300 text-sm font-semibold mb-2">Variable Extraction</h4>
+          <pre><code class="language-yaml">tests:
+  - name: Create item
+    call: create_item
+    with: { name: "test" }
+    extract:
+      - name: newId
+        path: $.id
+
+  - name: Verify item
+    call: get_item
+    with:
+      id: "{{newId}}"
+    expect:
+      - equals: [$.name, "test"]</code></pre>
+          <p class="text-gray-500 text-xs mt-2">Extract values from responses for use in later tests</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -556,7 +715,8 @@ jobs:
         with:
           node-version: '22'
 
-      # Or add mcpspec as a devDependency for version pinning
+      # Or add mcpspec as a devDependency
+      # for version pinning
       - run: npm install -g mcpspec
 
       - name: Run tests
@@ -564,6 +724,9 @@ jobs:
 
       - name: Security audit
         run: mcpspec audit "npx my-server" --mode passive --fail-on high
+
+      - name: MCP Score
+        run: mcpspec score "npx my-server" --min-score 80
 
       - uses: mikepenz/action-junit-report@v4
         if: always()
@@ -573,6 +736,7 @@ jobs:
 
         <div>
           <h3 class="text-white font-semibold mb-3">Exit Codes</h3>
+          <p class="text-gray-500 text-xs mb-3">Deterministic exit codes for CI gating</p>
           <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
               <thead><tr class="text-gray-500 border-b border-white/10"><th class="pb-3 pr-4">Code</th><th class="pb-3">Meaning</th></tr></thead>
@@ -589,6 +753,20 @@ jobs:
               </tbody>
             </table>
           </div>
+
+          <h3 class="text-white font-semibold mt-8 mb-3">Reporters</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead><tr class="text-gray-500 border-b border-white/10"><th class="pb-3 pr-4">Format</th><th class="pb-3">Use Case</th></tr></thead>
+              <tbody class="text-gray-300">
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light text-xs">console</td><td class="py-2">Terminal output with colors</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light text-xs">json</td><td class="py-2">Machine-readable for tooling</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light text-xs">junit</td><td class="py-2">Jenkins, GitHub Actions, GitLab CI</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2 pr-4 font-mono text-brand-light text-xs">html</td><td class="py-2">Interactive report for sharing</td></tr>
+                <tr><td class="py-2 pr-4 font-mono text-brand-light text-xs">tap</td><td class="py-2">Test Anything Protocol</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -598,35 +776,35 @@ jobs:
   <section id="architecture" class="py-20 px-4">
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold text-center text-white mb-4">Architecture</h2>
-      <p class="text-gray-400 text-center mb-12">TypeScript monorepo with 5 packages.</p>
+      <p class="text-gray-400 text-center mb-12">TypeScript monorepo with 5 packages. pnpm workspaces + Turborepo.</p>
 
       <div class="space-y-3">
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/shared</code>
-          <span class="text-gray-400 text-sm">Types, Zod schemas, constants</span>
+          <span class="text-gray-400 text-sm">Types, Zod schemas, constants, exit codes</span>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/core</code>
-          <span class="text-gray-400 text-sm">MCP client, test runner, assertions, security scanner (8 rules), profiler, doc generator, scorer, recording/replay</span>
+          <span class="text-gray-400 text-sm">MCP client (3 transports), test runner, 10 assertions, 8 security rules, profiler, doc generator, scorer, recording/replay</span>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/cli</code>
-          <span class="text-gray-400 text-sm">12 CLI commands built with Commander.js</span>
+          <span class="text-gray-400 text-sm">12 CLI commands built with Commander.js + @inquirer/prompts for interactive wizards</span>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/server</code>
-          <span class="text-gray-400 text-sm">Hono HTTP server with REST API + WebSocket for real-time updates</span>
+          <span class="text-gray-400 text-sm">Hono HTTP server with REST API + WebSocket for real-time updates, sql.js (WASM SQLite) storage</span>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4 flex items-center gap-4">
           <code class="text-brand-light font-mono text-sm w-40 flex-shrink-0">@mcpspec/ui</code>
-          <span class="text-gray-400 text-sm">React SPA — TanStack Router, TanStack Query, Tailwind CSS, shadcn/ui</span>
+          <span class="text-gray-400 text-sm">React SPA with 10 pages — TanStack Router, TanStack Query, Tailwind CSS, shadcn/ui, dark mode</span>
         </div>
       </div>
 
       <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div class="gradient-card rounded-lg border border-white/5 p-4">
           <div class="text-2xl font-bold text-white">299</div>
-          <div class="text-gray-500 text-sm">Tests</div>
+          <div class="text-gray-500 text-sm">Unit Tests</div>
         </div>
         <div class="gradient-card rounded-lg border border-white/5 p-4">
           <div class="text-2xl font-bold text-white">12</div>

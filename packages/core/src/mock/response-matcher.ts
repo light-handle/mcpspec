@@ -1,5 +1,25 @@
 import type { RecordingStep } from '@mcpspec/shared';
 
+/**
+ * Recursively sorts object keys at all nesting levels for deterministic comparison.
+ * JSON.stringify's replacer array only whitelists keys (and drops unlisted nested keys),
+ * so we need a custom implementation for deep key-order-independent comparison.
+ */
+function stableStringify(obj: unknown): string {
+  if (obj === null || typeof obj !== 'object') {
+    return JSON.stringify(obj);
+  }
+  if (Array.isArray(obj)) {
+    return '[' + obj.map(stableStringify).join(',') + ']';
+  }
+  const keys = Object.keys(obj as Record<string, unknown>).sort();
+  const parts = keys.map((key) => {
+    const val = (obj as Record<string, unknown>)[key];
+    return JSON.stringify(key) + ':' + stableStringify(val);
+  });
+  return '{' + parts.join(',') + '}';
+}
+
 export type MatchMode = 'match' | 'sequential';
 export type OnMissingBehavior = 'error' | 'empty';
 
@@ -101,7 +121,7 @@ export class ResponseMatcher {
   }
 
   private normalizeInput(input: Record<string, unknown>): string {
-    return JSON.stringify(input, Object.keys(input).sort());
+    return stableStringify(input);
   }
 
   private stepToResult(step: RecordingStep): MatchResult {

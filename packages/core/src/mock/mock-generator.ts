@@ -34,6 +34,16 @@ const MODE = '${options.mode}';
 const LATENCY = ${latencyValue};
 const ON_MISSING = '${options.onMissing}';
 
+// --- Stable stringify (deep key sorting) ---
+
+function stableStringify(obj) {
+  if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
+  if (Array.isArray(obj)) return '[' + obj.map(stableStringify).join(',') + ']';
+  const keys = Object.keys(obj).sort();
+  const parts = keys.map((k) => JSON.stringify(k) + ':' + stableStringify(obj[k]));
+  return '{' + parts.join(',') + '}';
+}
+
 // --- ResponseMatcher (inlined) ---
 
 class ResponseMatcher {
@@ -75,9 +85,9 @@ class ResponseMatcher {
     const queue = this.toolQueues.get(toolName);
     if (!queue || queue.length === 0) return null;
 
-    const inputKey = JSON.stringify(input, Object.keys(input).sort());
+    const inputKey = stableStringify(input);
     const exactIndex = queue.findIndex(
-      (s) => JSON.stringify(s.input, Object.keys(s.input).sort()) === inputKey
+      (s) => stableStringify(s.input) === inputKey
     );
 
     let step;

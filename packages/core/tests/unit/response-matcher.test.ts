@@ -33,6 +33,54 @@ describe('ResponseMatcher', () => {
       expect(result!.output).toEqual([{ type: 'text', text: 'ok' }]);
     });
 
+    it('should handle different key ordering in nested objects', () => {
+      const matcher = new ResponseMatcher(
+        [step('tool', { config: { z: 1, y: 2 }, name: 'test' }, [{ type: 'text', text: 'nested-ok' }])],
+        { mode: 'match', onMissing: 'error' },
+      );
+
+      // Same data, different key order at both levels
+      const result = matcher.match('tool', { name: 'test', config: { y: 2, z: 1 } });
+      expect(result).not.toBeNull();
+      expect(result!.output).toEqual([{ type: 'text', text: 'nested-ok' }]);
+    });
+
+    it('should handle deeply nested objects with different key ordering', () => {
+      const matcher = new ResponseMatcher(
+        [step('tool', { a: { b: { d: 4, c: 3 }, e: 5 } }, [{ type: 'text', text: 'deep-ok' }])],
+        { mode: 'match', onMissing: 'error' },
+      );
+
+      const result = matcher.match('tool', { a: { e: 5, b: { c: 3, d: 4 } } });
+      expect(result).not.toBeNull();
+      expect(result!.output).toEqual([{ type: 'text', text: 'deep-ok' }]);
+    });
+
+    it('should handle arrays in nested objects', () => {
+      const matcher = new ResponseMatcher(
+        [step('tool', { items: [1, 2, 3], meta: { count: 3 } }, [{ type: 'text', text: 'array-ok' }])],
+        { mode: 'match', onMissing: 'error' },
+      );
+
+      const result = matcher.match('tool', { meta: { count: 3 }, items: [1, 2, 3] });
+      expect(result).not.toBeNull();
+      expect(result!.output).toEqual([{ type: 'text', text: 'array-ok' }]);
+    });
+
+    it('should not match different nested values', () => {
+      const matcher = new ResponseMatcher(
+        [step('tool', { config: { x: 1 } }, [{ type: 'text', text: 'only-match' }])],
+        { mode: 'match', onMissing: 'error' },
+      );
+
+      // Different nested value — should NOT exact-match, falls back to queue
+      const result = matcher.match('tool', { config: { x: 999 } });
+      // Falls back to queue order (same tool), so still returns the step
+      expect(result).not.toBeNull();
+      // But now the queue is empty
+      expect(matcher.match('tool', { config: { x: 1 } })).toBeNull();
+    });
+
     it('should fall back to queue order when no exact match', () => {
       const matcher = new ResponseMatcher(
         [

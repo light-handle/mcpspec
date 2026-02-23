@@ -90,4 +90,18 @@ describe('MockGenerator', () => {
 
     expect(code).toContain('const LATENCY = 200');
   });
+
+  it('should include stableStringify for deep key sorting', () => {
+    const code = generator.generate({
+      recording: makeRecording(),
+      mode: 'match',
+      latency: 0,
+      onMissing: 'error',
+    });
+
+    expect(code).toContain('function stableStringify');
+    // Should NOT use the broken JSON.stringify replacer-array approach
+    expect(code).not.toContain('Object.keys(input).sort()');
+    expect(code).not.toContain('Object.keys(s.input).sort()');
+  });
 });

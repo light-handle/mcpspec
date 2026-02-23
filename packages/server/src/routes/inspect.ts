@@ -1,9 +1,10 @@
 import type { Hono } from 'hono';
-import { inspectConnectSchema, inspectCallSchema } from '@mcpspec/shared';
-import type { ProtocolLogEntry } from '@mcpspec/shared';
+import { inspectConnectSchema, inspectCallSchema, saveInspectRecordingSchema } from '@mcpspec/shared';
+import type { ProtocolLogEntry, Recording, RecordingStep } from '@mcpspec/shared';
 import { MCPClient, ProcessManagerImpl } from '@mcpspec/core';
 import type { ServerConfig } from '@mcpspec/shared';
 import type { WebSocketHandler } from '../websocket.js';
+import type { Database } from '../db/database.js';
 import { randomUUID } from 'node:crypto';
 
 const MAX_LOG_ENTRIES = 10_000;
@@ -31,7 +32,7 @@ setInterval(() => {
   }
 }, 60_000);
 
-export function inspectRoutes(app: Hono, wsHandler?: WebSocketHandler): void {
+export function inspectRoutes(app: Hono, db?: Database, wsHandler?: WebSocketHandler): void {
   app.post('/api/inspect/connect', async (c) => {
     const body = await c.req.json();
     const parsed = inspectConnectSchema.safeParse(body);
@@ -219,5 +220,92 @@ export function inspectRoutes(app: Hono, wsHandler?: WebSocketHandler): void {
     }
     sessions.delete(sessionId);
     return c.json({ data: { disconnected: true } });
+  });
+
+  // Save current inspect session as a recording
+  app.post('/api/inspect/save-recording', async (c) => {
+    if (!db) {
+      return c.json({ error: 'unavailable', message: 'Database not configured' }, 500);
+    }
+
+    const body = await c.req.json();
+    const parsed = saveInspectRecordingSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'validation_error', message: parsed.error.message }, 400);
+    }
+
+    const session = sessions.get(parsed.data.sessionId);
+    if (!session) {
+      return c.json({ error: 'not_found', message: 'Session not found or expired' }, 404);
+    }
+
+    // Extract tool calls from protocol log
+    const steps: RecordingStep[] = [];
+    const pendingCalls = new Map<string | number, { tool: string; input: Record<string, unknown>; sentAt: number }>();
+
+    for (const entry of session.protocolLog) {
+      if (entry.direction === 'outgoing' && entry.method === 'tools/call') {
+        const msg = entry.message as Record<string, unknown>;
+        const params = msg.params as Record<string, unknown> | undefined;
+        if (params && entry.jsonrpcId != null) {
+          pendingCalls.set(entry.jsonrpcId, {
+            tool: params.name as string,
+            input: (params.arguments ?? {}) as Record<string, unknown>,
+            sentAt: entry.timestamp,
+          });
+        }
+      } else if (entry.direction === 'incoming' && entry.jsonrpcId != null) {
+        const pending = pendingCalls.get(entry.jsonrpcId);
+        if (pending) {
+          const msg = entry.message as Record<string, unknown>;
+          const result = msg.result as Record<string, unknown> | undefined;
+          const isError = msg.error !== undefined || (result && (result as Record<string, unknown>).isError === true);
+          const content = result?.content as unknown[] ?? [];
+          const durationMs = entry.roundTripMs ?? (entry.timestamp - pending.sentAt);
+
+          steps.push({
+            tool: pending.tool,
+            input: pending.input,
+            output: content,
+            isError: isError || undefined,
+            durationMs,
+          });
+          pendingCalls.delete(entry.jsonrpcId);
+        }
+      }
+    }
+
+    if (steps.length === 0) {
+      return c.json({ error: 'no_calls', message: 'No tool calls found in session to record' }, 400);
+    }
+
+    // Get tool list from session
+    let toolList: Array<{ name: string; description?: string }> = [];
+    try {
+      const tools = await session.client.listTools();
+      toolList = tools.map((t) => ({ name: t.name, description: t.description }));
+    } catch {
+      // Best effort
+    }
+
+    const serverInfo = session.client.getServerInfo();
+    const recording: Recording = {
+      id: randomUUID(),
+      name: parsed.data.name,
+      description: parsed.data.description,
+      serverName: serverInfo?.name,
+      tools: toolList,
+      steps,
+      createdAt: new Date().toISOString(),
+    };
+
+    const saved = db.createRecording({
+      name: recording.name,
+      description: recording.description,
+      serverName: recording.serverName,
+      data: JSON.stringify(recording),
+    });
+
+    return c.json({ data: saved }, 201);
   });
 }

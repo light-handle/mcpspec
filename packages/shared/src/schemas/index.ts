@@ -13,6 +13,9 @@ export {
   benchmarkStartSchema,
   docsGenerateSchema,
   scoreCalculateSchema,
+  saveRecordingSchema,
+  replayRecordingSchema,
+  saveInspectRecordingSchema,
 } from './api.js';
 
 export const serverConfigSchema = z.union([

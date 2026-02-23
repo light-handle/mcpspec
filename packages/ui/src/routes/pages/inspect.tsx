@@ -12,7 +12,7 @@ import { ProtocolTail } from '@/components/inspect/protocol-tail';
 import { useServers } from '@/hooks/use-servers';
 import { useProtocolLog } from '@/hooks/use-protocol-log';
 import { api } from '@/lib/api';
-import { Plug, Unplug, Loader2 } from 'lucide-react';
+import { Plug, Unplug, Loader2, Save } from 'lucide-react';
 
 interface Tool {
   name: string;
@@ -39,6 +39,10 @@ export function InspectPage() {
   const [tools, setTools] = useState<Tool[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showSaveRecording, setShowSaveRecording] = useState(false);
+  const [recordingName, setRecordingName] = useState('');
+  const [recordingDescription, setRecordingDescription] = useState('');
+  const [savingRecording, setSavingRecording] = useState(false);
 
   const servers = useServers();
   const { entries: protocolEntries } = useProtocolLog(sessionId);
@@ -95,6 +99,25 @@ export function InspectPage() {
       setResources([]);
     }
   }
+
+  async function handleSaveRecording() {
+    if (!sessionId || !recordingName.trim()) return;
+    setSavingRecording(true);
+    try {
+      await api.inspect.saveRecording(sessionId, recordingName.trim(), recordingDescription.trim() || undefined);
+      setShowSaveRecording(false);
+      setRecordingName('');
+      setRecordingDescription('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save recording');
+    }
+    setSavingRecording(false);
+  }
+
+  // Check if there are tool calls in the protocol log
+  const hasToolCalls = protocolEntries.some(
+    (e) => e.direction === 'outgoing' && e.method === 'tools/call',
+  );
 
   return (
     <div className="space-y-6">
@@ -157,10 +180,45 @@ export function InspectPage() {
           <div className="flex items-center gap-3">
             <Badge variant="success">Connected</Badge>
             <span className="text-sm text-muted-foreground">{tools.length} tools, {resources.length} resources</span>
+            {hasToolCalls && (
+              <Button size="sm" variant="outline" onClick={() => setShowSaveRecording(true)}>
+                <Save className="mr-2 h-4 w-4" />Save Recording
+              </Button>
+            )}
             <Button size="sm" variant="outline" onClick={handleDisconnect}>
               <Unplug className="mr-2 h-4 w-4" />Disconnect
             </Button>
           </div>
+
+          {showSaveRecording && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Save Recording</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Input
+                  value={recordingName}
+                  onChange={(e) => setRecordingName(e.target.value)}
+                  placeholder="Recording name"
+                />
+                <Input
+                  value={recordingDescription}
+                  onChange={(e) => setRecordingDescription(e.target.value)}
+                  placeholder="Description (optional)"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleSaveRecording}
+                    disabled={savingRecording || !recordingName.trim()}
+                  >
+                    {savingRecording ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Save
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowSaveRecording(false)}>Cancel</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Tabs defaultValue="tools">
             <TabsList>

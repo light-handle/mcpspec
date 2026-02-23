@@ -1,4 +1,4 @@
-import { LayoutDashboard, Server, FileText, Play, Search, Shield, Timer, FileOutput, Star, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, Server, FileText, Play, Search, Shield, Timer, FileOutput, Star, Moon, Sun, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUiStore } from '@/stores/ui-store';
 
@@ -8,6 +8,7 @@ const navItems = [
   { href: '/collections', label: 'Collections', icon: FileText },
   { href: '/runs', label: 'Runs', icon: Play },
   { href: '/inspect', label: 'Inspect', icon: Search },
+  { href: '/recordings', label: 'Recordings', icon: Video },
   { href: '/audit', label: 'Audit', icon: Shield },
   { href: '/benchmark', label: 'Benchmark', icon: Timer },
   { href: '/docs', label: 'Docs', icon: FileOutput },
@@ -56,7 +57,7 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
-        <div className="mt-2 px-3 text-xs text-muted-foreground">v1.0.0</div>
+        <div className="mt-2 px-3 text-xs text-muted-foreground">v1.1.0</div>
       </div>
     </aside>
   );

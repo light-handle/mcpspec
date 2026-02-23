@@ -1,8 +1,8 @@
 # MCPSpec - The Definitive MCP Server Testing Platform
 
-> **Specification Version:** 2.0.0  
-> **Last Updated:** February 2026  
-> **Status:** Implementation Ready
+> **Specification Version:** 2.1.0
+> **Last Updated:** February 2026
+> **Status:** v1.1.0 Released
 
 ## Table of Contents
 
@@ -185,7 +185,9 @@ mcpspec/
 │   │   │   │   │   ├── resource-exhaustion.ts
 │   │   │   │   │   ├── auth-bypass.ts
 │   │   │   │   │   ├── injection.ts
-│   │   │   │   │   └── information-disclosure.ts
+│   │   │   │   │   ├── information-disclosure.ts
+│   │   │   │   │   ├── tool-poisoning.ts      # LLM prompt injection in tool descriptions
+│   │   │   │   │   └── excessive-agency.ts    # Overly broad/destructive tools
 │   │   │   │   └── payloads/
 │   │   │   │       ├── safe-payloads.ts
 │   │   │   │       └── platform-payloads.ts
@@ -199,6 +201,11 @@ mcpspec/
 │   │   │   │   ├── doc-generator.ts
 │   │   │   │   ├── markdown-generator.ts
 │   │   │   │   └── html-generator.ts
+│   │   │   │
+│   │   │   ├── recording/
+│   │   │   │   ├── recording-store.ts          # Save/load recordings
+│   │   │   │   ├── recording-replayer.ts       # Replay against server
+│   │   │   │   └── recording-differ.ts         # Diff original vs replay
 │   │   │   │
 │   │   │   ├── scoring/
 │   │   │   │   ├── mcp-score.ts
@@ -242,7 +249,8 @@ mcpspec/
 │   │       │   ├── score.ts
 │   │       │   ├── bench.ts
 │   │       │   ├── compare.ts
-│   │       │   └── baseline.ts
+│   │       │   ├── baseline.ts
+│   │       │   └── record.ts              # Recording & replay
 │   │       ├── wizard/
 │   │       │   └── onboarding.ts
 │   │       └── utils/
@@ -565,6 +573,12 @@ mcpspec score <server> --badge <path>
 
 # Performance benchmark
 mcpspec bench <server> --iterations 100
+
+# Recording & replay
+mcpspec record start <server>           # Record inspector session
+mcpspec record list                     # List saved recordings
+mcpspec record replay <name> <server>   # Replay and diff
+mcpspec record delete <name>            # Delete recording
 ```
 
 ---
@@ -843,15 +857,18 @@ mcpspec bench my-server --iterations 100
 ### v1.0.0 (Week 20)
 Initial public release. Core features complete.
 
-### v1.1.0 (Week 24)
-- Collection registry (share collections)
-- Import from Postman/Insomnia
-- More security rules
-- Bug fixes from feedback
-- **Server Process Monitor** — Real-time view of stdio server process health: stdout/stderr streams, memory/CPU usage, uptime, exit code on crash. Expose ProcessManager stats via server API/WebSocket. UI panel in Inspector.
+### v1.1.0 (Week 24) — COMPLETE
+- **Tool Poisoning security rule** — Detects LLM prompt injection in tool descriptions: suspicious instructions, hidden Unicode, cross-tool references, embedded code
+- **Excessive Agency security rule** — Detects overly broad/destructive tools: missing confirmation params, arbitrary code params, broad schemas, missing descriptions
+- **Recording & Replay** — Record inspector sessions, save to `~/.mcpspec/recordings/`, replay against servers, diff results (matched/changed/added/removed)
+- **Opinionated schema linting in MCP Score** — Schema quality now scores across 6 weighted criteria: structure (20%), property types (20%), property descriptions (20%), required fields (15%), constraints like enum/pattern/min/max (15%), and naming conventions (10%)
+- New CLI command: `mcpspec record` (start/list/replay/delete)
+- Server API: recordings CRUD + replay endpoint, save-recording from inspect sessions
+- UI: Recordings page, Save Recording button on Inspector
+- Security scanner now has 8 rules (was 6), passive mode has 5 rules (was 3)
 
 ### v1.1.5 (Week 26)
-- **Request/Response Diff & Replay** — Record Inspector sessions (tool call sequences with inputs/outputs) as "recordings". Replay against same or different server version and diff results side-by-side. Export recordings as YAML collections. Builds on baseline/compare infrastructure.
+- **Server Process Monitor** — Real-time view of stdio server process health: stdout/stderr streams, memory/CPU usage, uptime, exit code on crash. Expose ProcessManager stats via server API/WebSocket. UI panel in Inspector.
 - **Step-Through Test Execution** — Debug mode for collection runs: pause between test cases, inspect/modify variable state, continue/skip/abort. TestExecutor emits events and waits for "continue" signal via WebSocket. UI "Debug Run" button.
 - **MCP Conformance Probe** — Automatically exercise MCP protocol edge cases (missing fields, wrong types, extra fields, empty arrays, null values, oversized payloads) and report server handling. Protocol compliance report, not security scan. New CLI command (`mcpspec probe`) + UI section.
 

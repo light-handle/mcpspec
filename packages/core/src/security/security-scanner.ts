@@ -10,6 +10,8 @@ import { ResourceExhaustionRule } from './rules/resource-exhaustion.js';
 import { AuthBypassRule } from './rules/auth-bypass.js';
 import { InjectionRule } from './rules/injection.js';
 import { InformationDisclosureRule } from './rules/information-disclosure.js';
+import { ToolPoisoningRule } from './rules/tool-poisoning.js';
+import { ExcessiveAgencyRule } from './rules/excessive-agency.js';
 
 const SEVERITY_ORDER: SeverityLevel[] = ['info', 'low', 'medium', 'high', 'critical'];
 
@@ -163,5 +165,7 @@ export class SecurityScanner {
     this.registerRule(new AuthBypassRule());
     this.registerRule(new InjectionRule());
     this.registerRule(new InformationDisclosureRule());
+    this.registerRule(new ToolPoisoningRule());
+    this.registerRule(new ExcessiveAgencyRule());
   }
 }

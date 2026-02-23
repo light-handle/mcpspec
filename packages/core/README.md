@@ -88,7 +88,7 @@ Evaluated via `TestExecutor` — schema, equals, contains, exists, matches, type
 
 - `SecurityScanner` — Orchestrates security audits
 - `ScanConfig` — Safety controls and mode filtering
-- Rules: `PathTraversalRule`, `InputValidationRule`, `ResourceExhaustionRule`, `AuthBypassRule`, `InjectionRule`, `InformationDisclosureRule`
+- Rules: `PathTraversalRule`, `InputValidationRule`, `ResourceExhaustionRule`, `AuthBypassRule`, `InjectionRule`, `InformationDisclosureRule`, `ToolPoisoningRule`, `ExcessiveAgencyRule`
 - `getSafePayloads`, `getPlatformPayloads`, `getPayloadsForMode` — Payload management
 
 ### Performance
@@ -105,8 +105,14 @@ Evaluated via `TestExecutor` — schema, equals, contains, exists, matches, type
 
 ### Scoring
 
-- `MCPScoreCalculator` — 0–100 quality score across 5 categories
+- `MCPScoreCalculator` — 0–100 quality score across 5 categories; schema quality uses opinionated linting (property types, descriptions, constraints, naming conventions)
 - `BadgeGenerator` — shields.io-style SVG badges
+
+### Recording & Replay
+
+- `RecordingStore` — Save, load, list, and delete session recordings
+- `RecordingReplayer` — Replay recorded steps against a live server
+- `RecordingDiffer` — Diff original recording vs replayed results (matched/changed/added/removed)
 
 ### Utilities
 

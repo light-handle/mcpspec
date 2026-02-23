@@ -16,6 +16,8 @@ describe('ScanConfig', () => {
     expect(config.rules).toContain('path-traversal');
     expect(config.rules).toContain('input-validation');
     expect(config.rules).toContain('information-disclosure');
+    expect(config.rules).toContain('tool-poisoning');
+    expect(config.rules).toContain('excessive-agency');
     expect(config.rules).not.toContain('resource-exhaustion');
     expect(config.rules).not.toContain('auth-bypass');
     expect(config.rules).not.toContain('injection');
@@ -26,6 +28,8 @@ describe('ScanConfig', () => {
     expect(config.rules).toContain('path-traversal');
     expect(config.rules).toContain('input-validation');
     expect(config.rules).toContain('information-disclosure');
+    expect(config.rules).toContain('tool-poisoning');
+    expect(config.rules).toContain('excessive-agency');
     expect(config.rules).toContain('resource-exhaustion');
     expect(config.rules).toContain('auth-bypass');
     expect(config.rules).toContain('injection');
@@ -33,7 +37,7 @@ describe('ScanConfig', () => {
 
   it('should include all rules for aggressive mode', () => {
     const config = new ScanConfig({ mode: 'aggressive' });
-    expect(config.rules.length).toBe(6);
+    expect(config.rules.length).toBe(8);
   });
 
   it('should allow filtering to specific rules', () => {

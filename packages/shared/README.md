@@ -23,7 +23,8 @@ Internal shared package for [MCPSpec](https://www.npmjs.com/package/mcpspec). Pr
 - `MCPScore` — Quality scoring
 - `WSClientMessage`, `WSServerMessage` — WebSocket protocol
 - `ErrorTemplate` — Error formatting
-- `SavedServerConnection`, `SavedCollection`, `TestRunRecord` — API types
+- `Recording`, `RecordingStep`, `RecordingStepDiff`, `RecordingDiff` — Recording & replay types
+- `SavedServerConnection`, `SavedCollection`, `SavedRecording`, `TestRunRecord` — API types
 - `ApiResponse`, `ApiListResponse`, `ApiError` — API response wrappers
 
 ### Zod Schemas
@@ -40,6 +41,7 @@ Internal shared package for [MCPSpec](https://www.npmjs.com/package/mcpspec). Pr
 - `createCollectionSchema`, `updateCollectionSchema` — Collection API payloads
 - `triggerRunSchema`, `inspectConnectSchema`, `inspectCallSchema` — Action schemas
 - `auditStartSchema`, `benchmarkStartSchema`, `docsGenerateSchema`, `scoreCalculateSchema` — Feature schemas
+- `saveRecordingSchema`, `replayRecordingSchema`, `saveInspectRecordingSchema` — Recording schemas
 
 ### Constants
 

@@ -47,6 +47,21 @@ const MIGRATIONS: Migration[] = [
       `INSERT INTO schema_version (version) VALUES (1)`,
     ],
   },
+  {
+    version: 2,
+    up: [
+      `CREATE TABLE IF NOT EXISTS recordings (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        server_name TEXT,
+        data TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )`,
+      `UPDATE schema_version SET version = 2`,
+    ],
+  },
 ];
 
 export function getSchemaVersion(db: SqlJsDatabase): number {

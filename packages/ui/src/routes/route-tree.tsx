@@ -10,6 +10,7 @@ import { AuditPage } from './pages/audit';
 import { BenchmarkPage } from './pages/benchmark';
 import { DocsPage } from './pages/docs';
 import { ScorePage } from './pages/score';
+import { RecordingsPage } from './pages/recordings';
 
 const rootRoute = createRootRoute({
   component: function RootComponent() {
@@ -87,6 +88,12 @@ const scoreRoute = createRoute({
   component: ScorePage,
 });
 
+const recordingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/recordings',
+  component: RecordingsPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   serversRoute,
@@ -98,6 +105,7 @@ const routeTree = rootRoute.addChildren([
   benchmarkRoute,
   docsRoute,
   scoreRoute,
+  recordingsRoute,
 ]);
 
 export const routerInstance = createRouter({ routeTree });

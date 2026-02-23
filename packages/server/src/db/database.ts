@@ -7,6 +7,7 @@ import { runMigrations } from './migrations.js';
 import type {
   SavedServerConnection,
   SavedCollection,
+  SavedRecording,
   TestRunRecord,
   TestSummary,
   TestResult,
@@ -247,6 +248,49 @@ export class Database {
     return true;
   }
 
+  // --- Recordings ---
+
+  listRecordings(): SavedRecording[] {
+    const stmt = this.db.prepare('SELECT * FROM recordings ORDER BY updated_at DESC');
+    const rows: SavedRecording[] = [];
+    while (stmt.step()) {
+      rows.push(this.rowToRecording(stmt.getAsObject() as Record<string, unknown>));
+    }
+    stmt.free();
+    return rows;
+  }
+
+  getRecording(id: string): SavedRecording | null {
+    const stmt = this.db.prepare('SELECT * FROM recordings WHERE id = ?');
+    stmt.bind([id]);
+    if (!stmt.step()) {
+      stmt.free();
+      return null;
+    }
+    const row = this.rowToRecording(stmt.getAsObject() as Record<string, unknown>);
+    stmt.free();
+    return row;
+  }
+
+  createRecording(data: Omit<SavedRecording, 'id' | 'createdAt' | 'updatedAt'>): SavedRecording {
+    const id = randomUUID();
+    const now = new Date().toISOString();
+    this.db.run(
+      `INSERT INTO recordings (id, name, description, server_name, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, data.name, data.description ?? null, data.serverName ?? null, data.data, now, now],
+    );
+    this.save();
+    return this.getRecording(id)!;
+  }
+
+  deleteRecording(id: string): boolean {
+    const existing = this.getRecording(id);
+    if (!existing) return false;
+    this.db.run('DELETE FROM recordings WHERE id = ?', [id]);
+    this.save();
+    return true;
+  }
+
   // --- Row mappers ---
 
   private rowToServer(row: Record<string, unknown>): SavedServerConnection {
@@ -269,6 +313,18 @@ export class Database {
       name: row['name'] as string,
       description: (row['description'] as string) || undefined,
       yaml: row['yaml'] as string,
+      createdAt: row['created_at'] as string,
+      updatedAt: row['updated_at'] as string,
+    };
+  }
+
+  private rowToRecording(row: Record<string, unknown>): SavedRecording {
+    return {
+      id: row['id'] as string,
+      name: row['name'] as string,
+      description: (row['description'] as string) || undefined,
+      serverName: (row['server_name'] as string) || undefined,
+      data: row['data'] as string,
       createdAt: row['created_at'] as string,
       updatedAt: row['updated_at'] as string,
     };

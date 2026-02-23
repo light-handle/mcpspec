@@ -24,10 +24,11 @@
 ```bash
 mcpspec test ./collection.yaml        # Run tests
 mcpspec inspect "npx my-server"       # Interactive REPL
-mcpspec audit "npx my-server"         # Security scan
+mcpspec audit "npx my-server"         # Security scan (8 rules)
 mcpspec bench "npx my-server"         # Performance benchmark
 mcpspec score "npx my-server"         # Quality rating (0-100)
 mcpspec docs "npx my-server"          # Auto-generate documentation
+mcpspec record start "npx my-server"  # Record & replay sessions
 mcpspec ui                            # Launch web dashboard
 ```
 
@@ -50,9 +51,10 @@ mcpspec test
 |---|---|---|
 | **Test Collections** | YAML-based test suites with 10 assertion types, environments, variables, tags, retries, and parallel execution |
 | **Interactive Inspector** | Connect to any MCP server and explore tools, resources, and schemas in a live REPL |
-| **Security Audit** | Scan for path traversal, injection, auth bypass, resource exhaustion, and info disclosure. Safety filter auto-skips destructive tools; `--dry-run` previews targets |
+| **Security Audit** | 8 rules: path traversal, injection, auth bypass, resource exhaustion, info disclosure, **tool poisoning** (LLM prompt injection), and **excessive agency** (overly broad tools). Safety filter auto-skips destructive tools; `--dry-run` previews targets |
+| **Recording & Replay** | Record inspector sessions, save them, and replay against the same or different server versions. Diff output highlights regressions — matched, changed, added, removed steps |
 | **Benchmarks** | Measure min/max/mean/median/P95/P99 latency and throughput across hundreds of iterations |
-| **MCP Score** | 0-100 quality rating across documentation, schema quality, error handling, responsiveness, and security |
+| **MCP Score** | 0-100 quality rating across documentation, schema quality (opinionated linting: property types, descriptions, constraints, naming conventions), error handling, responsiveness, and security |
 | **Doc Generator** | Auto-generate Markdown or HTML documentation from server introspection |
 | **Web Dashboard** | Full React UI with server management, test runner, audit viewer, and dark mode |
 | **CI/CD Ready** | JUnit/JSON/TAP reporters, deterministic exit codes, `--ci` mode, GitHub Actions compatible |
@@ -69,6 +71,10 @@ mcpspec test
 | `mcpspec docs <server>` | Generate docs — `--format markdown\|html`, `--output <dir>` |
 | `mcpspec compare` | Compare test runs or `--baseline <name>` |
 | `mcpspec baseline save <name>` | Save/list baselines for regression detection |
+| `mcpspec record start <server>` | Record an inspector session — `.call`, `.save`, `.steps` |
+| `mcpspec record replay <name> <server>` | Replay a recording and diff against original |
+| `mcpspec record list` | List saved recordings |
+| `mcpspec record delete <name>` | Delete a saved recording |
 | `mcpspec init [dir]` | Scaffold project — `--template minimal\|standard\|full` |
 | `mcpspec ui` | Launch web dashboard on `localhost:6274` |
 
@@ -93,8 +99,8 @@ Pre-built test suites for popular MCP servers in [`examples/collections/servers/
 | Package | Description |
 |---------|-------------|
 | `@mcpspec/shared` | Types, Zod schemas, constants |
-| `@mcpspec/core` | MCP client, test runner, assertions, security scanner, profiler, doc generator, scorer |
-| `@mcpspec/cli` | 10 CLI commands built with Commander.js |
+| `@mcpspec/core` | MCP client, test runner, assertions, security scanner (8 rules), profiler, doc generator, scorer, recording/replay |
+| `@mcpspec/cli` | 11 CLI commands built with Commander.js |
 | `@mcpspec/server` | Hono HTTP server with REST API + WebSocket |
 | `@mcpspec/ui` | React SPA — TanStack Router, TanStack Query, Tailwind, shadcn/ui |
 
@@ -104,7 +110,7 @@ Pre-built test suites for popular MCP servers in [`examples/collections/servers/
 git clone https://github.com/light-handle/mcpspec.git
 cd mcpspec
 pnpm install && pnpm build
-pnpm test   # 260 tests across core + server
+pnpm test   # 294 tests across core + server
 ```
 
 ## License

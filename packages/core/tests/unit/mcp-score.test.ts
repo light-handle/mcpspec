@@ -8,10 +8,13 @@ describe('MCPScoreCalculator', () => {
       tools: [
         {
           name: 'read_file',
-          description: 'Reads a file',
+          description: 'Reads a file from the filesystem',
           inputSchema: {
             type: 'object',
-            properties: { path: { type: 'string' } },
+            properties: {
+              path: { type: 'string', description: 'The file path to read', minLength: 1 },
+              encoding: { type: 'string', description: 'File encoding', enum: ['utf-8', 'ascii', 'base64'], default: 'utf-8' },
+            },
             required: ['path'],
           },
         },
@@ -132,7 +135,7 @@ describe('MCPScoreCalculator', () => {
           description: 'A tool',
           inputSchema: {
             type: 'object',
-            properties: { a: { type: 'string' } },
+            properties: { a: { type: 'string', description: 'A param' } },
             required: ['a'],
           },
         },
@@ -154,6 +157,173 @@ describe('MCPScoreCalculator', () => {
       score.categories.security * 0.15,
     );
     expect(score.overall).toBe(expected);
+  });
+
+  it('penalizes properties missing type definitions', async () => {
+    const client = new MockMCPClient({
+      tools: [
+        {
+          name: 'tool1',
+          description: 'A tool',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              a: { description: 'has description but no type' },
+              b: { description: 'also no type' },
+            },
+            required: ['a'],
+          },
+        },
+      ],
+      serverInfo: { name: 'no-types', version: '1.0.0' },
+    });
+    await client.connect();
+
+    const calculator = new MCPScoreCalculator();
+    const score = await calculator.calculate(client);
+
+    // Has structure (20%) + descriptions (20%) + required (15%) + naming (10%) = 65
+    // Missing types (0%) and constraints (0%)
+    expect(score.categories.schemaQuality).toBe(65);
+  });
+
+  it('penalizes properties missing descriptions', async () => {
+    const client = new MockMCPClient({
+      tools: [
+        {
+          name: 'tool1',
+          description: 'A tool',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: { type: 'string' },
+              count: { type: 'number' },
+            },
+            required: ['path'],
+          },
+        },
+      ],
+      serverInfo: { name: 'no-desc', version: '1.0.0' },
+    });
+    await client.connect();
+
+    const calculator = new MCPScoreCalculator();
+    const score = await calculator.calculate(client);
+
+    // Has structure (20%) + types (20%) + required (15%) + naming (10%) = 65
+    // Missing descriptions (0%) and constraints (0%)
+    expect(score.categories.schemaQuality).toBe(65);
+  });
+
+  it('rewards schemas with constraints', async () => {
+    const client = new MockMCPClient({
+      tools: [
+        {
+          name: 'create_item',
+          description: 'Creates an item',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', description: 'Item name', minLength: 1, maxLength: 100 },
+              category: { type: 'string', description: 'Category', enum: ['a', 'b', 'c'] },
+            },
+            required: ['name', 'category'],
+          },
+        },
+      ],
+      serverInfo: { name: 'constrained', version: '1.0.0' },
+    });
+    await client.connect();
+
+    const calculator = new MCPScoreCalculator();
+    const score = await calculator.calculate(client);
+
+    // Perfect: structure + types + descriptions + required + constraints + naming
+    expect(score.categories.schemaQuality).toBe(100);
+  });
+
+  it('rewards consistent naming conventions', async () => {
+    // camelCase properties
+    const camelClient = new MockMCPClient({
+      tools: [
+        {
+          name: 'tool1',
+          description: 'A tool',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              firstName: { type: 'string', description: 'First name' },
+              lastName: { type: 'string', description: 'Last name' },
+            },
+            required: ['firstName'],
+          },
+        },
+      ],
+      serverInfo: { name: 'camel', version: '1.0.0' },
+    });
+    await camelClient.connect();
+
+    const calculator = new MCPScoreCalculator();
+    const camelScore = await calculator.calculate(camelClient);
+
+    // Inconsistent naming: mixed styles
+    const mixedClient = new MockMCPClient({
+      tools: [
+        {
+          name: 'tool1',
+          description: 'A tool',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              'First-Name': { type: 'string', description: 'First name' },
+              last_name: { type: 'string', description: 'Last name' },
+            },
+            required: ['First-Name'],
+          },
+        },
+      ],
+      serverInfo: { name: 'mixed', version: '1.0.0' },
+    });
+    await mixedClient.connect();
+
+    const mixedScore = await calculator.calculate(mixedClient);
+
+    // camelCase should score higher due to naming consistency
+    expect(camelScore.categories.schemaQuality).toBeGreaterThan(mixedScore.categories.schemaQuality);
+  });
+
+  it('scores nested object schemas with typed properties', async () => {
+    const client = new MockMCPClient({
+      tools: [
+        {
+          name: 'create_user',
+          description: 'Create a user',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', description: 'User name', minLength: 1 },
+              address: {
+                type: 'object',
+                description: 'Address',
+                properties: {
+                  street: { type: 'string' },
+                  city: { type: 'string' },
+                },
+              },
+            },
+            required: ['name'],
+          },
+        },
+      ],
+      serverInfo: { name: 'nested', version: '1.0.0' },
+    });
+    await client.connect();
+
+    const calculator = new MCPScoreCalculator();
+    const score = await calculator.calculate(client);
+
+    // Nested objects with typed properties count as having constraints
+    expect(score.categories.schemaQuality).toBe(100);
   });
 
   it('reports progress callbacks', async () => {

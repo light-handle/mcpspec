@@ -28,7 +28,7 @@ const server = await startServer({
 
 - `startServer(options?)` — Start the HTTP server with WebSocket support
 - `createApp(options)` — Create the Hono app without starting a server (for testing/embedding)
-- `Database` — sql.js (WASM SQLite) database for storing servers, collections, runs, and audit results
+- `Database` — sql.js (WASM SQLite) database for storing servers, collections, runs, recordings, and audit results
 - `WebSocketHandler` — Real-time event broadcasting over WebSocket
 - `UI_DIST_PATH` — Path to the bundled web UI static files
 
@@ -58,6 +58,12 @@ const server = await startServer({
 | POST | `/api/inspect/connect` | Start inspect session |
 | POST | `/api/inspect/call` | Call a tool in session |
 | POST | `/api/inspect/disconnect` | End inspect session |
+| POST | `/api/inspect/save-recording` | Save session as recording |
+| GET | `/api/recordings` | List recordings |
+| GET | `/api/recordings/:id` | Get recording |
+| POST | `/api/recordings` | Save a recording |
+| DELETE | `/api/recordings/:id` | Delete recording |
+| POST | `/api/recordings/:id/replay` | Replay recording against server |
 | POST | `/api/audit` | Start security audit |
 | POST | `/api/benchmark` | Start benchmark |
 | POST | `/api/docs/generate` | Generate documentation |

@@ -79,17 +79,72 @@ export class MCPScoreCalculator {
 
     let totalPoints = 0;
     for (const tool of tools) {
-      const schema = tool.inputSchema;
-      if (!schema) continue;
-
-      let toolPoints = 0;
-      if (schema.type) toolPoints += 1 / 3;
-      if (schema.properties && typeof schema.properties === 'object') toolPoints += 1 / 3;
-      if (schema.required && Array.isArray(schema.required)) toolPoints += 1 / 3;
-      totalPoints += toolPoints;
+      totalPoints += this.scoreToolSchema(tool);
     }
 
     return Math.round((totalPoints / tools.length) * 100);
+  }
+
+  /** Score a single tool's schema from 0.0 to 1.0 across 6 weighted criteria. */
+  private scoreToolSchema(tool: ToolInfo): number {
+    const schema = tool.inputSchema;
+    if (!schema) return 0;
+
+    // Weight: structure 20%, types 20%, descriptions 20%, required 15%, constraints 15%, naming 10%
+    let score = 0;
+
+    // 1. Structure (20%): has type + properties
+    const hasType = !!schema.type;
+    const properties = schema.properties as Record<string, Record<string, unknown>> | undefined;
+    const hasProperties = properties && typeof properties === 'object' && Object.keys(properties).length > 0;
+    score += (hasType ? 0.1 : 0) + (hasProperties ? 0.1 : 0);
+
+    if (!hasProperties || !properties) return score;
+
+    const propEntries = Object.entries(properties);
+
+    // 2. Property types (20%): every property should have a `type` field
+    const withType = propEntries.filter(([, prop]) => !!prop.type).length;
+    score += (withType / propEntries.length) * 0.2;
+
+    // 3. Property descriptions (20%): every property should have a `description`
+    const withDesc = propEntries.filter(([, prop]) => {
+      const desc = prop.description;
+      return typeof desc === 'string' && desc.trim().length > 0;
+    }).length;
+    score += (withDesc / propEntries.length) * 0.2;
+
+    // 4. Required array (15%): present and non-empty
+    const required = schema.required;
+    if (Array.isArray(required) && required.length > 0) {
+      score += 0.15;
+    }
+
+    // 5. Constraints (15%): properties use enum, pattern, min/max, minLength, etc.
+    const constraintKeys = ['enum', 'pattern', 'minimum', 'maximum', 'minLength', 'maxLength', 'minItems', 'maxItems', 'format', 'default'];
+    const withConstraints = propEntries.filter(([, prop]) => {
+      // Direct constraints
+      if (constraintKeys.some((k) => prop[k] !== undefined)) return true;
+      // Nested object with own properties
+      if (prop.type === 'object' && prop.properties && typeof prop.properties === 'object') {
+        const nested = prop.properties as Record<string, Record<string, unknown>>;
+        return Object.keys(nested).length > 0 &&
+          Object.values(nested).some((np) => !!np.type);
+      }
+      // Array with items schema
+      if (prop.type === 'array' && prop.items && typeof prop.items === 'object') return true;
+      return false;
+    }).length;
+    score += (withConstraints / propEntries.length) * 0.15;
+
+    // 6. Naming conventions (10%): consistent camelCase or snake_case
+    const names = propEntries.map(([name]) => name);
+    const camelCount = names.filter((n) => /^[a-z][a-zA-Z0-9]*$/.test(n)).length;
+    const snakeCount = names.filter((n) => /^[a-z][a-z0-9_]*$/.test(n)).length;
+    const bestConvention = Math.max(camelCount, snakeCount);
+    score += (bestConvention / names.length) * 0.1;
+
+    return score;
   }
 
   private async scoreErrorHandling(client: MCPClientInterface, tools: ToolInfo[]): Promise<number> {

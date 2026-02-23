@@ -85,6 +85,27 @@ export const docsGenerateSchema = z.object({
   format: z.enum(['markdown', 'html']).default('markdown'),
 });
 
+export const saveRecordingSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  serverName: z.string().optional(),
+  data: z.string().min(1),
+});
+
+export const replayRecordingSchema = z.object({
+  transport: z.enum(['stdio', 'sse', 'streamable-http']),
+  command: z.string().optional(),
+  args: z.array(z.string()).optional(),
+  url: z.string().optional(),
+  env: z.record(z.string()).optional(),
+});
+
+export const saveInspectRecordingSchema = z.object({
+  sessionId: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().optional(),
+});
+
 export const scoreCalculateSchema = z.object({
   transport: z.enum(['stdio', 'sse', 'streamable-http']),
   command: z.string().optional(),

@@ -37,6 +37,17 @@ export interface TestRunRecord {
   duration?: number;
 }
 
+// Saved recording (persisted in DB)
+export interface SavedRecording {
+  id: string;
+  name: string;
+  description?: string;
+  serverName?: string;
+  data: string; // JSON-serialized Recording
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
+}
+
 // API response wrappers
 export interface ApiResponse<T> {
   data: T;

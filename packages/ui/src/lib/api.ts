@@ -1,11 +1,13 @@
 import type {
   SavedServerConnection,
   SavedCollection,
+  SavedRecording,
   TestRunRecord,
   ProtocolLogEntry,
   SecurityScanResult,
   BenchmarkResult,
   MCPScore,
+  RecordingDiff,
   ApiResponse,
   ApiListResponse,
 } from '@mcpspec/shared';
@@ -117,6 +119,28 @@ export const api = {
       request<ApiResponse<{ disconnected: boolean }>>('/inspect/disconnect', {
         method: 'POST',
         body: JSON.stringify({ sessionId }),
+      }),
+    saveRecording: (sessionId: string, name: string, description?: string) =>
+      request<ApiResponse<SavedRecording>>('/inspect/save-recording', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, name, description }),
+      }),
+  },
+
+  recordings: {
+    list: () => request<ApiListResponse<SavedRecording>>('/recordings'),
+    get: (id: string) => request<ApiResponse<SavedRecording>>(`/recordings/${id}`),
+    save: (data: { name: string; description?: string; serverName?: string; data: string }) =>
+      request<ApiResponse<SavedRecording>>('/recordings', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    delete: (id: string) =>
+      request<ApiResponse<{ deleted: boolean }>>(`/recordings/${id}`, { method: 'DELETE' }),
+    replay: (id: string, data: { transport: string; command?: string; args?: string[]; url?: string; env?: Record<string, string> }) =>
+      request<ApiResponse<RecordingDiff>>(`/recordings/${id}/replay`, {
+        method: 'POST',
+        body: JSON.stringify(data),
       }),
   },
 

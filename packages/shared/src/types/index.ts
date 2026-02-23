@@ -288,7 +288,43 @@ export interface MCPScore {
   };
 }
 
-// WebSocket types  
+// Recording types
+export interface RecordingStep {
+  tool: string;
+  input: Record<string, unknown>;
+  output: unknown[];
+  isError?: boolean;
+  durationMs?: number;
+}
+
+export interface Recording {
+  id: string;
+  name: string;
+  description?: string;
+  serverName?: string;
+  tools: Array<{ name: string; description?: string }>;
+  steps: RecordingStep[];
+  createdAt: string;
+}
+
+export interface RecordingStepDiff {
+  index: number;
+  tool: string;
+  type: 'matched' | 'changed' | 'added' | 'removed';
+  original?: RecordingStep;
+  replayed?: RecordingStep;
+  outputDiff?: string;
+}
+
+export interface RecordingDiff {
+  recordingId: string;
+  recordingName: string;
+  replayedAt: string;
+  steps: RecordingStepDiff[];
+  summary: { matched: number; changed: number; added: number; removed: number };
+}
+
+// WebSocket types
 export type WSClientMessage =
   | { type: 'subscribe'; channel: string }
   | { type: 'unsubscribe'; channel: string }
@@ -318,4 +354,5 @@ export type {
   ApiResponse,
   ApiListResponse,
   ApiError,
+  SavedRecording,
 } from './api.js';

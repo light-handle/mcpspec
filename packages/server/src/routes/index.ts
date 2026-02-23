@@ -9,14 +9,16 @@ import { auditRoutes } from './audit.js';
 import { benchmarkRoutes } from './benchmark.js';
 import { docsRoutes } from './docs.js';
 import { scoreRoutes } from './score.js';
+import { recordingsRoutes } from './recordings.js';
 
 export function registerRoutes(app: Hono, db: Database, wsHandler?: WebSocketHandler): void {
   serversRoutes(app, db);
   collectionsRoutes(app, db);
   runsRoutes(app, db);
-  inspectRoutes(app, wsHandler);
+  inspectRoutes(app, db, wsHandler);
   auditRoutes(app, wsHandler);
   benchmarkRoutes(app, wsHandler);
   docsRoutes(app);
   scoreRoutes(app, wsHandler);
+  recordingsRoutes(app, db);
 }

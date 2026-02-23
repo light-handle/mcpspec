@@ -12,6 +12,7 @@ import { auditCommand } from './commands/audit.js';
 import { benchCommand } from './commands/bench.js';
 import { docsCommand } from './commands/docs.js';
 import { scoreCommand } from './commands/score.js';
+import { recordCommand } from './commands/record.js';
 
 const __cliDir = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__cliDir, '..', 'package.json'), 'utf-8'));
@@ -33,5 +34,6 @@ program.addCommand(auditCommand);
 program.addCommand(benchCommand);
 program.addCommand(docsCommand);
 program.addCommand(scoreCommand);
+program.addCommand(recordCommand);
 
 program.parse(process.argv);

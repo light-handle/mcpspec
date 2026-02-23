@@ -6,6 +6,8 @@ const PASSIVE_RULES = [
   'path-traversal',
   'input-validation',
   'information-disclosure',
+  'tool-poisoning',
+  'excessive-agency',
 ];
 
 const ACTIVE_RULES = [

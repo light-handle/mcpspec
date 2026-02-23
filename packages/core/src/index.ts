@@ -56,6 +56,8 @@ export { ResourceExhaustionRule } from './security/rules/resource-exhaustion.js'
 export { AuthBypassRule } from './security/rules/auth-bypass.js';
 export { InjectionRule } from './security/rules/injection.js';
 export { InformationDisclosureRule } from './security/rules/information-disclosure.js';
+export { ToolPoisoningRule } from './security/rules/tool-poisoning.js';
+export { ExcessiveAgencyRule } from './security/rules/excessive-agency.js';
 export { getSafePayloads } from './security/payloads/safe-payloads.js';
 export type { PayloadSet } from './security/payloads/safe-payloads.js';
 export { getPlatformPayloads, getPayloadsForMode } from './security/payloads/platform-payloads.js';
@@ -77,3 +79,9 @@ export { HtmlDocGenerator } from './documentation/html-generator.js';
 export { MCPScoreCalculator } from './scoring/mcp-score.js';
 export type { ScoreProgress } from './scoring/mcp-score.js';
 export { BadgeGenerator } from './scoring/badge-generator.js';
+
+// Recording
+export { RecordingStore } from './recording/recording-store.js';
+export { RecordingReplayer } from './recording/recording-replayer.js';
+export type { ReplayProgress, ReplayResult } from './recording/recording-replayer.js';
+export { RecordingDiffer } from './recording/recording-differ.js';

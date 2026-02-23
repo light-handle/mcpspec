@@ -57,7 +57,7 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
-        <div className="mt-2 px-3 text-xs text-muted-foreground">v1.1.0</div>
+        <div className="mt-2 px-3 text-xs text-muted-foreground">v1.2.0</div>
       </div>
     </aside>
   );

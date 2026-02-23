@@ -1,6 +1,6 @@
 {
   "name": "mcpspec",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "The definitive MCP server testing platform",
   "packageManager": "pnpm@10.30.0",

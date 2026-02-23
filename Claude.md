@@ -2,7 +2,7 @@
 
 > **Specification Version:** 2.1.0
 > **Last Updated:** February 2026
-> **Status:** v1.1.0 Released
+> **Status:** v1.2.0 Released
 
 ## Table of Contents
 
@@ -892,22 +892,28 @@ Initial public release. Core features complete.
 - Security scanner now has 8 rules (was 6), passive mode has 5 rules (was 3)
 - **CI Pipeline Generator** — `mcpspec ci-init` generates GitHub Actions, GitLab CI, or shell scripts with interactive wizard and flag-driven mode. Auto-detects platform. Supports test, audit, score, and bench checks with configurable severity gates and MCP Score thresholds.
 
-### v1.1.5 (Week 26)
+### v1.2.0 (Week 26) — COMPLETE
+- **Mock Server from Recordings** — `mcpspec mock <recording>` starts a stdio MCP server that serves prerecorded responses. Drop-in replacement for real servers in CI/CD, offline development, and deterministic testing.
+- Two matching modes: `match` (exact input first, then per-tool queue fallback) and `sequential` (tape/cassette style).
+- `--generate <path>` produces standalone `.js` files with inlined recording data and matching logic — only requires `@modelcontextprotocol/sdk` as a runtime dependency.
+- Options: `--latency original|<ms>`, `--on-missing error|empty`.
+- New CLI command: `mcpspec mock` (13 total commands).
+
+### v1.2.5 (Week 28)
 - **Server Process Monitor** — Real-time view of stdio server process health: stdout/stderr streams, memory/CPU usage, uptime, exit code on crash. Expose ProcessManager stats via server API/WebSocket. UI panel in Inspector.
 - **Step-Through Test Execution** — Debug mode for collection runs: pause between test cases, inspect/modify variable state, continue/skip/abort. TestExecutor emits events and waits for "continue" signal via WebSocket. UI "Debug Run" button.
 - **MCP Conformance Probe** — Automatically exercise MCP protocol edge cases (missing fields, wrong types, extra fields, empty arrays, null values, oversized payloads) and report server handling. Protocol compliance report, not security scan. New CLI command (`mcpspec probe`) + UI section.
 
-### v1.2.0 (Week 28)
+### v1.3.0 (Week 30)
 - Team workspaces
 - SSO integration
 - Audit logs
 - Role-based access
 
-### v1.3.0 (Week 32)
+### v1.4.0 (Week 34)
 - Fuzzing mode
 - Property-based testing
 - Contract testing
-- Mock server generation
 
 ### v2.0.0 (Week 40)
 - MCPSpec Cloud (hosted version)
